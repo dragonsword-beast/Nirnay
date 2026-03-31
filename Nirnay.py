@@ -6,7 +6,7 @@ from groq import Groq
 st.set_page_config(
     page_title="Nirnay - Medical Diagnostic Assistant",
     page_icon="https://cdn.creativefabrica.com/2020/07/17/Medicine-Logo-Graphics-4647232-1.jpg",
-    layout="wide",
+    layout="centered",
     initial_sidebar_state="collapsed"
 )
 
@@ -32,9 +32,9 @@ st.markdown(
     }}
 
     .stApp {{
-        background: radial-gradient(ellipse at the center, #0d1b2a 0%, #07101d 45%, #050812 100%);
+        background: radial-gradient(circle at top left, #0d1b2a 0%, #07101d 45%, #050812 100%);
         color: {accent_teal};
-        min-width: auto;
+        min-width: 0;
         overflow-x: hidden;
     }}
 
@@ -1075,6 +1075,41 @@ def render_analysis_chat_styles():
             border: 1px solid rgba(255,255,255,0.22) !important;
             box-shadow: 0 10px 18px rgba(0,0,0,0.18) !important;
         }
+        details,
+        .streamlit-expanderHeader,
+        .stExpanderHeader {
+            margin: 0;
+        }
+        .streamlit-expanderHeader,
+        .stExpanderHeader,
+        details > summary {
+            background: linear-gradient(135deg, #0d3b7d 0%, #e0b33f 55%, #0d3b7d 100%);
+            color: #f9f6e8 !important;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.18);
+            box-shadow: 0 18px 36px rgba(0,0,0,0.14);
+            padding: 0.95rem 1rem;
+            margin: 0;
+            font-weight: 700;
+            letter-spacing: 0.01em;
+            text-transform: none;
+            transition: background 0.25s ease, transform 0.2s ease;
+        }
+        details > summary:hover,
+        .streamlit-expanderHeader:hover,
+        .stExpanderHeader:hover {
+            background: linear-gradient(135deg, rgba(18, 117, 154, 0.95), rgba(35, 192, 220, 0.95));
+            transform: translateY(-1px);
+        }
+        .streamlit-expanderHeader > div,
+        .stExpanderHeader > div,
+        details > summary > div {
+            margin: 0;
+            line-height: 1.1;
+        }
+        details > summary::-webkit-details-marker {
+            display: none;
+        }
         @media (max-width: 980px) {
             .chat-options-grid {
                 grid-template-columns: 1fr;
@@ -1410,7 +1445,7 @@ if page == "analysis":
     expander_placeholder = st.empty()
 
     def render_chat_options():
-        st.markdown("<div class='chat-options-grid'><p><h4>🤖Talk with your AI assistant</h4></p></div>",
+        st.markdown("<div class='chat-options-grid'><text align='center'><p><h4>🤖Talk with your AI assistant</h4></p></div>",
                     unsafe_allow_html=True)
         col1, col2 = st.columns(2, gap="large")
         with col1:
@@ -1459,6 +1494,12 @@ def parse_float(val):
 def chunked(values, size):
     for i in range(0, len(values), size):
         yield values[i : i + size]
+
+
+def has_data(values):
+    return any(v is True for v in values if isinstance(v, bool)) or any(
+        v is not None for v in values if not isinstance(v, bool)
+    )
 
 
 def make_inputs(tab, fields):
@@ -1874,6 +1915,9 @@ with expander_target.expander("Manual Medical Analysis", expanded=True):
         else:
             st.info("Enter at least one measurement or symptom to enable the analysis report.")
 
+    with st.expander("🤖 Your AI assistants are here to help.", expanded=False):
+        render_chat_options()
+
 v_checks = collected["🧪 Metabolism"]
 c_checks = collected["❤️ Cardiac"]
 o_checks = collected["🧬 Oncology"]
@@ -1887,8 +1931,18 @@ psych_checks = collected["🧠 Psychiatry"]
 neph_checks = collected["💧 Nephrology"]
 hem_checks = collected["🩸 Hematology"]
 
-if "analysis_requested" not in st.session_state:
-    st.session_state.analysis_requested = False
+metabolic_has_data = has_data(v_checks.values())
+cardiac_has_data = has_data(c_checks.values())
+onco_has_data = has_data(o_checks.values())
+neural_has_data = has_data(n_checks.values())
+gynae_has_data = has_data(g_checks.values())
+immuno_has_data = has_data(i_checks.values())
+endo_has_data = has_data(endo_checks.values())
+ped_has_data = has_data(ped_checks.values())
+derm_has_data = has_data(derm_checks.values())
+psych_has_data = has_data(psych_checks.values())
+neph_has_data = has_data(neph_checks.values())
+hem_has_data = has_data(hem_checks.values())
 
 any_section_data = any(
     any(value is not None and value is not False and value != "" for value in section.values())
@@ -1908,27 +1962,6 @@ any_section_data = any(
     ]
 )
 
-if not st.session_state.analysis_requested:
-    render_footer()
-    st.stop()
-
-# ------------ Analysis generation -------------
-
-def has_data(values):
-    return any(v is True for v in values if isinstance(v, bool)) or any(v is not None for v in values if not isinstance(v, bool))
-
-metabolic_has_data = has_data(v_checks.values())
-cardiac_has_data = has_data(c_checks.values())
-onco_has_data = has_data(o_checks.values())
-neural_has_data = has_data(n_checks.values())
-gynae_has_data = has_data(g_checks.values())
-immuno_has_data = has_data(i_checks.values())
-endo_has_data = has_data(endo_checks.values())
-ped_has_data = has_data(ped_checks.values())
-derm_has_data = has_data(derm_checks.values())
-psych_has_data = has_data(psych_checks.values())
-neph_has_data = has_data(neph_checks.values())
-hem_has_data = has_data(hem_checks.values())
 output = []
 
 if metabolic_has_data:
@@ -2687,7 +2720,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-render_chat_options()
+
 
 
 
