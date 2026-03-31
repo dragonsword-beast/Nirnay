@@ -32,9 +32,9 @@ st.markdown(
     }}
 
     .stApp {{
-        background: radial-gradient(circle at top left, #0d1b2a 0%, #07101d 45%, #050812 100%);
+        background: radial-gradient(ellipse at the center, #0d1b2a 0%, #07101d 45%, #050812 100%);
         color: {accent_teal};
-        min-width: 0;
+        min-width: auto;
         overflow-x: hidden;
     }}
 
