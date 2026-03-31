@@ -924,8 +924,8 @@ if page == "profile":
             </div>
             <div class="feature-grid">
                 <div class="feature-card"><strong>Fast intake</strong><span>Complete patient details quickly.</span></div>
-                <div class="feature-card"><strong>Structured data</strong><span>Capture vitals, symptoms, and clinical findings in one place.</span></div>
-                <div class="feature-card"><strong>Clinical-ready</strong><span>Generate analysis designed for healthcare handoff. Featuring two AI assistants</span></div>
+                <div class="feature-card"><strong>Structured data</strong><span>Get 10+ medical sections which capture symptoms, and clinical findings in one place.</span></div>
+                <div class="feature-card"><strong>AI-Powered Insights</strong><span>Generate analysis designed for healthcare. Featuring two AI assistants</span></div>
             </div>
         </div>
         """,
