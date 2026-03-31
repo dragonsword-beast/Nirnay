@@ -1835,7 +1835,7 @@ try:
 except NameError:
     expander_target = st.empty()
 
-with expander_target.expander("Manual medical analysis checks", expanded=True):
+with expander_target.expander("Manual Medical Analysis", expanded=True):
     tabs_objs = st.tabs([x[0] for x in tab_names])
     collected = {}
 
