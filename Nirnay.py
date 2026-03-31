@@ -6,7 +6,7 @@ from groq import Groq
 st.set_page_config(
     page_title="Nirnay - Medical Diagnostic Assistant",
     page_icon="https://cdn.creativefabrica.com/2020/07/17/Medicine-Logo-Graphics-4647232-1.jpg",
-    layout="centered",
+    layout="wide",
     initial_sidebar_state="collapsed"
 )
 
@@ -35,11 +35,13 @@ st.markdown(
         background: radial-gradient(circle at top left, #0d1b2a 0%, #07101d 45%, #050812 100%);
         color: {accent_teal};
         min-width: 0;
+        width: 100vw;
         overflow-x: hidden;
     }}
 
     body, .stApp, .main, .block-container {{
         box-sizing: border-box;
+        min-width: 0;
     }}
 
     .block-container {{
@@ -772,8 +774,13 @@ st.markdown(
         .result-card,
         .analysis-summary,
         .analysis-sidebar-card,
-        .profile-card {{
+        .profile-card,
+        .topbar,
+        .analysis-patient-summary,
+        .report-header,
+        .chat-shell {{
             width: 100%;
+            max-width: 100%;
             padding: 1rem;
             margin: 0 0 1rem;
         }}
@@ -819,13 +826,33 @@ st.markdown(
 
         .site-hero,
         .hero-card,
-        .analysis-banner {{
+        .analysis-banner,
+        .analysis-summary,
+        .analysis-sidebar-card,
+        .result-card,
+        .topbar,
+        .analysis-patient-summary,
+        .report-header,
+        .chat-shell {{
             gap: 1rem;
         }}
 
         .feature-grid,
         .stat-grid {{
             grid-template-columns: 1fr;
+        }}
+
+        .stButton>button,
+        .stButton>div>button,
+        .stButton>div>div>button {{
+            max-width: 100% !important;
+        }}
+
+        .chat-card-action .stButton > button,
+        .chat-card-action .stButton > div > button,
+        .chat-card-action .stButton > div > div > button {{
+            width: 100% !important;
+            min-width: auto !important;
         }}
 
         .section-title {{
