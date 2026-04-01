@@ -1,27 +1,35 @@
 import streamlit as st
 import html
 import time
+import base64
+import pathlib
 from groq import Groq
 
+logo_path = pathlib.Path(__file__).parent / "893a2625-aa76-4993-af22-650fd069b640-8.png"
+logo_data = base64.b64encode(logo_path.read_bytes()).decode("ascii")
+logo_html = f'<img class="brand-logo" src="data:image/png;base64,{logo_data}" alt="Nirnay logo" />'
+
 st.set_page_config(
-    page_title="Nirnay - Medical Diagnostic Assistant",
-    page_icon="https://cdn.creativefabrica.com/2020/07/17/Medicine-Logo-Graphics-4647232-1.jpg",
+    page_title="Nirnay | Clinical Diagnostic Workflow",
+    page_icon="nirnay.ico",
     layout="centered",
     initial_sidebar_state="collapsed"
 )
 
-# --- THEME COLORS (for reference) ---
-gunmetal = "#ecf1f8"
-brushed_steel = "#f3c136"
-chrome = "#f5f7fb"
-soft_steel = "#e8eff7"
-accent_teal = "#4cbeb8"
-accent_slate = "#2549eb"
-border_steel = "#1f3042"
-deep_black = "#000000"
-success_green = "#22c55e"
-warning_yellow = "#eab308"
-danger_red = "#dc2626"
+# --- THEME COLORS---
+neutral_light = "#e8f3fc"
+highlight_gold = "#f3c136"
+surface_white = "#f5f7fb"
+surface_frost = "#dde6f4"
+primary_cyan = "#27c8f1"
+primary_ink = "#1761c1"
+border_ink = "#1f3042"
+text_night = "#020617"
+success_mint = "#22c55e"
+warning_amber = "#eab308"
+danger_crimson = "#dc2626"
+
+
 st.markdown(
     f"""
     <style>
@@ -33,7 +41,7 @@ st.markdown(
 
     .stApp {{
         background: radial-gradient(circle at top left, #0d1b2a 0%, #07101d 45%, #050812 100%);
-        color: {accent_teal};
+        color: {primary_cyan};
         min-width: 0;
         overflow-x: hidden;
     }}
@@ -60,13 +68,13 @@ st.markdown(
         font-weight: 900;
         margin-bottom: 0.15rem;
         letter-spacing: 0px;
-        color: {accent_teal};
+        color: {primary_cyan};
         text-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
     }}
 
     .subtitle {{
         text-align: center;
-        color: {soft_steel};
+        color: {surface_frost};
         font-size: 1.1rem;
         font-weight: 400;
         margin-bottom: 1.75rem;
@@ -86,6 +94,364 @@ st.markdown(
         box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
     }}
 
+    .stepper {{
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.85rem;
+        margin-bottom: 1.75rem;
+        padding: 0.75rem 0;
+    }}
+
+    .stepper-step {{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.6rem;
+        padding: 0.9rem 1rem;
+        border-radius: 18px;
+        background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(255,255,255,0.12);
+        color: {surface_frost};
+        font-weight: 700;
+        font-size: 0.98rem;
+        text-align: center;
+        min-height: 62px;
+        transition: all 0.3s ease;
+    }}
+
+    .stepper-step.active {{
+        background: linear-gradient(135deg, rgba(19, 71, 135, 0.24) 0%, rgba(11, 32, 58, 0.95) 100%);
+        border-color: rgba(36, 141, 227, 0.45);
+        color: {surface_white};
+        box-shadow: 0 0 26px rgba(37, 200, 241, 0.18), 0 24px 48px rgba(0,0,0,0.22);
+        animation: glowPulse 3.2s ease-in-out infinite;
+    }}
+
+    .stepper-step.completed {{
+        color: {surface_white};
+        background: rgba(37, 200, 241, 0.08);
+        border-color: rgba(37, 200, 241, 0.18);
+    }}
+
+    .stepper-step.upcoming {{
+        opacity: 0.75;
+    }}
+
+    .stepper-step span.status {{
+        color: {primary_cyan};
+        font-size: 0.82rem;
+        font-weight: 600;
+    }}
+
+    @keyframes glowPulse {{
+        0%, 100% {{
+            box-shadow: 0 0 0 rgba(37, 200, 241, 0.0);
+        }}
+        50% {{
+            box-shadow: 0 0 26px rgba(37, 200, 241, 0.18);
+        }}
+    }}
+
+    .analysis-shell {{
+        display: grid;
+        gap: 1.25rem;
+        margin-bottom: 1.6rem;
+        padding: 1.4rem;
+        background: rgba(7, 14, 28, 0.75);
+        border: 1px solid rgba(37, 200, 241, 0.14);
+        border-radius: 28px;
+        box-shadow: 0 30px 90px rgba(0, 0, 0, 0.26);
+        backdrop-filter: blur(18px);
+    }}
+
+    .analysis-header {{
+        display: grid;
+        gap: 1rem;
+    }}
+
+    .analysis-title-block h1 {{
+        margin: 0;
+        font-size: 2.3rem;
+        line-height: 1.05;
+        color: {surface_white};
+        letter-spacing: 0.02em;
+    }}
+
+    .step-label {{
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.55rem 0.9rem;
+        border-radius: 999px;
+        font-size: 0.88rem;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        background: rgba(37, 200, 241, 0.12);
+        color: {primary_cyan};
+        border: 1px solid rgba(37, 200, 241, 0.2);
+        width: fit-content;
+    }}
+
+    .page-guide {{
+        margin: 0.75rem 0 0;
+        color: rgba(229, 239, 255, 0.82);
+        max-width: 740px;
+        line-height: 1.75;
+        font-size: 1rem;
+    }}
+
+    .patient-pill-row {{
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.65rem;
+    }}
+
+    .patient-pill {{
+        display: inline-flex;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        border-radius: 999px;
+        background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(255,255,255,0.12);
+        color: {surface_white};
+        font-size: 0.92rem;
+        letter-spacing: 0.01em;
+    }}
+
+    .analysis-meta-grid {{
+        display: grid;
+        grid-template-columns: 1fr minmax(260px, 340px);
+        gap: 1rem;
+        align-items: start;
+    }}
+
+    .risk-card {{
+        display: grid;
+        gap: 0.85rem;
+        padding: 1.25rem;
+        border-radius: 24px;
+        border: 1px solid rgba(37, 200, 241, 0.14);
+        background: rgba(7, 14, 28, 0.88);
+        box-shadow: 0 18px 40px rgba(0,0,0,0.18);
+    }}
+
+    .risk-label {{
+        color: rgba(229, 239, 255, 0.84);
+        font-size: 0.95rem;
+        margin: 0;
+    }}
+
+    .risk-pill {{
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 94px;
+        padding: 0.65rem 0.95rem;
+        border-radius: 999px;
+        font-weight: 700;
+        letter-spacing: 0.01em;
+        color: #020617;
+        background: linear-gradient(135deg, #27c8f1 0%, #1761c1 100%);
+    }}
+
+    .assistant-panel {{
+        padding: 1.35rem;
+        border-radius: 28px;
+        background: rgba(9, 18, 35, 0.95);
+        border: 1px solid rgba(37, 200, 241, 0.18);
+        box-shadow: 0 24px 56px rgba(0,0,0,0.24);
+        backdrop-filter: blur(20px);
+    }}
+
+    .assistant-panel.sticky {{
+        position: sticky;
+        top: 1.6rem;
+    }}
+
+    .assistant-title {{
+        margin: 0 0 1rem;
+        font-size: 1.3rem;
+        color: {surface_white};
+        letter-spacing: 0.01em;
+    }}
+
+    .assistant-chip-row {{
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.6rem;
+        margin-bottom: 1rem;
+    }}
+
+    .assistant-chip {{
+        display: inline-flex;
+        align-items: center;
+        padding: 0.55rem 0.9rem;
+        border-radius: 999px;
+        background: rgba(37, 200, 241, 0.15);
+        color: {surface_white};
+        font-size: 0.92rem;
+        font-weight: 600;
+    }}
+
+    .assistant-card {{
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 22px;
+        padding: 1rem 1.1rem;
+        margin-bottom: 1rem;
+    }}
+
+    .assistant-card h4 {{
+        margin: 0 0 0.75rem;
+        color: #d9eeff;
+        font-size: 1rem;
+    }}
+
+    .assistant-card p,
+    .assistant-card li {{
+        color: rgba(228,236,249,0.88);
+        line-height: 1.7;
+        font-size: 0.95rem;
+    }}
+
+    .assistant-card ul {{
+        margin: 0;
+        padding-left: 1.2rem;
+    }}
+
+    .panel-card {{
+        background: rgba(15, 29, 45, 0.96);
+        border: 1px solid rgba(37, 200, 241, 0.14);
+        border-radius: 24px;
+        padding: 1.4rem;
+        box-shadow: 0 18px 42px rgba(0,0,0,0.22);
+        backdrop-filter: blur(16px);
+        margin-bottom: 1.25rem;
+    }}
+
+    .panel-title {{
+        margin: 0 0 0.75rem;
+        color: {primary_cyan};
+        font-size: 1.15rem;
+        letter-spacing: 0.01em;
+    }}
+
+    .panel-subtitle {{
+        margin: 0;
+        color: rgba(229, 239, 255, 0.8);
+        line-height: 1.7;
+        font-size: 0.96rem;
+    }}
+
+    .field-note {{
+        margin-top: 1rem;
+        color: rgba(229, 239, 255, 0.72);
+        font-size: 0.92rem;
+    }}
+
+    .upload-panel {{
+        position: relative;
+    }}
+
+    .upload-panel::before {{
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 24px;
+        background: linear-gradient(135deg, rgba(37, 200, 241, 0.08), rgba(51, 116, 206, 0.05));
+        pointer-events: none;
+    }}
+
+    .action-bar {{
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 1rem 1.2rem;
+        margin-top: 1.25rem;
+        border-radius: 22px;
+        background: rgba(7, 14, 28, 0.92);
+        border: 1px solid rgba(37, 200, 241, 0.14);
+        box-shadow: 0 22px 55px rgba(0,0,0,0.28);
+        position: sticky;
+        bottom: 0;
+        z-index: 12;
+    }}
+
+    .action-copy {{
+        color: rgba(229, 239, 255, 0.86);
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }}
+
+    .status-pill {{
+        display: inline-flex;
+        align-items: center;
+        padding: 0.65rem 0.95rem;
+        border-radius: 999px;
+        background: rgba(37, 200, 241, 0.14);
+        color: {surface_white};
+        font-weight: 700;
+        letter-spacing: 0.01em;
+    }}
+
+    .field-grid {{
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1rem;
+    }}
+
+    .symptom-panel {{
+        background: rgba(22, 38, 62, 0.92);
+        border: 1px solid rgba(37, 200, 241, 0.14);
+        border-radius: 24px;
+        padding: 1.25rem;
+    }}
+
+    .symptom-grid {{
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+        gap: 0.75rem;
+    }}
+
+    .symptom-chip {{
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.85rem 1rem;
+        border-radius: 999px;
+        border: 1px solid rgba(255,255,255,0.08);
+        color: rgba(229,239,255,0.88);
+        background: rgba(255,255,255,0.04);
+        transition: transform 0.22s ease, background 0.22s ease, border-color 0.22s ease;
+        cursor: pointer;
+    }}
+
+    .symptom-chip:hover {{
+        transform: translateY(-1px);
+        border-color: rgba(37, 200, 241, 0.3);
+        background: rgba(37, 200, 241, 0.08);
+    }}
+
+    .symptom-chip.selected {{
+        background: rgba(37, 200, 241, 0.18);
+        border-color: rgba(37, 200, 241, 0.28);
+        color: #ffffff;
+    }}
+
+    @media (max-width: 980px) {{
+        .analysis-meta-grid,
+        .analysis-shell,
+        .analysis-grid {{
+            display: block;
+        }}
+        .action-bar {{
+            flex-direction: column;
+            align-items: stretch;
+        }}
+    }}
+
     .topbar-brand {{
         display: flex;
         align-items: center;
@@ -95,36 +461,26 @@ st.markdown(
     .topbar-brand h1 {{
         margin: 0;
         font-size: 1.4rem;
-        letter-spacing: 0.1em;
-        color: {chrome};
+        letter-spacing: 0.08em;
+        color: {surface_white};
     }}
 
     .topbar-tagline {{
-        color: {soft_steel};
+        color: {surface_frost};
         font-size: 0.95rem;
         margin: 0;
     }}
 
-    .topbar-cta {{
-        background: linear-gradient(135deg, {accent_teal} 0%, {accent_slate} 100%);
-        color: {deep_black};
-        border-radius: 999px;
-        padding: 0.8rem 1.35rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-    }}
-
     .site-hero {{
         display: grid;
-        gap: 1rem;
-        background: rgba(19, 34, 56, 0.92);
-        border: 1px solid rgba(255,255,255,0.12);
-        border-radius: 28px;
-        padding: 2rem;
-        margin-bottom: 1.5rem;
-        box-shadow: 0 24px 60px rgba(0,0,0,0.22);
-        max-width: 980px;
+        gap: 1.2rem;
+        background: linear-gradient(180deg, rgba(8,18,33,0.98), rgba(15,33,57,0.95));
+        border: 1px solid rgba(79,209,197,0.16);
+        border-radius: 32px;
+        padding: 2.4rem;
+        margin-bottom: 1.75rem;
+        box-shadow: 0 28px 70px rgba(0,0,0,0.28);
+        max-width: 1000px;
         margin-left: auto;
         margin-right: auto;
     }}
@@ -133,47 +489,57 @@ st.markdown(
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 1rem;
+        gap: 0.55rem;
         width: 100%;
         flex-wrap: wrap;
     }}
 
     .brand-logo {{
-        width: 92px;
-        height: 92px;
-        border-radius: 22px;
-        background: rgba(79, 209, 197, 0.14);
-        padding: 0.75rem;
-        border: 1px solid rgba(79, 209, 197, 0.22);
-        box-shadow: 0 16px 28px rgba(0,0,0,0.14);
+        width: 88px;
+        height: 88px;
+        min-width: 88px;
+        border-radius: 20px;
+        background: linear-gradient(135deg, rgba(37, 200, 241, 0.24), rgba(23, 97, 193, 0.96));
+        padding: 0.7rem;
+        border: 1px solid rgba(79, 209, 197, 0.3);
+        box-shadow: 0 16px 30px rgba(0,0,0,0.14);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }}
+
+    .brand-copy {{
+        display: grid;
+        gap: 0.2rem;
+        max-width: 720px;
+        justify-items: start;
+        text-align: left;
+    }}
+
+    .brand-logo img {{
+        width: 100%;
+        height: 100%;
+        border-radius: 18px;
         object-fit: contain;
     }}
 
     .brand-copy {{
         display: grid;
-        gap: 0.25rem;
-        max-width: 640px;
+        gap: 0.35rem;
+        max-width: 720px;
         justify-items: center;
     }}
 
     .site-hero > div:first-child {{
-        max-width: 820px;
-    }}
-
-    .site-hero h2 {{
-        margin: 0;
-        font-size: 2.35rem;
-        line-height: 1.05;
-        color: {chrome};
-        font-weight: 900;
+        max-width: 860px;
     }}
 
     .site-hero h1,
     .main-header {{
         margin: 0;
-        color: {accent_teal};
-        font-size: 3rem;
-        line-height: 1.05;
+        color: {surface_white};
+        font-size: clamp(2.8rem, 4vw, 4.2rem);
+        line-height: 1.02;
         font-weight: 900;
         text-align: center;
     }}
@@ -181,74 +547,118 @@ st.markdown(
     .site-hero p,
     .subtitle {{
         margin: 0;
-        color: {soft_steel};
+        color: rgba(235, 247, 255, 0.88);
         font-size: 1.05rem;
-        line-height: 1.8;
+        line-height: 1.75;
         text-align: center;
+        max-width: 760px;
     }}
 
-    .feature-grid {{
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    .hero-actions {{
+        display: flex;
+        justify-content: center;
         gap: 1rem;
-        margin-top: 1.25rem;
+        flex-wrap: wrap;
+        margin-top: 1rem;
     }}
 
-    .feature-card {{
+    .hero-primary-cta,
+    .hero-secondary-cta {{
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem 1.6rem;
+        border-radius: 999px;
+        font-weight: 700;
+        letter-spacing: 0.01em;
+        transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+        text-decoration: none;
+    }}
+
+    .hero-primary-cta {{
+        background: linear-gradient(135deg, #05254e 0%, #0d4b8a 100%);
+        color: #ffffff;
+        box-shadow: 0 22px 46px rgba(5, 37, 78, 0.32);
+    }}
+
+    .hero-primary-cta:hover {{
+        transform: translateY(-2px) scale(1.02);
+        background: linear-gradient(135deg, #0a3f7d 0%, #2f75b2 100%);
+        box-shadow: 0 28px 58px rgba(9, 57, 100, 0.34);
+    }}
+
+    .hero-secondary-cta {{
+        background: rgba(8,32,60,0.14);
+        color: rgba(236,242,255,0.95);
+        border: 1px solid rgba(58, 96, 150, 0.36);
+    }}
+
+    .hero-secondary-cta:hover {{
+        transform: translateY(-2px);
+        background: rgba(16, 50, 85, 0.28);
+        border-color: rgba(72, 112, 182, 0.54);
+        color: #ffffff;
+    }}
+
+    .hero-trust-row {{
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 0.85rem;
+        margin-top: 1rem;
+    }}
+
+    .hero-trust-item {{
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.95rem 1rem;
+        border-radius: 18px;
         background: rgba(255,255,255,0.05);
         border: 1px solid rgba(255,255,255,0.08);
-        border-radius: 20px;
-        padding: 1.15rem;
-        min-height: 120px;
-        display: grid;
-        gap: 0.5rem;
-        transition: transform 0.2s ease;
-    }}
-
-    .feature-card:hover {{
-        transform: translateY(-2px);
-    }}
-
-    .feature-card strong {{
-        display: block;
-        color: {chrome};
-        font-size: 1.05rem;
-    }}
-
-    .feature-card span {{
-        color: {soft_steel};
+        color: {surface_frost};
         font-size: 0.95rem;
-        line-height: 1.6;
-    }}
-
-    .section-title {{
-        color: {accent_teal};
-        font-size: 1.5rem;
-        margin: 2rem 0 0.75rem;
-        text-align: center;
-        font-weight: 700;
     }}
 
     .profile-card {{
-        background: rgba(255,255,255,0.06);
-        border: 1px solid rgba(255,255,255,0.14);
-        border-radius: 24px;
-        padding: 1.5rem;
-        max-width: 900px;
-        margin: 0 auto 1.5rem;
-        box-shadow: 0 18px 44px rgba(0,0,0,0.20);
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.12);
+        border-radius: 28px;
+        padding: 2rem;
+        max-width: 980px;
+        margin: 0 auto 1.75rem;
+        box-shadow: 0 26px 64px rgba(0,0,0,0.24);
     }}
 
     .profile-card .card-header {{
-        margin-bottom: 0.85rem;
-        font-size: 1.3rem;
-        color: {accent_teal};
+        margin-bottom: 1rem;
+        font-size: 1.45rem;
+        color: {primary_cyan};
+    }}
+
+    .profile-group {{
+        display: grid;
+        gap: 1rem;
+        margin-top: 1rem;
+    }}
+
+    .profile-group h3 {{
+        margin: 0;
+        font-size: 1.1rem;
+        color: {surface_white};
+    }}
+
+    .profile-group p {{
+        margin: 0.5rem 0 0;
+        color: {surface_frost};
+        line-height: 1.7;
     }}
 
     .button-block {{
         display: flex;
         justify-content: center;
-        margin-top: 1rem;
+        flex-wrap: wrap;
+        gap: 0.85rem;
+        margin-top: 1.5rem;
     }}
 
     .stButton>button,
@@ -258,28 +668,50 @@ st.markdown(
         width: 100% !important;
         max-width: 420px !important;
         min-height: 56px;
-        padding: 1rem 1.9rem !important;
-        border-radius: 999px !important;
+        padding: 0.95rem 1.3rem !important;
+        border-radius: 14px !important;
         font-size: 1rem !important;
-        font-weight: 700 !important;
-        transition: transform 0.18s ease, box-shadow 0.18s ease !important;
-        background: linear-gradient(135deg, #3b7bec 0%, #e9f2ff 100%) !important;
-        color: {deep_black} !important;
-        border: 1px solid rgba(59, 124, 236, 0.35) !important;
-        box-shadow: 0 16px 28px rgba(59, 124, 236, 0.22) !important;
-        touch-action: manipulation !important;
-        -webkit-tap-highlight-color: transparent !important;
+        font-weight: 600 !important;
+        letter-spacing: 0.01em !important;
+        transition: all 0.2s ease-in-out !important;
+        background: linear-gradient(135deg, #06264e 0%, #0d4f8b 100%) !important;
+        color: #ffffff !important;
+        border: 1px solid rgba(255,255,255,0.16) !important;
+        box-shadow: 0 20px 40px rgba(5, 38, 78, 0.30) !important;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.18) !important;
         cursor: pointer !important;
-        user-select: none !important;
-        pointer-events: auto !important;
+        transform: translateZ(0);
+        backdrop-filter: blur(2px) !important;
+    }}
+
+    .stButton>button:hover,
+    .stButton>div>button:hover,
+    .stButton>div>div>button:hover {{
+        background: linear-gradient(135deg, #113f78 0%, #3b79b6 100%) !important;
+        box-shadow: 0 26px 54px rgba(15, 66, 110, 0.36) !important;
+        transform: translateY(-1px) scale(1.02) !important;
     }}
 
     .stButton>button:active,
     .stButton>div>button:active,
     .stButton>div>div>button:active {{
-        transform: translateY(1px) !important;
-        box-shadow: 0 8px 18px rgba(59, 124, 236, 0.28) !important;
+        background: linear-gradient(135deg, #062249 0%, #0f3d78 100%) !important;
+        box-shadow: 0 10px 18px rgba(6, 28, 55, 0.30) !important;
+        transform: translateY(1px) scale(0.98) !important;
         opacity: 0.98 !important;
+    }}
+
+    .stButton>button[disabled],
+    .stButton>div>button[disabled],
+    .stButton>div>div>button[disabled] {{
+        background: rgba(110,120,140,0.18) !important;
+        color: rgba(255,255,255,0.75) !important;
+        border: 1px solid rgba(255,255,255,0.08) !important;
+        box-shadow: none !important;
+        cursor: not-allowed !important;
+        transform: none !important;
+        opacity: 0.72 !important;
+        pointer-events: none !important;
     }}
 
     .stTextInput>div>div>input,
@@ -294,7 +726,7 @@ st.markdown(
     textarea,
     select {{
         background-color: rgba(12, 24, 39, 0.92) !important;
-        color: {chrome} !important;
+        color: #ffffff !important;
         border: 1px solid rgba(255,255,255,0.1) !important;
         border-radius: 14px !important;
         padding: 1rem !important;
@@ -309,7 +741,7 @@ st.markdown(
     .stCheckbox>div>label {{
         display: block;
         width: 100%;
-        color: {chrome};
+        color: #f5f7fb;
         font-weight: 600;
         background: rgba(255,255,255,0.04);
         border: 1px solid rgba(255,255,255,0.08);
@@ -346,14 +778,14 @@ st.markdown(
 
     .hero-stat h3 {{
         margin: 0;
-        color: {accent_teal};
+        color: #27c8f1;
         font-size: 1rem;
         font-weight: 700;
     }}
 
     .hero-stat p {{
         margin: 0;
-        color: {chrome};
+        color: #f5f7fb;
         line-height: 1.55;
         opacity: 0.95;
         font-size: 0.95rem;
@@ -371,13 +803,13 @@ st.markdown(
     }}
 
     .hero-metric strong {{
-        color: {accent_slate};
+        color: #1761c1;
         font-size: 1.15rem;
         display: block;
     }}
 
     .hero-metric span {{
-        color: {soft_steel};
+        color: #dde6f4;
         font-size: 0.88rem;
     }}
 
@@ -389,10 +821,39 @@ st.markdown(
         margin-top: 1rem;
     }}
 
+    .disclaimer-banner {{
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.14);
+        border-radius: 22px;
+        padding: 1rem 1.15rem;
+        margin: 1rem 0 1.5rem;
+        color: #f5f7fb;
+        line-height: 1.55;
+        box-shadow: 0 16px 32px rgba(0,0,0,0.14);
+    }}
+
+    .disclaimer-banner strong {{
+        color: #27c8f1;
+    }}
+
+    .hint-box {{
+        background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(255,255,255,0.14);
+        border-radius: 22px;
+        padding: 1.15rem 1.2rem;
+        margin: 1rem 0;
+        color: #f5f7fb;
+        line-height: 1.6;
+    }}
+
+    .hint-box strong {{
+        color: #27c8f1;
+    }}
+
     .section-card h3 {{
         margin-top: 0;
         margin-bottom: 0.9rem;
-        color: {chrome};
+        color: #f5f7fb;
         font-size: 1.2rem;
         font-weight: 700;
     }}
@@ -409,7 +870,7 @@ st.markdown(
         border: 1px solid rgba(255,255,255,0.12);
         border-radius: 999px;
         padding: 0.7rem 1rem;
-        color: {chrome};
+        color: #f5f7fb;
         font-size: 0.93rem;
         opacity: 0.92;
     }}
@@ -438,21 +899,21 @@ st.markdown(
 
     .analysis-summary .card-header {{
         margin-top: 0;
-        color: {accent_teal};
+        color: #27c8f1;
         font-size: 1.35rem;
         letter-spacing: 0.02em;
     }}
 
     .analysis-summary p {{
         margin: 0.8rem 0 1rem;
-        color: {soft_steel};
+        color: #dde6f4;
         line-height: 1.75;
     }}
 
     .analysis-summary ul {{
         margin: 0;
         padding-left: 1.3rem;
-        color: {chrome};
+        color: #f5f7fb;
         line-height: 1.85;
         list-style: disc inside;
     }}
@@ -474,7 +935,7 @@ st.markdown(
 
     .analysis-sidebar-card h3 {{
         margin: 0;
-        color: {accent_slate};
+        color: #1761c1;
         font-size: 1.2rem;
         letter-spacing: 0.02em;
     }}
@@ -486,7 +947,7 @@ st.markdown(
     }}
 
     .analysis-sidebar-card strong {{
-        color: {chrome};
+        color: #f5f7fb;
     }}
 
     .card {{
@@ -500,7 +961,7 @@ st.markdown(
     }}
 
     .card-header {{
-        color: {accent_teal};
+        color: #27c8f1;
         font-size: 1.35rem;
         font-weight: 700;
         margin-bottom: 1rem;
@@ -517,19 +978,19 @@ st.markdown(
     }}
 
     .info-card h2 {{
-        color: {accent_slate};
+        color: #1761c1;
         margin-bottom: 0.5rem;
     }}
 
     .info-card ul {{
         margin: 0.75rem 0 0 1.2rem;
-        color: {chrome};
+        color: #f5f7fb;
         line-height: 1.75;
     }}
 
     .stTextInput>div>div>input, .stSelectbox>div>div>select {{
         background-color: rgba(12, 24, 39, 0.9);
-        color: {chrome};
+        color: #f5f7fb;
         border: 1px solid rgba(255,255,255,0.1);
         border-radius: 12px;
         padding: 0.85rem;
@@ -539,7 +1000,7 @@ st.markdown(
     .stCheckbox>div>label {{
         display: block;
         width: 100%;
-        color: {chrome};
+        color: #f5f7fb;
         font-weight: 500;
         background: rgba(255,255,255,0.03);
         border: 1px solid rgba(255,255,255,0.08);
@@ -580,7 +1041,7 @@ st.markdown(
 
     .stTabs [data-baseweb="tab"] {{
         background-color: rgba(255, 255, 255, 0.04);
-        color: {chrome};
+        color: #f5f7fb;
         border-radius: 12px;
         padding: 0.85rem 1.4rem;
         font-weight: 600;
@@ -588,15 +1049,15 @@ st.markdown(
     }}
 
     .stTabs [aria-selected="true"] {{
-        background: linear-gradient(135deg, {accent_teal} 0%, {accent_slate} 100%);
-        color: {deep_black} !important;
+        background: linear-gradient(135deg, #27c8f1 0%, #1761c1 100%);
+        color: #020617 !important;
         box-shadow: 0 6px 18px rgba(0,0,0,0.28);
     }}
 
     .patient-info {{
         background: rgba(7, 16, 28, 0.96);
         border: 1px solid rgba(79, 209, 197, 0.16);
-        color: {chrome};
+        color: #f5f7fb;
         padding: 1rem 1.25rem;
         border-radius: 16px;
         text-align: center;
@@ -606,12 +1067,12 @@ st.markdown(
 
     .disclaimer-text {{
         line-height: 1.75;
-        color: {soft_steel};
+        color: #dde6f4;
         user-select: none;
     }}
 
     .disclaimer-text strong {{
-        color: {accent_teal};
+        color: #27c8f1;
     }}
 
     .dashboard-overview {{
@@ -633,13 +1094,13 @@ st.markdown(
     .dashboard-tile h3 {{
         margin-top: 0;
         margin-bottom: 0.9rem;
-        color: {accent_teal};
+        color: #27c8f1;
         font-size: 1.1rem;
     }}
 
     .dashboard-tile p {{
         margin: 0.45rem 0;
-        color: {chrome};
+        color: #f5f7fb;
         opacity: 0.92;
         line-height: 1.7;
     }}
@@ -676,7 +1137,7 @@ st.markdown(
     }}
 
     .report-title {{
-        color: {accent_teal};
+        color: #27c8f1;
         font-size: 2rem;
         font-weight: 900;
         margin: 0;
@@ -684,7 +1145,7 @@ st.markdown(
     }}
 
     .report-subtitle {{
-        color: {soft_steel};
+        color: #dde6f4;
         font-size: 1rem;
         margin: 0.35rem 0 0;
         line-height: 1.7;
@@ -695,7 +1156,7 @@ st.markdown(
         border-radius: 999px;
         background: rgba(255,255,255,0.06);
         border: 1px solid rgba(255,255,255,0.08);
-        color: {chrome};
+        color: #f5f7fb;
         font-size: 0.95rem;
         font-weight: 600;
         white-space: nowrap;
@@ -712,7 +1173,7 @@ st.markdown(
         border-radius: 18px;
         border: 1px solid rgba(255,255,255,0.08);
         background: rgba(10, 18, 32, 0.85);
-        color: {chrome};
+        color: #f5f7fb;
         line-height: 1.65;
         font-size: 0.98rem;
         white-space: pre-wrap;
@@ -741,7 +1202,7 @@ st.markdown(
     .result-line.heading {{
         border: none;
         background: transparent;
-        color: {accent_teal};
+        color: #27c8f1;
         font-weight: 700;
         font-size: 1.02rem;
         padding-left: 0;
@@ -749,7 +1210,7 @@ st.markdown(
 
     .footer {{
         text-align: center;
-        color: {soft_steel};
+        color: #dde6f4;
         opacity: 0.84;
         margin-top: 3rem;
         padding-top: 2.5rem;
@@ -836,6 +1297,302 @@ st.markdown(
         .button-block {{
             width: 100%;
         }}
+
+        /* Premium dashboard theme */
+        .stApp {{
+            background: radial-gradient(circle at top left, #061323 0%, #051426 38%, #030f1e 100%);
+            color: #e8faff;
+        }}
+
+        .block-container {{
+            background: rgba(6, 14, 26, 0.92);
+            border: 1px solid rgba(24, 109, 171, 0.18);
+            box-shadow: 0 32px 96px rgba(0, 0, 0, 0.35);
+            backdrop-filter: blur(26px);
+            border-radius: 26px;
+            padding: 2rem 2.2rem;
+        }}
+
+        .main-header {{
+            color: #d4f5ff;
+            text-shadow: 0 0 24px rgba(60, 190, 245, 0.16);
+            letter-spacing: 0.02em;
+        }}
+
+        .subtitle {{
+            color: rgba(225, 243, 255, 0.78);
+            line-height: 1.75;
+        }}
+
+        .glass-card {{
+            background: rgba(10, 20, 37, 0.86);
+            border: 1px solid rgba(58, 152, 224, 0.18);
+            border-radius: 24px;
+            box-shadow: 0 26px 74px rgba(8, 22, 46, 0.30);
+            backdrop-filter: blur(20px);
+            transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
+            overflow: hidden;
+        }}
+
+        .glass-card:hover {{
+            transform: translateY(-3px) scale(1.004);
+            border-color: rgba(36, 200, 255, 0.28);
+            box-shadow: 0 34px 98px rgba(36, 148, 222, 0.22);
+        }}
+
+        .glass-card .card-header {{
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.1rem;
+            color: #a0f4ff;
+            font-size: 1.38rem;
+            font-weight: 700;
+            letter-spacing: 0.01em;
+        }}
+
+        .section-icon {{
+            width: 42px;
+            height: 42px;
+            border-radius: 16px;
+            display: grid;
+            place-items: center;
+            background: rgba(38, 205, 255, 0.16);
+            color: #c9f5ff;
+            font-size: 1.1rem;
+        }}
+
+        .profile-row {{
+            display: block;
+            gap: 1rem;
+        }}
+
+        .avatar {{
+            width: 76px;
+            height: 76px;
+            border-radius: 24px;
+            display: grid;
+            place-items: center;
+            font-size: 1.65rem;
+            font-weight: 800;
+            color: #ffffff;
+            background: linear-gradient(135deg, rgba(54, 200, 255, 0.92), rgba(124, 79, 252, 0.86));
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.16), 0 18px 38px rgba(32, 131, 218, 0.22);
+        }}
+
+        .profile-name {{
+            font-size: 1.55rem;
+            font-weight: 800;
+            color: #ffffff !important;
+            margin-bottom: 0.22rem;
+        }}
+
+        .profile-meta {{
+            color: #ffffff !important;
+            font-size: 0.98rem;
+            line-height: 1.65;
+        }}
+
+        .status-badge {{
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.55rem 0.95rem;
+            border-radius: 999px;
+            background: rgba(37, 200, 241, 0.14);
+            color: #ffffff !important;
+            border: 1px solid rgba(37, 200, 241, 0.22);
+            font-size: 0.88rem;
+            font-weight: 700;
+            margin-top: 0.85rem;
+        }}
+
+        .metrics-grid {{
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.92rem;
+            margin-top: 1.35rem;
+        }}
+
+        .metric-pill {{
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 1rem 1rem;
+        }}
+
+        .metric-pill strong {{
+            display: block;
+            color: #ffffff !important;
+            font-size: 1.05rem;
+            margin-bottom: 0.3rem;
+        }}
+
+        .metric-pill span {{
+            color: #ffffff !important;
+            font-size: 0.92rem;
+            line-height: 1.65;
+        }}
+
+        .dashboard-shell {{
+            display: grid;
+            gap: 1.4rem;
+            animation: fadeInUp 0.84s ease both;
+        }}
+
+        .dashboard-top-grid {{
+            display: grid;
+            grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+            gap: 1.2rem;
+        }}
+
+        .insights-grid {{
+            display: grid;
+            gap: 0.9rem;
+            margin-top: 1rem;
+        }}
+
+        .insight-item {{
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 0.9rem;
+            align-items: center;
+            padding: 0.95rem 1rem;
+            border-radius: 18px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+        }}
+
+        .insight-icon {{
+            width: 44px;
+            height: 44px;
+            display: grid;
+            place-items: center;
+            border-radius: 16px;
+            background: linear-gradient(135deg, rgba(43, 210, 255, 0.16), rgba(110, 85, 255, 0.16));
+            color: #b6f6ff;
+            font-size: 1.1rem;
+        }}
+
+        .insight-item strong {{
+            color: #ffffff;
+            font-size: 1rem;
+            margin-bottom: 0.2rem;
+        }}
+
+        .insight-item p {{
+            margin: 0;
+            color: rgba(241,248,255,0.78);
+            font-size: 0.95rem;
+            line-height: 1.65;
+        }}
+
+        .data-card, .notes-card, .action-card {{
+            background: rgba(11, 20, 36, 0.82);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 24px;
+            padding: 1.4rem;
+            box-shadow: 0 20px 50px rgba(8, 18, 36, 0.24);
+            margin-top: 1rem;
+        }}
+
+        .data-card h3,
+        .notes-card h3,
+        .action-card h3 {{
+            margin-top: 0;
+            margin-bottom: 0.9rem;
+            color: #d8f7ff;
+            font-size: 1.25rem;
+        }}
+
+        .data-card ul,
+        .notes-card ul {{
+            margin: 0.9rem 0 0 1.2rem;
+            padding-left: 1.1rem;
+            color: rgba(232,245,255,0.9);
+            line-height: 1.8;
+        }}
+
+        .data-card li,
+        .notes-card li {{
+            margin-bottom: 0.85rem;
+            font-size: 0.96rem;
+        }}
+
+        .progress-group {{
+            display: grid;
+            gap: 0.85rem;
+            margin-top: 1rem;
+        }}
+
+        .progress-label {{
+            display: flex;
+            justify-content: space-between;
+            color: rgba(242,250,255,0.76);
+            font-size: 0.94rem;
+            margin-bottom: 0.32rem;
+        }}
+
+        .progress-bar {{
+            height: 12px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.08);
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+        }}
+
+        .progress-fill {{
+            height: 100%;
+            width: 72%;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #2bd4ff 0%, #9866ff 100%);
+            box-shadow: 0 0 22px rgba(46, 206, 255, 0.22);
+        }}
+
+        .notes-card details {{
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 18px;
+            padding: 0.95rem 1rem;
+            margin-top: 0.95rem;
+        }}
+
+        .notes-card summary {{
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #ffffff;
+            list-style: none;
+        }}
+
+        .notes-card summary::marker {{
+            color: rgba(37,200,241,0.9);
+        }}
+
+        .action-grid {{
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 0.85rem;
+            margin-top: 1rem;
+        }}
+
+        .stButton>button,
+        .stButton>div>button,
+        .stButton>div>div>button {{
+            transition: transform 0.22s ease, box-shadow 0.22s ease, background 0.22s ease !important;
+        }}
+
+        .stButton>button:hover,
+        .stButton>div>button:hover,
+        .stButton>div>div>button:hover {{
+            box-shadow: 0 24px 62px rgba(46, 170, 232, 0.28) !important;
+            transform: translateY(-2px) scale(1.01) !important;
+        }}
+
+        @keyframes fadeInUp {{
+            from {{ opacity: 0; transform: translateY(18px); }}
+            to {{ opacity: 1; transform: translateY(0); }}
+        }}
     }}
 
     </style>
@@ -853,7 +1610,7 @@ def render_footer():
         unsafe_allow_html=True,
     )
 
-# ------------ Page state / routing -------------
+# ------------ Pages -------------
 if "page" not in st.session_state:
     st.session_state.page = "profile"
 page = st.session_state.page
@@ -871,10 +1628,19 @@ if "patient_gender" not in st.session_state:
     st.session_state.patient_gender = ""
 if "agree_disclaimer" not in st.session_state:
     st.session_state.agree_disclaimer = False
+if "saved_profiles" not in st.session_state:
+    st.session_state.saved_profiles = []
+if "selected_saved_profile" not in st.session_state:
+    st.session_state.selected_saved_profile = ""
+if "profile_saved" not in st.session_state:
+    st.session_state.profile_saved = False
+if "uploaded_images" not in st.session_state:
+    st.session_state.uploaded_images = []
+if "manual_symptoms" not in st.session_state:
+    st.session_state.manual_symptoms = ""
 
 if "last_button_click" not in st.session_state:
     st.session_state.last_button_click = {"key": None, "time": 0.0}
-
 
 def click_debounced(key, threshold=0.8):
     now = time.time()
@@ -891,12 +1657,52 @@ def set_page(target):
         st.experimental_rerun()
 
 
+def save_profile():
+    profile = {
+        "name": st.session_state.patient_name.strip(),
+        "age": st.session_state.patient_age.strip(),
+        "gender": st.session_state.patient_gender,
+    }
+    if profile["name"] and profile["age"] and profile["gender"]:
+        label = f"{profile['name']} · {profile['age']} · {profile['gender']}"
+        if label not in [f"{p['name']} · {p['age']} · {p['gender']}" for p in st.session_state.saved_profiles]:
+            st.session_state.saved_profiles.append(profile)
+        st.session_state.profile_saved = True
+    if hasattr(st, "experimental_rerun"):
+        st.experimental_rerun()
+
+
+def load_saved_profile():
+    label = st.session_state.selected_saved_profile
+    for p in st.session_state.saved_profiles:
+        if f"{p['name']} · {p['age']} · {p['gender']}" == label:
+            st.session_state.patient_name = p["name"]
+            st.session_state.patient_age = p["age"]
+            st.session_state.patient_gender = p["gender"]
+            break
+    if hasattr(st, "experimental_rerun"):
+        st.experimental_rerun()
+
+
 def continue_to_analysis():
     set_page("analysis")
 
 
+def reset_profile():
+    st.session_state.patient_name = ""
+    st.session_state.patient_age = ""
+    st.session_state.patient_gender = ""
+    st.session_state.agree_disclaimer = False
+    if hasattr(st, "experimental_rerun"):
+        st.experimental_rerun()
+
+
 def back_to_analysis():
     set_page("analysis")
+
+
+def request_analysis():
+    st.session_state.analysis_requested = True
 
 
 def launch_chat(mode=None):
@@ -913,72 +1719,111 @@ if page == "profile":
     # Mobile-first hero landing layout for the initial profile screen.
     st.markdown("<div id='page-top'></div>", unsafe_allow_html=True)
     st.markdown("<script>window.scrollTo({top:0,behavior:'auto'});</script>", unsafe_allow_html=True)
-    st.markdown(
-        """
+    st.markdown(f"""
+        <div class="stepper">
+            <div class="stepper-step active"><span class="status">Step 1 of 3</span>Profile</div>
+            <div class="stepper-step upcoming"><span class="status">Next</span>Analysis</div>
+            <div class="stepper-step upcoming"><span class="status">Future</span>Chat</div>
+        </div>
         <div class="site-hero">
             <div class="brand-header">
+                {logo_html}
                 <div class="brand-copy">
-                    <h1 class="main-header">👨‍⚕️ Nirnay</h1>
+                    <h1 class="main-header">Nirnay</h1>
                     <p class="subtitle">World's Hope, Health's Future</p>
                 </div>
             </div>
-            <div class="feature-grid">
-                <div class="feature-card"><strong>Fast intake</strong><span>Complete patient details quickly.</span></div>
-                <div class="feature-card"><strong>Structured data</strong><span>Get 10+ medical sections which capture symptoms, and clinical findings in one place.</span></div>
-                <div class="feature-card"><strong>AI-Powered Insights</strong><span>Generate analysis designed for healthcare. Featuring two AI assistants</span></div>
+            <div class="hero-actions">
+                <a class="hero-primary-cta" href="#profile-section">Start Assessment</a>
+                <a class="hero-secondary-cta" href="#profile-section">Review patient intake</a>
+            </div>
+            <div class="hero-trust-row">
+                <div class="hero-trust-item">🤖 AI-assisted, not a doctor</div>
+                <div class="hero-trust-item">🔒 Secure by design</div>
+                <div class="hero-trust-item">⚡ Fast clinical workflow</div>
             </div>
         </div>
         """,
         unsafe_allow_html=True,
     )
 
-    with st.sidebar.expander("⚠️Please read the Medical Disclaimer", expanded=False):
+    st.markdown(
+        """
+        <div class="disclaimer-banner">
+            <div><strong>⚠️ Medical disclaimer</strong> This is an AI-assisted clinical workflow, not a clinical diagnosis tool. Please read the full disclaimer before continuing.</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    with st.expander("Read the full medical disclaimer", expanded=False):
         st.markdown(
             """
             <div class="disclaimer-text">
                 <strong>IMPORTANT NOTICE:</strong><br>
                 This diagnostic tool is designed to ASSIST and ENHANCE medical sciences.
                 It is NOT a replacement for professional medical diagnosis, treatment, or advice from a qualified healthcare provider.
-                
-                • All diagnostic findings and insights provided by this tool must be CORRELATED with a qualified physician or medical specialist.
-                • Users should NOT rely solely on this tool for medical decisions.
-                • Always consult your doctor before making any healthcare decisions based on this tool's output.
-                • This tool is for educational and informational purposes only.
-                • In case of medical emergencies, seek immediate professional medical attention.
-                
-                By proceeding, you acknowledge and accept full responsibility for your medical decisions
-                and agree to consult with healthcare professionals regarding all diagnostic findings.
+                <ul>
+                    <li>All diagnostic findings and insights provided by this tool must be CORRELATED with a qualified physician or medical specialist.</li>
+                    <li>Users should NOT rely solely on this tool for medical decisions.</li>
+                    <li>Always consult your doctor before making any healthcare decisions based on this tool's output.</li>
+                    <li>This tool is for educational and informational purposes only.</li>
+                    <li>In case of medical emergencies, seek immediate professional medical attention.</li>
+                </ul>
+                <p>By proceeding, you acknowledge and accept full responsibility for your medical decisions and agree to consult with healthcare professionals regarding all diagnostic findings.</p>
             </div>
             """,
             unsafe_allow_html=True,
         )
 
     st.markdown(
-        """
-        <div class="profile-card">
-            <div class="card-header">👤 Patient profile</div>
-            <p>Fill in the clinical intake details below so Nirnay can prepare the analysis workflow. Scroll down to fill up the identity information.</p>
+        f"""
+        <div class="glass-card profile-card" id="profile-section">
+            <div class="card-header"><span class="section-icon">👤</span> Patient profile</div>
+            <div class="profile-row">
+                <div>
+                    <div class="profile-name">Patient intake</div>
+                    <div class="profile-meta">Complete the patient's core details to launch the diagnostic workup.</div>
+                    <div class="status-badge">Ready to assess</div>
+                </div>
+            </div>
+            <div class="metrics-grid">
+                <div class="metric-pill">
+                    <strong>Profile readiness</strong>
+                    <span>{'Complete' if st.session_state.patient_name and st.session_state.patient_age and st.session_state.patient_gender else 'Pending details'}</span>
+                </div>
+                <div class="metric-pill">
+                    <strong>Saved workflows</strong>
+                    <span>{len(st.session_state.saved_profiles)} saved profiles</span>
+                </div>
+            </div>
         </div>
         """,
         unsafe_allow_html=True,
     )
 
+    age_value = int(st.session_state.patient_age) if str(st.session_state.patient_age).isdigit() else 0
     col1, col2, col3 = st.columns(3)
     with col1:
         st.session_state.patient_name = st.text_input(
-            "Patient Full Name",
+            "👤 Full name",
             value=st.session_state.patient_name,
-            placeholder="Enter full name",
+            placeholder="e.g. Priya Sharma",
         )
     with col2:
-        st.session_state.patient_age = st.text_input(
-            "Age",
-            value=st.session_state.patient_age,
-            placeholder="Years",
+        st.session_state.patient_age = str(
+            st.number_input(
+                "🎂 Age",
+                min_value=0,
+                max_value=130,
+                value=age_value,
+                step=1,
+                help="Enter the patient's age in years.",
+            )
         )
     with col3:
         st.session_state.patient_gender = st.selectbox(
-            "Biological Gender",
+            "⚧ Gender",
             ["", "Male", "Female"],
             index=["", "Male", "Female"].index(st.session_state.patient_gender)
             if st.session_state.patient_gender in ["", "Male", "Female"]
@@ -992,18 +1837,30 @@ if page == "profile":
         key="agree_disclaimer",
     )
 
-    valid_profile = bool(
+    with st.expander("Saved profiles", expanded=False):
+        if st.session_state.saved_profiles:
+            saved_labels = [f"{p['name']} · {p['age']} · {p['gender']}" for p in st.session_state.saved_profiles]
+            st.selectbox("Select a saved profile to load", [""] + saved_labels, key="selected_saved_profile")
+            st.button("Load saved profile", key="load_saved_profile", on_click=load_saved_profile)
+        else:
+            st.info("No saved profiles yet. Save the current profile after completing the form.")
+
+    profile_save_ready = bool(
         st.session_state.patient_name.strip()
         and st.session_state.patient_age.strip()
         and st.session_state.patient_gender != ""
+    )
+
+    valid_profile = bool(
+        profile_save_ready
         and st.session_state.agree_disclaimer
     )
 
     if not valid_profile:
         st.markdown(
             f"""
-            <div style="background: linear-gradient(135deg, {warning_yellow} 0%, {danger_red} 100%); 
-                        color: {gunmetal}; 
+            <div style="background: linear-gradient(135deg, #eab308 0%, #dc2626 100%); 
+                        color: #e8f3fc; 
                         padding: 1rem; 
                         border-radius: 12px; 
                         text-align: center; 
@@ -1014,10 +1871,32 @@ if page == "profile":
             """,
             unsafe_allow_html=True,
         )
+        if profile_save_ready:
+            st.info("You can still save this profile once the name, age, and gender are filled in.")
+        st.button("Reset profile", key="reset_profile", on_click=reset_profile)
         render_footer()
         st.stop()
 
-    st.button("Continue to Analysis", key="continue_to_analysis", on_click=continue_to_analysis)
+    col1, col2 = st.columns([3, 2])
+    with col1:
+        st.button(
+            "Begin Assessment",
+            key="continue_to_analysis",
+            on_click=continue_to_analysis,
+            disabled=not valid_profile,
+        )
+    with col2:
+        st.button(
+            "Save profile",
+            key="save_profile",
+            on_click=save_profile,
+            disabled=not profile_save_ready,
+        )
+
+    if st.session_state.profile_saved:
+        st.success("Profile saved successfully. You can load it later from Saved profiles.")
+
+    st.button("Reset profile", key="reset_profile", on_click=reset_profile)
     render_footer()
     st.stop()
 
@@ -1026,93 +1905,206 @@ def render_analysis_chat_styles():
     st.markdown(
         """
         <style>
-        .chat-options-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1rem;
-            margin: 1.5rem 0 0;
+        .assistant-experience-section {
             position: relative;
             z-index: 1;
+            width: 100%;
+            max-width: 100%;
+            margin: 1.5rem 0 1.5rem;
+            padding: 1.8rem 1.5rem;
+            border-radius: 22px;
+            background: rgba(10, 18, 34, 0.84);
+            border: 1px solid rgba(94, 202, 255, 0.15);
+            box-shadow: 0 24px 80px rgba(4, 18, 38, 0.28);
+            backdrop-filter: blur(18px);
+            overflow: hidden;
+            box-sizing: border-box;
         }
-        .chat-option-card {
-            background: rgba(255,255,255,0.08);
-            border: 1px solid rgba(255,255,255,0.12);
-            border-radius: 28px;
-            padding: 1.3rem;
-            box-shadow: 0 18px 40px rgba(0,0,0,0.14);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            min-height: 220px;
+        .assistant-experience-section::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 10% 10%, rgba(45, 207, 255, 0.12), transparent 20%),
+                        radial-gradient(circle at 85% 20%, rgba(142, 96, 255, 0.10), transparent 18%),
+                        radial-gradient(circle at 50% 90%, rgba(89, 183, 255, 0.08), transparent 22%);
+            pointer-events: none;
+            filter: blur(10px);
+            opacity: 0.9;
         }
-        .chat-option-card h3 {
-            margin: 0;
-            color: #f3f7fb;
-            font-size: 1.3rem;
-            line-height: 1.2;
+        .assistant-experience-section::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.00) 100%);
+            opacity: 0.18;
+            pointer-events: none;
         }
-        .chat-option-card p {
-            color: rgba(232,239,247,0.92);
-            margin: 1rem 0 0;
-            line-height: 1.65;
-            font-size: 0.96rem;
+        .assistant-experience-header {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            max-width: 740px;
+            margin: 0 auto 1.85rem;
         }
-        .chat-card-action {
-            display: flex;
-            justify-content: center;
-            margin-top: 1rem;
+        .assistant-experience-title {
+            margin: 0 auto;
+            color: #f8fbff;
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            text-shadow: 0 0 24px rgba(38, 209, 255, 0.18);
         }
-        .chat-card-action .stButton > button,
-        .chat-card-action .stButton > div > button,
-        .chat-card-action .stButton > div > div > button {
-            width: auto !important;
-            min-width: 150px !important;
-            max-width: 240px !important;
-            padding: 0.85rem 1.25rem !important;
-            border-radius: 18px !important;
-            background: rgba(255,255,255,0.12) !important;
-            color: #ffffff !important;
-            border: 1px solid rgba(255,255,255,0.22) !important;
-            box-shadow: 0 10px 18px rgba(0,0,0,0.18) !important;
-        }
-        details,
-        .streamlit-expanderHeader,
-        .stExpanderHeader {
-            margin: 0;
-        }
-        .streamlit-expanderHeader,
-        .stExpanderHeader,
-        details > summary {
-            background: linear-gradient(135deg, #0d3b7d 0%, #e0b33f 55%, #0d3b7d 100%);
-            color: #f9f6e8 !important;
-            border-radius: 20px;
-            border: 1px solid rgba(255,255,255,0.18);
-            box-shadow: 0 18px 36px rgba(0,0,0,0.14);
-            padding: 0.95rem 1rem;
-            margin: 0;
-            font-weight: 700;
+        .assistant-experience-subtitle {
+            margin: 0.8rem auto 0;
+            max-width: 640px;
+            color: rgba(220, 236, 255, 0.78);
+            font-size: 1rem;
+            line-height: 1.8;
             letter-spacing: 0.01em;
-            text-transform: none;
-            transition: background 0.25s ease, transform 0.2s ease;
         }
-        details > summary:hover,
-        .streamlit-expanderHeader:hover,
-        .stExpanderHeader:hover {
-            background: linear-gradient(135deg, rgba(18, 117, 154, 0.95), rgba(35, 192, 220, 0.95));
-            transform: translateY(-1px);
+        .assistant-experience-underline {
+            width: 90px;
+            height: 4px;
+            margin: 1.2rem auto 0;
+            border-radius: 999px;
+            background: linear-gradient(90deg, rgba(52, 211, 255, 0.95), rgba(126, 78, 255, 0.95));
+            box-shadow: 0 0 22px rgba(52, 211, 255, 0.25);
         }
-        .streamlit-expanderHeader > div,
-        .stExpanderHeader > div,
-        details > summary > div {
-            margin: 0;
+        .assistant-option-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.25rem;
+            position: relative;
+            z-index: 2;
+        }
+        .assistant-option-card {
+            position: relative;
+            overflow: hidden;
+            border-radius: 28px;
+            min-height: 260px;
+            padding: 1.85rem 1.75rem;
+            background: linear-gradient(180deg, rgba(7, 17, 34, 0.92), rgba(12, 25, 48, 0.78));
+            border: 1px solid rgba(86, 216, 255, 0.14);
+            box-shadow: 0 28px 72px rgba(6, 18, 38, 0.26);
+            backdrop-filter: blur(14px);
+            transition: transform 0.32s ease, box-shadow 0.32s ease, border-color 0.32s ease;
+            animation: assistantFadeIn 0.75s ease both;
+        }
+        .assistant-option-card:nth-child(1) {
+            animation-delay: 0.08s;
+        }
+        .assistant-option-card:nth-child(2) {
+            animation-delay: 0.16s;
+        }
+        .assistant-option-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background: radial-gradient(circle at top left, rgba(40, 199, 255, 0.12), transparent 28%),
+                        radial-gradient(circle at bottom right, rgba(142, 96, 255, 0.08), transparent 24%);
+        }
+        .assistant-option-card:hover {
+            transform: translateY(-6px) scale(1.01);
+            border-color: rgba(37, 212, 255, 0.32);
+            box-shadow: 0 34px 96px rgba(8, 24, 52, 0.32);
+        }
+        .assistant-option-card:hover .assistant-option-icon {
+            transform: translateY(-2px) scale(1.04);
+            box-shadow: 0 0 22px rgba(37, 212, 255, 0.25);
+        }
+        .assistant-option-card .assistant-option-icon {
+            width: 56px;
+            height: 56px;
+            display: grid;
+            place-items: center;
+            border-radius: 18px;
+            background: rgba(34, 153, 255, 0.13);
+            color: #b5f3ff;
+            font-size: 1.45rem;
+            border: 1px solid rgba(255,255,255,0.12);
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06);
+            transition: transform 0.28s ease, box-shadow 0.28s ease;
+        }
+        .assistant-option-card .assistant-option-title {
+            margin: 1.25rem 0 0.6rem;
+            color: #eff7ff;
+            font-size: 1.35rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
             line-height: 1.1;
         }
-        details > summary::-webkit-details-marker {
-            display: none;
+        .assistant-option-card .assistant-option-desc {
+            margin: 0;
+            color: rgba(197, 214, 237, 0.78);
+            font-size: 0.98rem;
+            line-height: 1.75;
+            max-width: 95%;
         }
-        @media (max-width: 980px) {
-            .chat-options-grid {
+        .assistant-option-card .assistant-option-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 1.5rem;
+            gap: 1rem;
+        }
+        .assistant-option-card .option-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.45rem 0.9rem;
+            border-radius: 999px;
+            background: rgba(37, 212, 255, 0.14);
+            color: #c9f7ff;
+            font-size: 0.82rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+        .assistant-option-card .assistant-option-action {
+            width: 100%;
+            margin-top: 0.85rem;
+        }
+        .assistant-option-card .assistant-option-action .stButton > button,
+        .assistant-option-card .assistant-option-action .stButton > div > button,
+        .assistant-option-card .assistant-option-action .stButton > div > div > button {
+            width: 100% !important;
+            padding: 0.95rem 1.2rem !important;
+            border-radius: 18px !important;
+            background: linear-gradient(135deg, rgba(64,236,255,0.92), rgba(121, 90, 255, 0.94)) !important;
+            color: #03111f !important;
+            font-weight: 700 !important;
+            letter-spacing: 0.01em !important;
+            box-shadow: 0 18px 40px rgba(26, 151, 219, 0.24) !important;
+            border: 1px solid rgba(255,255,255,0.18) !important;
+            transition: transform 0.24s ease, box-shadow 0.24s ease, background 0.24s ease !important;
+        }
+        .assistant-option-card .assistant-option-action .stButton > button:hover,
+        .assistant-option-card .assistant-option-action .stButton > div > button:hover,
+        .assistant-option-card .assistant-option-action .stButton > div > div > button:hover {
+            transform: translateY(-1px) !important;
+            background: linear-gradient(135deg, rgba(75,244,255,0.98), rgba(171, 100, 255, 0.95)) !important;
+            box-shadow: 0 24px 48px rgba(54, 188, 255, 0.28) !important;
+        }
+        .assistant-option-card .assistant-option-action .stButton > button:focus,
+        .assistant-option-card .assistant-option-action .stButton > div > button:focus,
+        .assistant-option-card .assistant-option-action .stButton > div > div > button:focus {
+            animation: assistantPulse 1.8s infinite;
+        }
+        @keyframes assistantFadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes assistantPulse {
+            0%, 100% { box-shadow: 0 22px 42px rgba(68, 180, 255, 0.28); }
+            50% { box-shadow: 0 26px 56px rgba(68, 180, 255, 0.34); }
+        }
+        @media (max-width: 840px) {
+            .assistant-option-grid {
                 grid-template-columns: 1fr;
+            }
+            .assistant-experience-section {
+                padding: 1.6rem;
             }
         }
         """,
@@ -1222,6 +2214,48 @@ def render_chat_styles():
             display: grid;
             gap: 0.75rem;
         }
+        .chat-shell .stButton>button,
+        .chat-shell .stButton>div>button,
+        .chat-shell .stButton>div>div>button {
+            background: rgba(255,255,255,0.08) !important;
+            color: #e8eff7 !important;
+            border: 1px solid rgba(255,255,255,0.16) !important;
+            border-radius: 18px !important;
+            min-height: 3.4rem !important;
+            box-shadow: none !important;
+        }
+        .chat-shell .stButton>button:hover,
+        .chat-shell .stButton>div>button:hover,
+        .chat-shell .stButton>div>div>button:hover {
+            background: rgba(255,255,255,0.14) !important;
+        }
+        .chat-input-panel .stButton>button,
+        .chat-input-panel .stButton>div>button,
+        .chat-input-panel .stButton>div>div>button {
+            min-height: 3.6rem !important;
+        }
+        .chat-input-panel .stButton>button:hover,
+        .chat-input-panel .stButton>div>button:hover,
+        .chat-input-panel .stButton>div>div>button:hover {
+            background: rgba(255,255,255,0.14) !important;
+        }
+        .chat-prompt-panel {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.65rem;
+            padding: 1rem 0 0;
+        }
+        .chat-prompt-chip {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.65rem 0.95rem;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.12);
+            color: #e8eff7;
+            font-size: 0.92rem;
+        }
         .chat-input-panel input[type="text"] {
             width: 100% !important;
             height: 4rem !important;
@@ -1260,15 +2294,21 @@ def render_chat_styles():
     )
 
 
-def render_footer():
-    st.markdown(
-        """
-        <footer class="footer">
-            Created with passion by Aarko Batabyal & Saptak Bhattacharjee
-        </footer>
-        """,
-        unsafe_allow_html=True,
-    )
+def fill_chat_prompt(suggestion, input_key):
+    st.session_state[input_key] = suggestion
+    st.session_state.chat_warning = ""
+    st.session_state.chat_error = ""
+
+
+def clear_chat_history(mode=None):
+    if mode == "medical":
+        st.session_state.chat_history_medical = []
+    else:
+        st.session_state.chat_history_quick = []
+    st.session_state.chat_warning = ""
+    st.session_state.chat_error = ""
+    if hasattr(st, "experimental_rerun"):
+        st.experimental_rerun()
 
 
 def handle_chat_submit(input_key, mode):
@@ -1277,7 +2317,22 @@ def handle_chat_submit(input_key, mode):
         st.session_state.chat_error = ""
         return
 
-    prompt_text = st.session_state[input_key].strip()
+    user_prompt = st.session_state[input_key].strip()
+    prompt_text = user_prompt
+    patient_context_parts = []
+    if st.session_state.get("patient_name"):
+        patient_context_parts.append(f"Patient name: {st.session_state.patient_name}.")
+    if st.session_state.get("patient_age"):
+        patient_context_parts.append(f"Patient age: {st.session_state.patient_age}.")
+    if st.session_state.get("patient_gender"):
+        patient_context_parts.append(f"Patient gender: {st.session_state.patient_gender}.")
+    if st.session_state.get("uploaded_images"):
+        file_names = ", ".join([img.name for img in st.session_state.uploaded_images])
+        patient_context_parts.append(f"Uploaded clinical image files: {file_names}.")
+
+    if patient_context_parts:
+        prompt_text = " ".join(patient_context_parts) + " Question: " + prompt_text
+
     last_submit = st.session_state.get("last_chat_submit", {"prompt": "", "mode": "", "time": 0.0})
     if (
         last_submit["prompt"] == prompt_text
@@ -1291,12 +2346,13 @@ def handle_chat_submit(input_key, mode):
         "time": time.time(),
     }
     try:
-        if "GROQ_API_KEY" in st.secrets:
-            client = Groq(api_key=st.secrets["GROQ_API_KEY"])
-        else:
-            client = Groq()
+        with st.spinner("Generating response from Nirnay..."):
+            if "GROQ_API_KEY" in st.secrets:
+                client = Groq(api_key=st.secrets["GROQ_API_KEY"])
+            else:
+                client = Groq()
 
-        system_prompt = (
+            system_prompt = (
             "You are a medical assistant. Provide general medical information only, not medical advice. Answer in clear, complete points and full sentences. Avoid using tables. Prefer numbered or bulleted lists when summarizing symptoms, causes, or steps. Do not truncate the reply; complete the answer fully. Always remind users to consult a qualified healthcare provider for final clinical decisions."
             if mode == "medical"
             else "You are a medical assistant. Answer briefly and compactly in 1-2 short sentences. Provide general medical information only, not medical advice. Always remind users to consult a qualified healthcare provider for final clinical decisions."
@@ -1322,12 +2378,12 @@ def handle_chat_submit(input_key, mode):
             bot_response = completion.choices[0].text
 
         bot_response = bot_response or "No response received from the AI."
-        st.session_state.chat_last_user = prompt_text
+        st.session_state.chat_last_user = user_prompt
         st.session_state.chat_last_response = bot_response
         history_key = "chat_history_medical" if mode == "medical" else "chat_history_quick"
         if history_key not in st.session_state:
             st.session_state[history_key] = []
-        st.session_state[history_key].append({"role": "user", "content": prompt_text})
+        st.session_state[history_key].append({"role": "user", "content": user_prompt})
         st.session_state[history_key].append({"role": "assistant", "content": bot_response})
         st.session_state[input_key] = ""
         st.session_state.chat_error = ""
@@ -1335,152 +2391,6 @@ def handle_chat_submit(input_key, mode):
     except Exception as exc:
         st.session_state.chat_error = f"AI chatbot error: {exc}"
         st.session_state.chat_warning = ""
-
-if page == "chat":
-    mode = st.session_state.chat_mode
-    header = "Medical Chatbot" if mode == "medical" else "Quick Chat"
-    subtitle = (
-        "Ask Nirnay a clinical question and receive a full response."
-        if mode == "medical"
-        else "Ask a short clinical question and receive a compact answer."
-    )
-    prompt_label = (
-        "Type your medical question..."
-        if mode == "medical"
-        else "Type your compact question..."
-    )
-    send_label = "Send" if mode == "medical" else "Send Compact"
-    form_key = "nirnay_chat_form" if mode == "medical" else "nirnay_chat_alt_form"
-    input_key = "nirnay_chat_prompt" if mode == "medical" else "nirnay_chat_prompt_alt"
-
-    render_chat_styles()
-
-    if "chat_last_user" not in st.session_state:
-        st.session_state.chat_last_user = ""
-    if "chat_last_response" not in st.session_state:
-        st.session_state.chat_last_response = ""
-    if "chat_error" not in st.session_state:
-        st.session_state.chat_error = ""
-    if "chat_warning" not in st.session_state:
-        st.session_state.chat_warning = ""
-
-    st.markdown("<div class='chat-shell'>", unsafe_allow_html=True)
-    st.button(
-        "⬅️ Back to Analysis",
-        key=f"back_{mode}_button",
-        on_click=back_to_analysis,
-    )
-
-    st.markdown(
-        f"<header><div class='avatar'>{'👩‍⚕️' if mode == 'medical' else '⚡'}</div><div><div class='chat-title'>{header}</div><div class='chat-subtitle'>{subtitle}</div></div></header>",
-        unsafe_allow_html=True,
-    )
-
-    st.markdown("<div class='chat-window'>", unsafe_allow_html=True)
-
-    history_key = "chat_history_medical" if mode == "medical" else "chat_history_quick"
-    history = st.session_state.get(history_key, [])
-
-    if history:
-        for msg in history:
-            content_html = html.escape(msg["content"]).replace("\n", "<br>")
-            if msg["role"] == "user":
-                bubble_class = "bubble user"
-            else:
-                bubble_class = "bubble assistant" if mode == "medical" else "bubble assistant alt"
-            st.markdown(
-                f"<div class='{bubble_class}'>{content_html}</div>",
-                unsafe_allow_html=True,
-            )
-    else:
-        welcome_text = (
-            "Hello! I'm Nirnay. Ask me any clinical question to begin." if mode == "medical" else "Hello! I'm Quick Nirnay. Ask me a short clinical question for a compact answer."
-        )
-        st.markdown(
-            f"<div class='bubble assistant'>{html.escape(welcome_text)}</div>",
-            unsafe_allow_html=True,
-        )
-
-    st.markdown("</div>", unsafe_allow_html=True)
-
-    if st.session_state.chat_error:
-        st.error(st.session_state.chat_error)
-    if st.session_state.chat_warning:
-        st.warning(st.session_state.chat_warning)
-
-    st.markdown("<div class='chat-input-panel'>", unsafe_allow_html=True)
-    user_input = st.text_input(prompt_label, key=input_key, placeholder=prompt_label, label_visibility='collapsed')
-    st.button(send_label, key=f"{form_key}_submit", on_click=handle_chat_submit, args=(input_key, mode))
-    st.markdown("</div>", unsafe_allow_html=True)
-    st.markdown("</div>", unsafe_allow_html=True)
-    render_footer()
-    st.stop()
-
-# ------------ Analysis page -------------
-if page == "analysis":
-    st.markdown("<div id='page-top'></div>", unsafe_allow_html=True)
-    output = []  # Initialize output list
-
-    # keep patient values local in analysis
-    patient_name = st.session_state.patient_name or "Unknown"
-    patient_age = st.session_state.patient_age or "N/A"
-    patient_gender = st.session_state.patient_gender or "N/A"
-
-    if "chat_page" not in st.session_state:
-        st.session_state.chat_page = None
-
-
-    st.markdown(
-        f"""
-        <div class="topbar"><h1>🔬Analysis Dashboard with AI Integration</h1></div>
-        <div class="analysis-patient-summary">
-            <p><strong>Patient:</strong> {patient_name} &nbsp; | &nbsp; <strong>Age:</strong> {patient_age} &nbsp; | &nbsp; <strong>Gender:</strong> {patient_gender}</p>
-        </div>
-        
-        """,
-        unsafe_allow_html=True,
-    )
-
-    st.button("⬅️ Back to Profile", key="back_to_profile", on_click=set_page, args=("profile",))
-    expander_placeholder = st.empty()
-
-    def render_chat_options():
-        st.markdown("<div class='chat-options-grid'><text align='center'><p><h4>🤖Talk with your AI assistant</h4></p></div>",
-                    unsafe_allow_html=True)
-        col1, col2 = st.columns(2, gap="large")
-        with col1:
-            st.markdown(
-                """
-                <div class='chat-option-card'>
-                    <h3>👩‍⚕️ Medical Assistant</h3>
-                    <p>Long-form clinical reasoning, differential diagnosis support, and structured recommendations.</p>
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
-            st.markdown("<div class='chat-card-action'>", unsafe_allow_html=True)
-            st.button("Choose Medical Assistant", key="choose_medical_assistant", on_click=launch_chat, args=("medical",))
-            st.markdown("</div>", unsafe_allow_html=True)
-        with col2:
-            st.markdown(
-                """
-                <div class='chat-option-card'>
-                    <h3>⚡ Quick Summary Chat</h3>
-                    <p>Short clinical answers, rapid clarifications, and high-level guidance.</p>
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
-            st.markdown("<div class='chat-card-action'>", unsafe_allow_html=True)
-            st.button("Choose Quick Assistant", key="choose_quick_assistant", on_click=launch_chat, args=("quick",))
-            st.markdown("</div>", unsafe_allow_html=True)
-        st.markdown("</div>", unsafe_allow_html=True)
-
-
-    render_analysis_chat_styles()
-    render_chat_styles()
-
-
 
 # ------------ Helpers -------------
 def parse_float(val):
@@ -1490,6 +2400,136 @@ def parse_float(val):
         return float(val)
     except ValueError:
         return None
+
+
+def infer_image_context(filename):
+    lower_name = filename.lower()
+    if any(term in lower_name for term in ["wound", "ulcer", "lesion", "skin", "derm", "dermatology"]):
+        return "Wound / dermatology image"
+    if any(term in lower_name for term in ["xray", "x-ray", "chest", "radiograph", "radiography"]):
+        return "X-ray image"
+    if any(term in lower_name for term in ["ct", "ctscan", "ct-scan", "computed tomography"]):
+        return "CT scan image"
+    if any(term in lower_name for term in ["mri", "magnetic resonance", "mr"]):
+        return "MRI image"
+    if any(term in lower_name for term in ["ultrasound", "us", "sonogram"]):
+        return "Ultrasound image"
+    return "Clinical image"
+
+
+def generate_uploaded_image_insights(uploaded_images, patient_name, patient_age, patient_gender):
+    if not uploaded_images:
+        return []
+
+    files_description = "\n".join(
+        [f"- {img.name} ({img.type or 'unknown'}, {img.size // 1024} KB)" for img in uploaded_images]
+    )
+    prompt = (
+        f"Patient: {patient_name or 'Unknown'}, Age: {patient_age or 'N/A'}, Gender: {patient_gender or 'N/A'}. "
+        f"The following clinical image files were uploaded:\n{files_description}\n\n"
+        "Based on these filenames and metadata only, suggest the likely imaging context, possible findings to review, and the most relevant clinical questions a clinician should ask. "
+        "Present the response as 3-5 concise bullet points and explicitly note that the interpretation is based on filenames only."
+    )
+
+    try:
+        with st.spinner("Analyzing uploaded files with AI..."):
+            response = run_groq_chat_sync(prompt)
+        if response:
+            return [line.strip() for line in response.splitlines() if line.strip()]
+        return ["[INFO] AI image insight generation returned empty. Using filename-based context only."]
+    except Exception as exc:
+        return [f"[INFO] AI image insight generation failed: {exc}. Using filename-based context only."]
+
+
+def summarize_uploaded_files(uploaded_images, patient_name, patient_age, patient_gender):
+    summary = ["\n=== 📷 UPLOADED IMAGE REVIEW ==="]
+    for img in uploaded_images:
+        context = infer_image_context(img.name)
+        summary.append(
+            f"[INFO] {context} attached: {img.name} ({img.type or 'unknown'}, {img.size // 1024} KB)."
+        )
+
+    ai_lines = generate_uploaded_image_insights(uploaded_images, patient_name, patient_age, patient_gender)
+    if ai_lines:
+        summary.append("Inferred image findings:")
+        for line in ai_lines:
+            summary.append(line)
+
+    summary.append("[INFO] Review the attached files for visual findings and compare them with the clinical data entered.")
+    return summary
+
+
+def suggest_analysis_followup_questions(collected):
+    question_map = [
+        (
+            "🧪 Metabolism",
+            collected["🧪 Metabolism"],
+            "Add glucose metrics, lipid markers, or classic diabetes symptoms such as thirst, polyuria, or slow wound healing.",
+        ),
+        (
+            "❤️ Cardiac",
+            collected["❤️ Cardiac"],
+            "Add blood pressure, troponin, BNP, or chest pain/shortness of breath symptoms.",
+        ),
+        (
+            "🧬 Oncology",
+            collected["🧬 Oncology"],
+            "Add mass size, weight loss, lymph node changes, tumor marker values, or new systemic symptoms.",
+        ),
+        (
+            "🧠 Neurology",
+            collected["🧠 Neurology"],
+            "Add headaches, weakness, sensory changes, seizures, dizziness, or focal deficit details.",
+        ),
+        (
+            "👩 Gynecology",
+            collected["👩 Gynecology"],
+            "Add menstrual changes, pelvic pain, discharge, infertility symptoms, or gynecologic exam findings.",
+        ),
+        (
+            "🛡️ Immunology",
+            collected["🛡️ Immunology"],
+            "Add autoimmune markers, recurrent infection history, rashes, joint pain, or lymph node findings.",
+        ),
+        (
+            "🦋 Endocrinology",
+            collected["🦋 Endocrinology"],
+            "Add thyroid labs, cortisol/PTH levels, metabolic symptoms, or hormone-related complaints.",
+        ),
+        (
+            "👶 Pediatric",
+            collected["👶 Pediatric"],
+            "Add growth measures, developmental milestones, feeding issues, fever, or respiratory symptoms.",
+        ),
+        (
+            "🧴 Dermatology",
+            collected["🧴 Dermatology"],
+            "Add rash description, lesion size, itching, scaling, or ulcer characteristics.",
+        ),
+        (
+            "🧠 Psychiatry",
+            collected["🧠 Psychiatry"],
+            "Add mood, anxiety, sleep, cognitive impairment, or suicide risk details.",
+        ),
+        (
+            "💧 Nephrology",
+            collected["💧 Nephrology"],
+            "Add kidney labs, urine changes, edema, blood in urine, or fluid balance concerns.",
+        ),
+        (
+            "🩸 Hematology",
+            collected["🩸 Hematology"],
+            "Add hemoglobin, platelet or white count values, bleeding, bruising, or lymphadenopathy symptoms.",
+        ),
+    ]
+    followups = []
+    for label, section, prompt in question_map:
+        if not has_data(section.values()):
+            followups.append(f"{label}: {prompt}")
+    if not followups:
+        followups.append("If you want a more precise report, add more measurements or symptoms in the relevant tabs and upload any available imaging.")
+    return followups
+
 
 def chunked(values, size):
     for i in range(0, len(values), size):
@@ -1532,6 +2572,7 @@ def val(entry_key, dict_obj):
         return dict_obj[entry_key]
     return None
 
+
 def put_message(txt):
     st.write(txt)
 
@@ -1573,6 +2614,195 @@ def run_groq_chat(prompt, model="openai/gpt-oss-120b"):
         response += delta
         yield response
 
+
+def run_groq_chat_sync(prompt, model="openai/gpt-oss-120b"):
+    client = Groq()
+    messages = [
+        {
+            "role": "system",
+            "content": (
+                "You are Nirnay, a professional medical diagnostic assistant. "
+                "Provide concise, clinically responsible guidance and remind users to consult a qualified healthcare provider."
+            ),
+        },
+        {"role": "user", "content": prompt},
+    ]
+
+    completion = client.chat.completions.create(
+        model=model,
+        messages=messages,
+        temperature=0.5,
+        max_completion_tokens=2048,
+        top_p=1,
+        stream=False,
+    )
+
+    if hasattr(completion.choices[0].message, "content"):
+        return completion.choices[0].message.content or ""
+    if isinstance(completion.choices[0].message, dict):
+        return completion.choices[0].message.get("content", "") or ""
+    return getattr(completion.choices[0], "text", "") or ""
+
+if page == "chat":
+    mode = st.session_state.get("chat_mode", "medical")
+    header = "Nirnay Clinical Advisor" if mode == "medical" else "Nirnay Rapid Triage"
+    subtitle = (
+        "Ask Nirnay a clinical question about this patient and receive a full assessment response."
+        if mode == "medical"
+        else "Ask a short clinical question and receive a focused triage recommendation."
+    )
+    prompt_label = (
+        "Type your clinical question..."
+        if mode == "medical"
+        else "Type your quick triage question..."
+    )
+    send_label = "Ask Advisor" if mode == "medical" else "Ask Triage"
+    form_key = "nirnay_chat_form" if mode == "medical" else "nirnay_chat_alt_form"
+    input_key = "nirnay_chat_prompt" if mode == "medical" else "nirnay_chat_prompt_alt"
+
+    render_chat_styles()
+
+    if "chat_last_user" not in st.session_state:
+        st.session_state.chat_last_user = ""
+    if "chat_last_response" not in st.session_state:
+        st.session_state.chat_last_response = ""
+    if "chat_error" not in st.session_state:
+        st.session_state.chat_error = ""
+    if "chat_warning" not in st.session_state:
+        st.session_state.chat_warning = ""
+
+    st.markdown("<div class='chat-shell'>", unsafe_allow_html=True)
+    action_col, _ = st.columns([1, 2], gap="small")
+    with action_col:
+        st.button(
+            "🗑️ Clear Conversation",
+            key=f"clear_chat_{mode}_button",
+            on_click=clear_chat_history,
+            args=(mode,),
+        )
+        st.button(
+            "⬅️ Back to Analysis",
+            key=f"back_{mode}_button",
+            on_click=back_to_analysis,
+        )
+
+    st.markdown(
+        f"<header><div class='avatar'>{'👩‍⚕️' if mode == 'medical' else '⚡'}</div><div><div class='chat-title'>{header}</div><div class='chat-subtitle'>{subtitle}</div></div></header>",
+        unsafe_allow_html=True,
+    )
+
+    switch_col1, switch_col2 = st.columns([1, 1], gap="small")
+    with switch_col1:
+        st.button(
+            "Medical Assistant",
+            key="chat_mode_med_button",
+            disabled=mode == "medical",
+            on_click=launch_chat,
+            args=("medical",),
+        )
+    with switch_col2:
+        st.button(
+            "Quick Assistant",
+            key="chat_mode_quick_button",
+            disabled=mode == "quick",
+            on_click=launch_chat,
+            args=("quick",),
+        )
+
+    context_items = []
+    if st.session_state.get("patient_name"):
+        context_items.append(f"Patient: {st.session_state.patient_name}")
+    if st.session_state.get("patient_age"):
+        context_items.append(f"Age: {st.session_state.patient_age}")
+    if st.session_state.get("patient_gender"):
+        context_items.append(f"Gender: {st.session_state.patient_gender}")
+    if st.session_state.get("uploaded_images"):
+        context_items.append(f"Uploaded files: {len(st.session_state.uploaded_images)}")
+    if context_items:
+        st.markdown(
+            f"<div class='hint-box'><strong>Session context:</strong> {html.escape(' · '.join(context_items))}</div>",
+            unsafe_allow_html=True,
+        )
+
+    st.markdown(
+        "<div class='chat-prompt-panel'>"
+        + "<span class='chat-prompt-chip'>What are the key red flags for this symptom?</span>"
+        + "<span class='chat-prompt-chip'>How should I interpret these lab values?</span>"
+        + "<span class='chat-prompt-chip'>List the top 3 differential diagnoses.</span>"
+        + "<span class='chat-prompt-chip'>What next test is most useful?</span>"
+        + "</div>",
+        unsafe_allow_html=True,
+    )
+
+    suggestion_texts = [
+        "What are the most urgent concerns for this patient?",
+        "Which findings need immediate follow-up?",
+        "What additional tests are recommended next?",
+    ] if mode == "medical" else [
+        "Summarize the main concern in one sentence.",
+        "Give a quick next step for this presentation.",
+        "What is the likely diagnosis?",
+    ]
+    suggestion_cols = st.columns(len(suggestion_texts), gap="small")
+    for idx, suggestion in enumerate(suggestion_texts):
+        suggestion_cols[idx].button(
+            suggestion,
+            key=f"chat_suggestion_{mode}_{idx}",
+            on_click=fill_chat_prompt,
+            args=(suggestion, input_key),
+        )
+
+    st.markdown("<div class='chat-window'>", unsafe_allow_html=True)
+
+    history_key = "chat_history_medical" if mode == "medical" else "chat_history_quick"
+    history = st.session_state.get(history_key, [])
+
+    if history:
+        for msg in history:
+            content_html = html.escape(msg["content"]).replace("\n", "<br>")
+            if msg["role"] == "user":
+                bubble_class = "bubble user"
+            else:
+                bubble_class = "bubble assistant" if mode == "medical" else "bubble assistant alt"
+            st.markdown(
+                f"<div class='{bubble_class}'>{content_html}</div>",
+                unsafe_allow_html=True,
+            )
+    else:
+        welcome_text = (
+            "Hello! I'm Nirnay. Ask me any clinical question to begin." if mode == "medical" else "Hello! I'm Quick Nirnay. Ask me a short clinical question for a compact answer."
+        )
+        st.markdown(
+            f"<div class='bubble assistant'>{html.escape(welcome_text)}</div>",
+            unsafe_allow_html=True,
+        )
+
+    st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown(
+        """
+        <script>
+        const chatWindow = document.querySelector('.chat-window');
+        if (chatWindow) {
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+        window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'});
+        </script>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    if st.session_state.chat_error:
+        st.error(st.session_state.chat_error)
+    if st.session_state.chat_warning:
+        st.warning(st.session_state.chat_warning)
+
+    st.markdown("<div class='chat-input-panel'>", unsafe_allow_html=True)
+    user_input = st.text_input(prompt_label, key=input_key, placeholder=prompt_label, label_visibility='collapsed')
+    st.button(send_label, key=f"{form_key}_submit", on_click=handle_chat_submit, args=(input_key, mode))
+    st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)
+    render_footer()
+    st.stop()
 
 # ------------ Field definitions (copying your categories) -------------
 vital_defs = {
@@ -1876,46 +3106,288 @@ try:
 except NameError:
     expander_target = st.empty()
 
-with expander_target.expander("Manual Medical Analysis", expanded=True):
-    tabs_objs = st.tabs([x[0] for x in tab_names])
-    collected = {}
+# ------------ Analysis page -------------
+if page == "analysis":
+    st.markdown("<div id='page-top'></div>", unsafe_allow_html=True)
+    st.markdown(
+        """
+        <div class="stepper">
+            <div class="stepper-step">1. Profile</div>
+            <div class="stepper-step active">2. Analysis</div>
+            <div class="stepper-step">3. Chat</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+    render_analysis_chat_styles()
+    output = []  # Initialize output list
 
-    for (tab_title, defs), tab_obj in zip(tab_names, tabs_objs):
-        with tab_obj:
-            collected[tab_title] = make_inputs(tab_obj, defs)
+    # keep patient values local in analysis
+    patient_name = st.session_state.patient_name or "Unknown"
+    patient_age = st.session_state.patient_age or "N/A"
+    patient_gender = st.session_state.patient_gender or "N/A"
 
-    any_section_data = any(
-        any(value is not None and value is not False and value != "" for value in section.values())
-        for section in [
-            collected["🧪 Metabolism"],
-            collected["❤️ Cardiac"],
-            collected["🧬 Oncology"],
-            collected["🧠 Neurology"],
-            collected["👩 Gynecology"],
-            collected["🛡️ Immunology"],
-            collected["🦋 Endocrinology"],
-            collected["👶 Pediatric"],
-            collected["🧴 Dermatology"],
-            collected["🧠 Psychiatry"],
-            collected["💧 Nephrology"],
-            collected["🩸 Hematology"],
-        ]
+    if "chat_page" not in st.session_state:
+        st.session_state.chat_page = None
+
+
+    st.markdown(
+        f"""
+        <div class='dashboard-shell'>
+            <div class='dashboard-top-grid'>
+                <div class='glass-card'>
+                    <div class='card-header'><span class='section-icon'>📊</span> Insights console</div>
+                    <div class='profile-row'>
+                        <div class='avatar'></div>
+                        <div>
+                            <div class='profile-name'>{patient_name}</div>
+                            <div class='profile-meta'>Age: {patient_age} · Gender: {patient_gender}</div>
+                            <div class='status-badge'>Active</div>
+                        </div>
+                    </div>
+                    <div class='metrics-grid'>
+                        <div class='metric-pill'><strong>{len(st.session_state.uploaded_images)} assets</strong><span><br>Uploaded files ready for review.</br></span></div>
+                        <div class='metric-pill'><strong>{len(tab_names)} categories</strong><span>   Structured data sections available.   </span></div>
+                    </div>
+                </div>
+                <div class='glass-card action-card'>
+                    <div class='card-header'><span class='section-icon'>⚡</span> Workspace actions</div>
+                    <div class='profile-meta'>Run analysis, save progress, or export insights from a polished dashboard experience.</div>
+                </div>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
     )
 
-    if st.button("Generate Professional Analysis", key="generate_analysis"):
-        if click_debounced("generate_analysis"):
-            if any_section_data:
-                st.session_state.analysis_requested = True
-            else:
-                st.warning("Please enter at least one clinical measurement or symptom before generating results.")
+    st.button("⬅️ Back to Profile", key="back_to_profile", on_click=set_page, args=("profile",))
+    expander_placeholder = st.empty()
 
-    if not st.session_state.analysis_requested:
-        if any_section_data:
-            st.info("Data detected. Click Generate Professional Analysis to display the diagnostic summary.")
-        else:
-            st.info("Enter at least one measurement or symptom to enable the analysis report.")
+    def render_chat_options():
+        st.markdown(
+            """
+            <div class='assistant-experience-section'>
+                <div class='assistant-experience-header'>
+                    <div class='assistant-experience-title'>Choose Your AI Experience</div>
+                    <div class='assistant-experience-subtitle'>Select how you want to interact with the system</div>
+                    <div class='assistant-experience-underline'></div>
+                </div>
+                <div class='assistant-option-grid'>
+                    <div class='assistant-option-card recommended'>
+                        <div class='assistant-option-icon'>👩‍⚕️</div>
+                        <div class='assistant-option-title'>Insights Advisor</div>
+                        <div class='assistant-option-desc'>Long-form reasoning, structured recommendations, and guided interpretation.</div>
+                        <div class='assistant-option-meta'>
+                            <div class='option-badge'>Recommended</div>
+                        </div>
+                        <div class='assistant-option-action'></div>
+                    </div>
+                    <div class='assistant-option-card'>
+                        <div class='assistant-option-icon'>⚡</div>
+                        <div class='assistant-option-title'>Quick Summary</div>
+                        <div class='assistant-option-desc'>Short insights, fast clarifications, and high-level findings.</div>
+                        <div class='assistant-option-meta'>
+                            <div class='option-badge'>Fast response</div>
+                        </div>
+                        <div class='assistant-option-action'></div>
+                    </div>
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+        button_cols = st.columns(2, gap="large")
+        with button_cols[0]:
+            st.button("Open Insights Advisor", key="choose_medical_assistant", on_click=launch_chat, args=("medical",))
+        with button_cols[1]:
+            st.button("Open Quick Summary", key="choose_quick_assistant", on_click=launch_chat, args=("quick",))
 
-    with st.expander("🤖 Your AI assistants are here to help.", expanded=False):
+
+    col1, col2 = st.columns([7, 3], gap="large")
+    with col1:
+        st.markdown(
+            """
+            <div class='glass-card'>
+                <div class='card-header'><span class='section-icon'>🧩</span> Intake dashboard</div>
+                <p class='profile-meta'>Choose a category, enter your core data, and use the dashboard to generate concise insights.</p>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+        with expander_placeholder.expander("Clinical Intake Dashboard", expanded=True):
+            tabs_objs = st.tabs([x[0] for x in tab_names])
+            collected = {}
+
+            for (tab_title, defs), tab_obj in zip(tab_names, tabs_objs):
+                with tab_obj:
+                    collected[tab_title] = make_inputs(tab_obj, defs)
+
+            any_section_data = any(
+                any(value is not None and value is not False and value != "" for value in section.values())
+                for section in [
+                    collected["🧪 Metabolism"],
+                    collected["❤️ Cardiac"],
+                    collected["🧬 Oncology"],
+                    collected["🧠 Neurology"],
+                    collected["👩 Gynecology"],
+                    collected["🛡️ Immunology"],
+                    collected["🦋 Endocrinology"],
+                    collected["👶 Pediatric"],
+                    collected["🧴 Dermatology"],
+                    collected["🧠 Psychiatry"],
+                    collected["💧 Nephrology"],
+                    collected["🩸 Hematology"],
+                ]
+            ) or bool(st.session_state.uploaded_images) or bool(st.session_state.manual_symptoms.strip())
+
+        st.markdown(
+            """
+            <div class='upload-panel panel-card'>
+                <div class='panel-title'>Upload clinical images</div>
+                <p class='panel-subtitle'>Drag and drop scans, photos, pathology images, or capture a photo directly from your camera for the AI-assisted review.</p>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+        camera_image = None
+        if hasattr(st, "camera_input"):
+            camera_image = st.camera_input(
+                "Capture an image from your camera",
+                key="camera_capture",
+                help="Use your device camera to upload a photo directly into the diagnostic workflow.",
+            )
+            if camera_image:
+                existing_names = [getattr(img, "name", None) for img in st.session_state.uploaded_images]
+                if getattr(camera_image, "name", None) not in existing_names:
+                    st.session_state.uploaded_images.append(camera_image)
+
+        uploaded = st.file_uploader(
+            "Upload wound photos, X-ray plates, or other scans",
+            type=["png", "jpg", "jpeg", "bmp", "tiff"],
+            accept_multiple_files=True,
+            key="uploaded_image_files",
+            help="Optional: upload patient imaging for reference in the diagnostic report.",
+        )
+        if uploaded:
+            next_images = list(uploaded)
+            for img in st.session_state.uploaded_images:
+                if all(getattr(img, "name", None) != getattr(new_img, "name", None) for new_img in next_images):
+                    next_images.append(img)
+            st.session_state.uploaded_images = next_images
+
+        if st.session_state.uploaded_images:
+            st.markdown("**Preview uploaded images:**")
+            image_cols = st.columns(3)
+            image_contexts = []
+            for idx, img in enumerate(st.session_state.uploaded_images):
+                with image_cols[idx % 3]:
+                    st.image(img, caption=img.name, width=300)
+                image_contexts.append(infer_image_context(img.name))
+
+            st.markdown(
+                f"<div class='hint-box'>Uploaded {len(st.session_state.uploaded_images)} file(s) received. They will be included in the generated report.</div>",
+                unsafe_allow_html=True,
+            )
+
+        manual_symptom_text = st.text_area(
+            "Manual symptom labels / clinical complaints",
+            value=st.session_state.manual_symptoms,
+            placeholder="e.g. fever, chest pain, skin rash, fatigue, night sweats",
+            help="Enter symptoms or problem labels when structured measurements are not available.",
+            key="manual_symptoms",
+            height=140,
+        ).strip()
+
+        if manual_symptom_text:
+            st.markdown(
+                f"<div class='hint-box'>Manual symptom input captured. You can run analysis using symptom labels only.</div>",
+                unsafe_allow_html=True,
+            )
+
+        st.markdown(
+            "<div class='action-bar'><div class='action-copy'>Primary action will activate once at least one clinical input, manual symptom text, or image is provided.</div></div>",
+            unsafe_allow_html=True,
+        )
+        action_cols = st.columns([4, 2, 2], gap="large")
+        with action_cols[0]:
+            st.button(
+                "Run Analysis",
+                key="generate_analysis",
+                disabled=not any_section_data,
+                on_click=request_analysis,
+            )
+        with action_cols[1]:
+            st.button("Save Draft", key="save_draft")
+        with action_cols[2]:
+            st.button("Reset", key="reset_analysis")
+
+        if st.session_state.get("analysis_output", "").strip():
+            report_text = st.session_state.analysis_output
+            st.markdown(
+                """
+                <div class='analysis-report-box'>
+                    <div class='report-header'>
+                        <div>
+                            <div class='report-title'>Nirnay Diagnostics Report</div>
+                            <div class='report-subtitle'>Structured findings and follow-up guidance generated from the clinical intake.</div>
+                        </div>
+                        <div class='report-badge'>Ready</div>
+                    </div>
+                """,
+                unsafe_allow_html=True,
+            )
+            download_cols = st.columns([3, 1])
+            with download_cols[1]:
+                st.download_button(
+                    "Download Report",
+                    report_text,
+                    file_name="nirnay_diagnostics_report.txt",
+                    mime="text/plain",
+                    key="download_report",
+                )
+            for line in report_text.splitlines():
+                safe_line = html.escape(line)
+                if line.startswith("==="):
+                    line_class = "heading"
+                elif line.startswith("[CRITICAL]"):
+                    line_class = "critical"
+                elif line.startswith("[ALERT]"):
+                    line_class = "alert"
+                elif line.startswith("[!]"):
+                    line_class = "warning"
+                else:
+                    line_class = "ok"
+                st.markdown(f"<div class='result-line {line_class}'>{safe_line}</div>", unsafe_allow_html=True)
+            st.markdown("</div>", unsafe_allow_html=True)
+
+    with col2:
+        st.markdown(
+            """
+            <div class='assistant-panel sticky'>
+                <div class='assistant-title'>AI Assistant</div>
+                <div class='assistant-chip-row'>
+                    <span class='assistant-chip'>Diagnosis</span>
+                    <span class='assistant-chip'>Risk</span>
+                    <span class='assistant-chip'>Recommendations</span>
+                </div>
+                <div class='assistant-card'>
+                    <h4>Suggested prompts</h4>
+                    <ul>
+                        <li>"Summarize the most urgent clinical findings."</li>
+                        <li>"What are the top three risk factors for this patient?"</li>
+                        <li>"Recommend the next diagnostic step."</li>
+                    </ul>
+                </div>
+                <div class='assistant-card'>
+                    <h4>Mini chat</h4>
+                    <p>Ask the AI for a concise clinical interpretation of any abnormal metric or uploaded image.</p>
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
         render_chat_options()
 
 v_checks = collected["🧪 Metabolism"]
@@ -1960,9 +3432,33 @@ any_section_data = any(
         neph_checks,
         hem_checks,
     ]
-)
+) or bool(st.session_state.manual_symptoms.strip())
+
+manual_symptom_text = st.session_state.manual_symptoms.strip()
 
 output = []
+
+if manual_symptom_text:
+    output.append("\n=== 📝 MANUAL SYMPTOM INPUT ===")
+    output.append(f"[+] Manual symptom labels: {manual_symptom_text}")
+    if not any(
+        any(value is not None and value is not False and value != "" for value in section.values())
+        for section in [
+            v_checks,
+            c_checks,
+            o_checks,
+            n_checks,
+            g_checks,
+            i_checks,
+            endo_checks,
+            ped_checks,
+            derm_checks,
+            psych_checks,
+            neph_checks,
+            hem_checks,
+        ]
+    ) and not st.session_state.uploaded_images:
+        output.append("[!] MANUAL: Symptom-only intake was used. Review these symptoms with a clinician and use them as a preliminary clinical problem list.")
 
 if metabolic_has_data:
     output.append("\n=== 🧪 METABOLIC ANALYSIS ===")
@@ -2680,43 +4176,18 @@ epistax = hem_checks["epistax"]
 if hem_has_data and epistax:
     output.append("[!] HEMATOLOGICAL: Epistaxis reported. Possible bleeding disorder evaluation recommended.")
 
-if len("\n".join(output).strip()) < 60:
-    output.append("[+] ANALYSIS: No major anomalies detected. Patient appears to be in good health status.")
+if st.session_state.analysis_requested:
+    if st.session_state.uploaded_images:
+        output.extend(
+            summarize_uploaded_files(
+                st.session_state.uploaded_images,
+                patient_name,
+                patient_age,
+                patient_gender,
+            )
+        )
 
-formatted_output = []
-for line in output:
-    line_stripped = line.strip()
-    escaped_line = html.escape(line_stripped)
-    if line_stripped.startswith(">>>"):
-        formatted_output.append(f"<div class='result-line heading'>{escaped_line[3:].strip()}</div>")
-    elif line_stripped.startswith("==="):
-        formatted_output.append(f"<div class='result-line heading'>{escaped_line}</div>")
-    elif line_stripped.startswith("[CRITICAL]"):
-        formatted_output.append(f"<div class='result-line critical'>{escaped_line}</div>")
-    elif line_stripped.startswith("[ALERT]"):
-        formatted_output.append(f"<div class='result-line alert'>{escaped_line}</div>")
-    elif line_stripped.startswith("[!]"):
-        formatted_output.append(f"<div class='result-line warning'>{escaped_line}</div>")
-    elif line_stripped.startswith("[+]"):
-        formatted_output.append(f"<div class='result-line ok'>{escaped_line}</div>")
-    else:
-        formatted_output.append(f"<div class='result-line'>{escaped_line}</div>")
-
-st.markdown(
-    f"""
-    <div class='analysis-report-box'>
-        <div class='report-header'>
-            <div>
-                <div class='report-title'>🩺 NIRNAY DIAGNOSTIC REPORT</div>
-                <div class='report-subtitle'>Structured clinical findings with clear system-level flags and suggested urgency.</div>
-            </div>
-            <div class='report-badge'>Patient: {html.escape(patient_name)} · Age: {html.escape(patient_age)} · Gender: {html.escape(patient_gender)}</div>
-        </div>
-        <div class='result-body'>
-            {''.join(formatted_output)}
-        </div>
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
-
+    if len("\n".join(output).strip()) < 60:
+        output.append("[+] ANALYSIS: No major anomalies detected. Patient appears to be in good health status.")
+    st.session_state.analysis_output = "\n".join(output)
+    
