@@ -1879,9 +1879,6 @@ def render_language_header(page_title: str = "Nirnay"):
     )
 
 
-render_language_header("Nirnay")
-
-
 def set_page(target):
     st.session_state.page = target
     if hasattr(st, "experimental_rerun"):
@@ -1955,6 +1952,9 @@ def launch_chat(mode=None):
         )
     st.session_state.chat_mode = mode
     st.session_state.page = "chat"
+
+
+render_language_header("Nirnay")
 
 # ------------ Disclaimer -------------
 
