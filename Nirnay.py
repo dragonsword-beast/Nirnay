@@ -2420,9 +2420,9 @@ def handle_chat_submit(input_key, mode):
                 client = Groq()
 
             system_prompt = (
-            "You are a medical assistant. Provide general medical information only, not medical advice. Answer in clear, complete points and full sentences. Avoid using tables. Prefer numbered or bulleted lists when summarizing symptoms, causes, or steps. Do not truncate the reply; complete the answer fully. Always remind users to consult a qualified healthcare provider for final clinical decisions."
+            "You are a medical assistant. Provide general medical information only, not medical advice. Answer in clear, complete points and full sentences. Avoid using tables. Prefer numbered or bulleted lists when summarizing symptoms, causes, or steps. Do not truncate the reply; complete the answer fully. Always remind users to consult a qualified healthcare provider for final clinical decisions. Respond in the same language as the user's query. Support all international languages, including Indian languages such as Hindi, Tamil, Telugu, Bengali, Marathi, Gujarati, Kannada, Malayalam, Punjabi, Urdu, and others."
             if mode == "medical"
-            else "You are a medical assistant. Answer briefly and compactly in 1-2 short sentences. Provide general medical information only, not medical advice. Always remind users to consult a qualified healthcare provider for final clinical decisions."
+            else "You are a medical assistant. Answer briefly and compactly in 1-2 short sentences. Provide general medical information only, not medical advice. Always remind users to consult a qualified healthcare provider for final clinical decisions. Respond in the same language as the user's query. Support all international languages, including Indian languages such as Hindi, Tamil, Telugu, Bengali, Marathi, Gujarati, Kannada, Malayalam, Punjabi, Urdu, and others."
         )
 
         completion = client.chat.completions.create(
@@ -2703,7 +2703,8 @@ def run_groq_chat_sync(prompt, model="openai/gpt-oss-120b"):
             "role": "system",
             "content": (
                 "You are Nirnay, a professional medical diagnostic assistant. "
-                "Provide concise, clinically responsible guidance and remind users to consult a qualified healthcare provider."
+                "Provide concise, clinically responsible guidance and remind users to consult a qualified healthcare provider. "
+                "Respond in the same language as the user's query. Support all international languages, including Indian languages such as Hindi, Tamil, Telugu, Bengali, Marathi, Gujarati, Kannada, Malayalam, Punjabi, Urdu, and others."
             ),
         },
         {"role": "user", "content": prompt},
@@ -2728,14 +2729,14 @@ if page == "chat":
     mode = st.session_state.get("chat_mode", "medical")
     header = "Nirnay Clinical Advisor" if mode == "medical" else "Nirnay Rapid Triage"
     subtitle = (
-        "Ask Nirnay a clinical question about this patient and receive a full assessment response."
+        "Ask Nirnay a clinical question about this patient in any language and receive a full assessment response."
         if mode == "medical"
-        else "Ask a short clinical question and receive a focused triage recommendation."
+        else "Ask a short clinical question in any language and receive a focused triage recommendation."
     )
     prompt_label = (
-        "Type your clinical question..."
+        "Type your clinical question in any language..."
         if mode == "medical"
-        else "Type your quick triage question..."
+        else "Type your quick triage question in any language..."
     )
     send_label = "Ask Advisor" if mode == "medical" else "Ask Triage"
     form_key = "nirnay_chat_form" if mode == "medical" else "nirnay_chat_alt_form"
@@ -2851,7 +2852,7 @@ if page == "chat":
             )
     else:
         welcome_text = (
-            "Hello! I'm Nirnay. Ask me any clinical question to begin." if mode == "medical" else "Hello! I'm Quick Nirnay. Ask me a short clinical question for a compact answer."
+            "Hello! I'm Nirnay. Ask me any clinical question in any language to begin." if mode == "medical" else "Hello! I'm Quick Nirnay. Ask me a short clinical question in any language for a compact answer."
         )
         st.markdown(
             f"<div class='bubble assistant'>{html.escape(welcome_text)}</div>",
