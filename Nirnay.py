@@ -1,5 +1,6 @@
 import streamlit as st
 import html
+import re
 import time
 import base64
 import pathlib
@@ -1172,6 +1173,48 @@ st.markdown(
         white-space: nowrap;
     }}
 
+    .upload-report-hover {{
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        margin-bottom: 1rem;
+    }}
+
+    .upload-report-trigger {{
+        cursor: pointer;
+        font-weight: 700;
+        color: #76d7ff;
+        text-decoration: underline;
+    }}
+
+    .upload-report-card {{
+        visibility: hidden;
+        opacity: 0;
+        position: absolute;
+        top: 140%;
+        left: 0;
+        width: 360px;
+        max-width: calc(100vw - 3rem);
+        padding: 1rem 1.1rem;
+        border-radius: 22px;
+        background: rgba(8, 18, 34, 0.96);
+        border: 1px solid rgba(37, 200, 241, 0.22);
+        box-shadow: 0 22px 48px rgba(0, 0, 0, 0.38);
+        transition: all 0.2s ease;
+        z-index: 999;
+        line-height: 1.65;
+        color: #f5f8ff;
+        pointer-events: none;
+    }}
+
+    .upload-report-hover:hover .upload-report-card {{
+        visibility: visible;
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+    }}
+
     .result-body {{
         display: grid;
         gap: 0.9rem;
@@ -1646,6 +1689,8 @@ if "profile_saved" not in st.session_state:
     st.session_state.profile_saved = False
 if "uploaded_images" not in st.session_state:
     st.session_state.uploaded_images = []
+if "uploaded_image_report" not in st.session_state:
+    st.session_state.uploaded_image_report = ""
 if "manual_symptoms" not in st.session_state:
     st.session_state.manual_symptoms = ""
 
@@ -1665,6 +1710,18 @@ def set_page(target):
     st.session_state.page = target
     if hasattr(st, "experimental_rerun"):
         st.experimental_rerun()
+
+
+def remove_uploaded_image(index):
+    images = st.session_state.uploaded_images
+    if 0 <= index < len(images):
+        st.session_state.uploaded_images = [img for idx, img in enumerate(images) if idx != index]
+        st.session_state.uploaded_image_report = ""
+
+
+def clear_uploaded_images():
+    st.session_state.uploaded_images = []
+    st.session_state.uploaded_image_report = ""
 
 
 def save_profile():
@@ -2432,23 +2489,38 @@ def generate_uploaded_image_insights(uploaded_images, patient_name, patient_age,
         return []
 
     files_description = "\n".join(
-        [f"- {img.name} ({img.type or 'unknown'}, {img.size // 1024} KB)" for img in uploaded_images]
+        [f"- {img.type or 'unknown'} image, {img.size // 1024} KB" for img in uploaded_images]
     )
     prompt = (
         f"Patient: {patient_name or 'Unknown'}, Age: {patient_age or 'N/A'}, Gender: {patient_gender or 'N/A'}. "
-        f"The following clinical image files were uploaded:\n{files_description}\n\n"
-        "Based on these filenames and metadata only, suggest the likely imaging context, possible findings to review, and the most relevant clinical questions a clinician should ask. "
-        "Present the response as 3-5 concise bullet points and explicitly note that the interpretation is based on filenames only."
+        f"{len(uploaded_images)} clinical image file(s) were uploaded with the following metadata:\n{files_description}\n\n"
+        "Suggest the most likely imaging context and possible findings to review without asking any clinical questions. "
+        "Do not infer any diagnosis or finding from the filename or filename-like labels. "
+        "Do not include any prefix about metadata, file size, or image source. "
+        "Present the response as a single concise paragraph."
     )
 
     try:
         with st.spinner("Analyzing uploaded files with AI..."):
             response = run_groq_chat_sync(prompt)
         if response:
-            return [line.strip() for line in response.splitlines() if line.strip()]
-        return ["[INFO] AI image insight generation returned empty. Using filename-based context only."]
+            paragraph = " ".join([line.strip() for line in response.splitlines() if line.strip()])
+            paragraph = re.sub(
+                r"^Based (?:solely )?on(?: the)? (?:limited )?metadata\s*\([^\)]*\),\s*", "", paragraph,
+                flags=re.IGNORECASE,
+            )
+            paragraph = re.sub(
+                r"^Based (?:solely )?on(?: the)? metadata,\s*", "", paragraph,
+                flags=re.IGNORECASE,
+            )
+            paragraph = re.sub(
+                r"^Based (?:solely )?on(?: the)? (?:limited )?metadata\s*[\.:]?\s*", "", paragraph,
+                flags=re.IGNORECASE,
+            )
+            return paragraph
+        return "Image insight generation returned empty. Using metadata-only context."
     except Exception as exc:
-        return [f"[INFO] AI image insight generation failed: {exc}. Using filename-based context only."]
+        return f"Image insight generation failed: {exc}. Using metadata-only context."
 
 
 def summarize_uploaded_files(uploaded_images, patient_name, patient_age, patient_gender):
@@ -2456,14 +2528,13 @@ def summarize_uploaded_files(uploaded_images, patient_name, patient_age, patient
     for img in uploaded_images:
         context = infer_image_context(img.name)
         summary.append(
-            f"[INFO] {context} attached: {img.name} ({img.type or 'unknown'}, {img.size // 1024} KB)."
+            f"[INFO] {context} attached ({img.type or 'unknown'}, {img.size // 1024} KB)."
         )
 
-    ai_lines = generate_uploaded_image_insights(uploaded_images, patient_name, patient_age, patient_gender)
-    if ai_lines:
-        summary.append("Inferred image findings:")
-        for line in ai_lines:
-            summary.append(line)
+    ai_text = generate_uploaded_image_insights(uploaded_images, patient_name, patient_age, patient_gender)
+    st.session_state.uploaded_image_report = ai_text
+    if ai_text:
+        summary.append(f"[INFO] {ai_text}")
 
     summary.append("[INFO] Review the attached files for visual findings and compare them with the clinical data entered.")
     return summary
@@ -3290,16 +3361,21 @@ if page == "analysis":
         if st.session_state.uploaded_images:
             st.markdown("**Preview uploaded images:**")
             image_cols = st.columns(3)
-            image_contexts = []
             for idx, img in enumerate(st.session_state.uploaded_images):
                 with image_cols[idx % 3]:
                     st.image(img, caption=img.name, width=300)
-                image_contexts.append(infer_image_context(img.name))
+                    st.button(
+                        "Remove",
+                        key=f"remove_uploaded_image_{idx}",
+                        on_click=remove_uploaded_image,
+                        args=(idx,),
+                    )
 
             st.markdown(
                 f"<div class='hint-box'>Uploaded {len(st.session_state.uploaded_images)} file(s) received. They will be included in the generated report.</div>",
                 unsafe_allow_html=True,
             )
+            st.button("Clear all uploaded images", key="clear_uploaded_images", on_click=clear_uploaded_images)
 
         manual_symptom_text = st.text_area(
             "Manual symptom labels / clinical complaints",
@@ -3356,6 +3432,17 @@ if page == "analysis":
                     file_name="nirnay_diagnostics_report.txt",
                     mime="text/plain",
                     key="download_report",
+                )
+            if st.session_state.get("uploaded_image_report", "").strip():
+                report_html = html.escape(st.session_state.uploaded_image_report).replace("\n", " ")
+                st.markdown(
+                    f"""
+                    <div class='upload-report-hover'>
+                        <span class='upload-report-trigger'>Hover to view uploaded image report</span>
+                        <div class='upload-report-card'>{report_html}</div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
                 )
             for line in report_text.splitlines():
                 safe_line = html.escape(line)
