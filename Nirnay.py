@@ -151,10 +151,36 @@ st.markdown(
         gap: 0.8rem;
         margin-bottom: 1rem;
         padding: 0.8rem 1rem;
-        background: rgba(255,255,255,0.05);
-        border: 1px solid rgba(255,255,255,0.1);
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.16);
         border-radius: 18px;
-        box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 3px 12px rgba(0,0,0,0.2);
+        position: sticky;
+        top: 0;
+        z-index: 120;
+        backdrop-filter: blur(8px);
+    }}
+
+    .topbar-actions {{
+        display: flex;
+        gap: 0.55rem;
+        align-items: center;
+    }}
+
+    .nav-btn {{
+        color: #ffffff;
+        background: linear-gradient(135deg, #27c8f1 0%, #1761c1 100%);
+        border: none;
+        border-radius: 999px;
+        padding: 0.45rem 0.85rem;
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 0.9rem;
+    }}
+
+    .nav-btn:hover {{
+        box-shadow: 0 0 12px rgba(37, 200, 241, 0.45);
+        transform: translateY(-1px);
     }}
 
     .stepper {{
@@ -1729,19 +1755,37 @@ def render_language_header(page_title: str = "Nirnay"):
         <div class='topbar'>
             <div class='topbar-brand'>
                 <h1 class='main-header'>{html.escape(page_title)}</h1>
-                <p class='topbar-tagline'>{html.escape(t('Choose your preferred language for AI responses and page guidance.'))}</p>
+                <p class='topbar-tagline'>{html.escape(t('Choose your preferred language for AI responses. UI stays in English.'))}</p>
+            </div>
+            <div class='topbar-actions'>
+                <button class='nav-btn' onclick="window.location.reload();">Refresh View</button>
             </div>
         </div>
         """,
         unsafe_allow_html=True,
     )
+
+    # Page navigation quick access, improves UX by reducing scroll friction
+    col1, col2, col3, col4 = st.columns([1, 1, 1, 2])
+    with col1:
+        st.button(t("Profile"), key="nav_profile", on_click=set_page, args=("profile",))
+    with col2:
+        st.button(t("Analysis"), key="nav_analysis", on_click=set_page, args=("analysis",))
+    with col3:
+        st.button(t("Chat"), key="nav_chat", on_click=set_page, args=("chat",))
+    with col4:
+        st.markdown(
+            f"<div class='language-widget'><strong>AI response language:</strong> {html.escape(st.session_state.get('language', 'English'))}</div>",
+            unsafe_allow_html=True,
+        )
+
     st.markdown(
         translate_text(
             """
         <div class='language-widget'>
             <div>
-                <strong>Page language</strong>
-                <span>Change UI and AI response language here</span>
+                <strong>AI response language</strong>
+                <span>Change AI response language here (UI remains English)</span>
             </div>
         </div>
         """,
