@@ -64,6 +64,61 @@ language_options = [
     "Hebrew",
 ]
 
+if "translation_cache" not in st.session_state:
+    st.session_state.translation_cache = {}
+
+
+def get_translation_client():
+    if "GROQ_API_KEY" in st.secrets:
+        return Groq(api_key=st.secrets["GROQ_API_KEY"])
+    return Groq()
+
+
+def translate_text(text: str, target_language: str) -> str:
+    if not text:
+        return text
+    if not target_language or target_language.lower().startswith("english"):
+        return text
+
+    cache_key = f"{target_language}|{text}"
+    if cache_key in st.session_state.translation_cache:
+        return st.session_state.translation_cache[cache_key]
+
+    client = get_translation_client()
+    prompt = (
+        f"Translate the following text into {target_language}. Preserve all HTML tags exactly and return only the translated text."
+    )
+    try:
+        completion = client.chat.completions.create(
+            model="openai/gpt-oss-120b",
+            messages=[
+                {"role": "system", "content": prompt},
+                {"role": "user", "content": text},
+            ],
+            temperature=0.1,
+            max_completion_tokens=1024,
+            top_p=1,
+            stream=False,
+        )
+        if hasattr(completion.choices[0].message, "content"):
+            translated = completion.choices[0].message.content or text
+        elif isinstance(completion.choices[0].message, dict):
+            translated = completion.choices[0].message.get("content", "") or text
+        else:
+            translated = getattr(completion.choices[0], "text", "") or text
+    except Exception:
+        translated = text
+
+    translated = translated.strip()
+    st.session_state.translation_cache[cache_key] = translated
+    return translated
+
+
+def t(text: str) -> str:
+    language = st.session_state.get("language", "English") or "English"
+    return translate_text(text, language)
+
+
 st.set_page_config(
     page_title="Nirnay | Clinical Diagnostic Workflow",
     page_icon=icon_path,
@@ -1747,14 +1802,15 @@ def render_language_header(page_title: str = "Nirnay"):
         <div class='topbar'>
             <div class='topbar-brand'>
                 <h1 class='main-header'>{html.escape(page_title)}</h1>
-                <p class='topbar-tagline'>Choose your preferred language for AI responses and page guidance.</p>
+                <p class='topbar-tagline'>{html.escape(t('Choose your preferred language for AI responses and page guidance.'))}</p>
             </div>
         </div>
         """,
         unsafe_allow_html=True,
     )
     st.markdown(
-        """
+        translate_text(
+            """
         <div class='language-widget'>
             <div>
                 <strong>Page language</strong>
@@ -1762,6 +1818,8 @@ def render_language_header(page_title: str = "Nirnay"):
             </div>
         </div>
         """,
+            st.session_state.get("language", "English"),
+        ),
         unsafe_allow_html=True,
     )
     st.selectbox(
@@ -1858,7 +1916,9 @@ if page == "profile":
     # Mobile-first hero landing layout for the initial profile screen.
     st.markdown("<div id='page-top'></div>", unsafe_allow_html=True)
     st.markdown("<script>window.scrollTo({top:0,behavior:'auto'});</script>", unsafe_allow_html=True)
-    st.markdown(f"""
+    st.markdown(
+        translate_text(
+            f"""
         <div class="stepper">
             <div class="stepper-step active"><span class="status">Step 1 of 3</span>Profile</div>
             <div class="stepper-step upcoming"><span class="status">Next</span>Analysis</div>
@@ -1883,21 +1943,27 @@ if page == "profile":
             </div>
         </div>
         """,
+            st.session_state.get("language", "English"),
+        ),
         unsafe_allow_html=True,
     )
 
     st.markdown(
-        """
+        translate_text(
+            """
         <div class="disclaimer-banner">
             <div><strong>⚠️ Medical disclaimer</strong> This is an AI-assisted clinical workflow, not a clinical diagnosis tool. Please read the full disclaimer before continuing.</div>
         </div>
         """,
+            st.session_state.get("language", "English"),
+        ),
         unsafe_allow_html=True,
     )
 
-    with st.expander("Read the full medical disclaimer", expanded=False):
+    with st.expander(t("Read the full medical disclaimer"), expanded=False):
         st.markdown(
-            """
+            translate_text(
+                """
             <div class="disclaimer-text">
                 <strong>IMPORTANT NOTICE:</strong><br>
                 This diagnostic tool is designed to ASSIST and ENHANCE medical sciences.
@@ -1912,11 +1978,14 @@ if page == "profile":
                 <p>By proceeding, you acknowledge and accept full responsibility for your medical decisions and agree to consult with healthcare professionals regarding all diagnostic findings.</p>
             </div>
             """,
+                st.session_state.get("language", "English"),
+            ),
             unsafe_allow_html=True,
         )
 
     st.markdown(
-        f"""
+        translate_text(
+            f"""
         <div class="glass-card profile-card" id="profile-section">
             <div class="card-header"><span class="section-icon">👤</span> Patient profile</div>
             <div class="profile-row">
@@ -1942,6 +2011,8 @@ if page == "profile":
             </div>
         </div>
         """,
+            st.session_state.get("language", "English"),
+        ),
         unsafe_allow_html=True,
     )
 
@@ -1956,26 +2027,28 @@ if page == "profile":
     with col2:
         st.session_state.patient_age = str(
             st.number_input(
-                "🎂 Age",
+                t("🎂 Age"),
                 min_value=0,
                 max_value=130,
                 value=age_value,
                 step=1,
-                help="Enter the patient's age in years.",
+                help=t("Enter the patient's age in years."),
             )
         )
     with col3:
+        gender_options = ["", "Male", "Female"]
         st.session_state.patient_gender = st.selectbox(
-            "⚧ Gender",
-            ["", "Male", "Female"],
-            index=["", "Male", "Female"].index(st.session_state.patient_gender)
-            if st.session_state.patient_gender in ["", "Male", "Female"]
+            t("⚧ Gender"),
+            gender_options,
+            index=gender_options.index(st.session_state.patient_gender)
+            if st.session_state.patient_gender in gender_options
             else 0,
+            format_func=lambda value: t(value) if value else value,
         )
 
     st.markdown("---")
     st.checkbox(
-        "I have read and agree to the medical disclaimer",
+        t("I have read and agree to the medical disclaimer"),
         value=st.session_state.agree_disclaimer,
         key="agree_disclaimer",
     )
@@ -1983,10 +2056,10 @@ if page == "profile":
     with st.expander("Saved profiles", expanded=False):
         if st.session_state.saved_profiles:
             saved_labels = [f"{p['name']} · {p['age']} · {p['gender']}" for p in st.session_state.saved_profiles]
-            st.selectbox("Select a saved profile to load", [""] + saved_labels, key="selected_saved_profile")
-            st.button("Load saved profile", key="load_saved_profile", on_click=load_saved_profile)
+            st.selectbox(t("Select a saved profile to load"), [""] + saved_labels, key="selected_saved_profile")
+            st.button(t("Load saved profile"), key="load_saved_profile", on_click=load_saved_profile)
         else:
-            st.info("No saved profiles yet. Save the current profile after completing the form.")
+            st.info(t("No saved profiles yet. Save the current profile after completing the form."))
 
     profile_save_ready = bool(
         st.session_state.patient_name.strip()
@@ -2015,31 +2088,31 @@ if page == "profile":
             unsafe_allow_html=True,
         )
         if profile_save_ready:
-            st.info("You can still save this profile once the name, age, and gender are filled in.")
-        st.button("Reset profile", key="reset_profile", on_click=reset_profile)
+            st.info(t("You can still save this profile once the name, age, and gender are filled in."))
+        st.button(t("Reset profile"), key="reset_profile", on_click=reset_profile)
         render_footer()
         st.stop()
 
     col1, col2 = st.columns([3, 2])
     with col1:
         st.button(
-            "Begin Assessment",
+            t("Begin Assessment"),
             key="continue_to_analysis",
             on_click=continue_to_analysis,
             disabled=not valid_profile,
         )
     with col2:
         st.button(
-            "Save profile",
+            t("Save profile"),
             key="save_profile",
             on_click=save_profile,
             disabled=not profile_save_ready,
         )
 
     if st.session_state.profile_saved:
-        st.success("Profile saved successfully. You can load it later from Saved profiles.")
+        st.success(t("Profile saved successfully. You can load it later from Saved profiles."))
 
-    st.button("Reset profile", key="reset_profile", on_click=reset_profile)
+    st.button(t("Reset profile"), key="reset_profile", on_click=reset_profile)
     render_footer()
     st.stop()
 
@@ -2675,18 +2748,18 @@ def run_groq_chat_sync(prompt, model="openai/gpt-oss-120b"):
 
 if page == "chat":
     mode = st.session_state.get("chat_mode", "medical")
-    header = "Nirnay Clinical Advisor" if mode == "medical" else "Nirnay Rapid Triage"
+    header = t("Nirnay Clinical Advisor") if mode == "medical" else t("Nirnay Rapid Triage")
     subtitle = (
-        "Ask Nirnay a clinical question about this patient and receive a full assessment response."
+        t("Ask Nirnay a clinical question about this patient and receive a full assessment response.")
         if mode == "medical"
-        else "Ask a short clinical question and receive a focused triage recommendation."
+        else t("Ask a short clinical question and receive a focused triage recommendation.")
     )
     prompt_label = (
-        "Type your clinical question..."
+        t("Type your clinical question...")
         if mode == "medical"
-        else "Type your quick triage question..."
+        else t("Type your quick triage question...")
     )
-    send_label = "Ask Advisor" if mode == "medical" else "Ask Triage"
+    send_label = t("Ask Advisor") if mode == "medical" else t("Ask Triage")
     form_key = "nirnay_chat_form" if mode == "medical" else "nirnay_chat_alt_form"
     input_key = "nirnay_chat_prompt" if mode == "medical" else "nirnay_chat_prompt_alt"
 
@@ -2705,13 +2778,13 @@ if page == "chat":
     action_col, _ = st.columns([1, 2], gap="small")
     with action_col:
         st.button(
-            "🗑️ Clear Conversation",
+            t("🗑️ Clear Conversation"),
             key=f"clear_chat_{mode}_button",
             on_click=clear_chat_history,
             args=(mode,),
         )
         st.button(
-            "⬅️ Back to Analysis",
+            t("⬅️ Back to Analysis"),
             key=f"back_{mode}_button",
             on_click=back_to_analysis,
         )
@@ -2724,7 +2797,7 @@ if page == "chat":
     switch_col1, switch_col2 = st.columns([1, 1], gap="small")
     with switch_col1:
         st.button(
-            "Medical Assistant",
+            t("Medical Assistant"),
             key="chat_mode_med_button",
             disabled=mode == "medical",
             on_click=launch_chat,
@@ -2732,7 +2805,7 @@ if page == "chat":
         )
     with switch_col2:
         st.button(
-            "Quick Assistant",
+            t("Quick Assistant"),
             key="chat_mode_quick_button",
             disabled=mode == "quick",
             on_click=launch_chat,
