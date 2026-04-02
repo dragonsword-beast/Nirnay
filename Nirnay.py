@@ -3133,6 +3133,15 @@ if page == "analysis":
         unsafe_allow_html=True,
     )
     render_analysis_chat_styles()
+    st.selectbox(
+        "🌍 Preferred language for chatbot and UI guidance",
+        language_options,
+        index=language_options.index(st.session_state.language)
+        if st.session_state.language in language_options
+        else 0,
+        key="language",
+        help="Select your preferred language for AI responses and guidance across the workflow.",
+    )
     output = []  # Initialize output list
 
     # keep patient values local in analysis
