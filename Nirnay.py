@@ -189,6 +189,12 @@ st.markdown(
         gap: 0.85rem;
         margin-bottom: 1.75rem;
         padding: 0.75rem 0;
+        animation: stepperFadeIn 0.7s ease-out;
+    }}
+
+    @keyframes stepperFadeIn {{
+        from {{ opacity: 0; transform: translateY(-10px); }}
+        to {{ opacity: 1; transform: translateY(0); }}
     }}
 
     .stepper-step {{
@@ -199,7 +205,7 @@ st.markdown(
         padding: 0.9rem 1rem;
         border-radius: 18px;
         background: rgba(255,255,255,0.06);
-        border: 1px solid rgba(255,255,255,0.12);
+        border: 1.5px solid rgba(255,255,255,0.12);
         color: {surface_frost};
         font-weight: 700;
         font-size: 0.98rem;
@@ -564,14 +570,21 @@ st.markdown(
         display: grid;
         gap: 1.2rem;
         background: linear-gradient(180deg, rgba(8,18,33,0.98), rgba(15,33,57,0.95));
-        border: 1px solid rgba(79,209,197,0.16);
+        border: 2px solid rgba(79,209,197,0.24);
         border-radius: 32px;
         padding: 2.4rem;
         margin-bottom: 1.75rem;
-        box-shadow: 0 28px 70px rgba(0,0,0,0.28);
+        box-shadow: 0 28px 70px rgba(0,0,0,0.28), 0 0 60px rgba(79,209,197,0.08);
         max-width: 1000px;
         margin-left: auto;
         margin-right: auto;
+        backdrop-filter: blur(12px);
+        animation: heroSlideIn 0.8s ease-out;
+    }}
+
+    @keyframes heroSlideIn {{
+        from {{ opacity: 0; transform: translateY(20px); }}
+        to {{ opacity: 1; transform: translateY(0); }}
     }}
 
     .brand-header {{
@@ -709,13 +722,29 @@ st.markdown(
     }}
 
     .profile-card {{
-        background: rgba(255,255,255,0.05);
-        border: 1px solid rgba(255,255,255,0.12);
+        background: linear-gradient(135deg, rgba(10,24,45,0.92) 0%, rgba(15,32,55,0.88) 100%);
+        border: 1.5px solid rgba(79,209,197,0.18);
         border-radius: 28px;
         padding: 2rem;
         max-width: 980px;
         margin: 0 auto 1.75rem;
-        box-shadow: 0 26px 64px rgba(0,0,0,0.24);
+        box-shadow: 0 26px 64px rgba(0,0,0,0.24), inset 0 1px 0 rgba(255,255,255,0.08);
+        animation: cardFadeIn 0.6s ease-out;
+        position: relative;
+    }}
+
+    .profile-card::before {{
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 28px;
+        background: radial-gradient(circle at top right, rgba(79,209,197,0.05), transparent 60%);
+        pointer-events: none;
+    }}
+
+    @keyframes cardFadeIn {{
+        from {{ opacity: 0; transform: translateY(10px); }}
+        to {{ opacity: 1; transform: translateY(0); }}
     }}
 
     .profile-card .card-header {{
@@ -760,25 +789,44 @@ st.markdown(
         padding: 0.95rem 1.3rem !important;
         border-radius: 14px !important;
         font-size: 1rem !important;
-        font-weight: 600 !important;
-        letter-spacing: 0.01em !important;
-        transition: all 0.2s ease-in-out !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.02em !important;
+        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
         background: linear-gradient(135deg, #06264e 0%, #0d4f8b 100%) !important;
         color: #ffffff !important;
-        border: 1px solid rgba(255,255,255,0.16) !important;
-        box-shadow: 0 20px 40px rgba(5, 38, 78, 0.30) !important;
+        border: 1.5px solid rgba(79,209,197,0.24) !important;
+        box-shadow: 0 20px 40px rgba(5, 38, 78, 0.30), 0 0 30px rgba(79,209,197,0.1) !important;
         text-shadow: 0 1px 2px rgba(0,0,0,0.18) !important;
         cursor: pointer !important;
         transform: translateZ(0);
         backdrop-filter: blur(2px) !important;
+        position: relative;
+    }}
+
+    .stButton>button::before,
+    .stButton>div>button::before,
+    .stButton>div>div>button::before {{
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 14px;
+        background: linear-gradient(135deg, rgba(79,209,197,0.2), transparent);
+        opacity: 0;
+        transition: opacity 0.3s ease;
     }}
 
     .stButton>button:hover,
     .stButton>div>button:hover,
     .stButton>div>div>button:hover {{
         background: linear-gradient(135deg, #113f78 0%, #3b79b6 100%) !important;
-        box-shadow: 0 26px 54px rgba(15, 66, 110, 0.36) !important;
-        transform: translateY(-1px) scale(1.02) !important;
+        box-shadow: 0 30px 60px rgba(15, 66, 110, 0.4), 0 0 40px rgba(79,209,197,0.2) !important;
+        transform: translateY(-3px) scale(1.02) !important;
+    }}
+
+    .stButton>button:hover::before,
+    .stButton>div>button:hover::before,
+    .stButton>div>div>button:hover::before {{
+        opacity: 1;
     }}
 
     .stButton>button:active,
@@ -793,13 +841,13 @@ st.markdown(
     .stButton>button[disabled],
     .stButton>div>button[disabled],
     .stButton>div>div>button[disabled] {{
-        background: rgba(110,120,140,0.18) !important;
-        color: rgba(255,255,255,0.75) !important;
-        border: 1px solid rgba(255,255,255,0.08) !important;
+        background: rgba(110,120,140,0.12) !important;
+        color: rgba(255,255,255,0.5) !important;
+        border: 1.5px solid rgba(255,255,255,0.06) !important;
         box-shadow: none !important;
         cursor: not-allowed !important;
         transform: none !important;
-        opacity: 0.72 !important;
+        opacity: 0.6 !important;
         pointer-events: none !important;
     }}
 
@@ -816,10 +864,21 @@ st.markdown(
     select {{
         background-color: rgba(12, 24, 39, 0.92) !important;
         color: #ffffff !important;
-        border: 1px solid rgba(255,255,255,0.1) !important;
+        border: 1.5px solid rgba(79,209,197,0.16) !important;
         border-radius: 14px !important;
         padding: 1rem !important;
         font-size: 1rem !important;
+        transition: all 0.3s ease !important;
+    }}
+
+    .stTextInput>div>div>input:focus,
+    .stTextInput>div>div>div>input:focus,
+    div[data-testid="stTextInput"] input:focus,
+    div[data-testid="stNumberInput"] input:focus,
+    input[type="text"]:focus,
+    input[type="number"]:focus {{
+        border-color: rgba(79,209,197,0.4) !important;
+        box-shadow: 0 0 20px rgba(79,209,197,0.15) !important;
     }}
 
     input::placeholder,
@@ -853,13 +912,21 @@ st.markdown(
 
     .hero-metric {{
         padding: 0.8rem 1rem;
-        border-radius: 16px;
-        background: rgba(255,255,255,0.04);
-        border: 1px solid rgba(255,255,255,0.09);
+        border-radius: 18px;
+        background: rgba(255,255,255,0.06);
+        border: 1.5px solid rgba(79,209,197,0.16);
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 0.8rem;
+        transition: all 0.3s ease;
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 4px 12px rgba(0,0,0,0.12);
+    }}
+
+    .hero-metric:hover {{
+        background: rgba(79,209,197,0.08);
+        border-color: rgba(79,209,197,0.28);
+        transform: translateY(-1px);
     }}
 
     .hero-metric strong {{
@@ -882,14 +949,20 @@ st.markdown(
     }}
 
     .disclaimer-banner {{
-        background: rgba(255,255,255,0.08);
-        border: 1px solid rgba(255,255,255,0.14);
+        background: linear-gradient(135deg, rgba(255,193,7,0.08) 0%, rgba(220,38,38,0.08) 100%);
+        border: 1.5px solid rgba(255,193,7,0.24);
         border-radius: 22px;
-        padding: 1rem 1.15rem;
+        padding: 1.2rem 1.35rem;
         margin: 1rem 0 1.5rem;
         color: #f5f7fb;
-        line-height: 1.55;
-        box-shadow: 0 16px 32px rgba(0,0,0,0.14);
+        line-height: 1.6;
+        box-shadow: 0 16px 32px rgba(0,0,0,0.14), inset 0 1px 0 rgba(255,255,255,0.08);
+        animation: disclaimerSlide 0.6s ease-out 0.2s both;
+    }}
+
+    @keyframes disclaimerSlide {{
+        from {{ opacity: 0; transform: translateX(-10px); }}
+        to {{ opacity: 1; transform: translateX(0); }}
     }}
 
     .disclaimer-banner strong {{
@@ -1061,18 +1134,23 @@ st.markdown(
         display: block;
         width: 100%;
         color: #f5f7fb;
-        font-weight: 500;
-        background: rgba(255,255,255,0.03);
-        border: 1px solid rgba(255,255,255,0.08);
+        font-weight: 600;
+        background: rgba(255,255,255,0.05);
+        border: 1.5px solid rgba(79,209,197,0.16);
         border-radius: 14px;
-        padding: 0.85rem 1rem;
-        margin-bottom: 0.65rem;
-        transition: background 0.2s ease, transform 0.2s ease;
+        padding: 1rem 1.1rem;
+        margin-bottom: 0.75rem;
+        font-size: 0.98rem;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 4px 12px rgba(0,0,0,0.12);
     }}
 
     .stCheckbox>div>label:hover {{
-        background: rgba(79, 209, 197, 0.08);
+        background: rgba(79, 209, 197, 0.12);
+        border-color: rgba(79,209,197,0.28);
         transform: translateY(-1px);
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), 0 6px 16px rgba(79,209,197,0.1);
     }}
 
     .stTabs [data-baseweb="tab-list"] {{
@@ -1704,14 +1782,11 @@ st.markdown(
 
 def render_footer():
     st.markdown(
-        translate_text(
-            """
+        f"""
         <footer class="footer">
-            {footer_text}
+            {t('Created with passion by Aarko Batabyal & Saptak Bhattacharjee')}
         </footer>
-        """.format(footer_text=t("Created with passion by Aarko Batabyal & Saptak Bhattacharjee")),
-            st.session_state.get("language", "English"),
-        ),
+        """,
         unsafe_allow_html=True,
     )
 
@@ -2017,7 +2092,7 @@ if page == "profile":
             format_func=lambda value: t(value) if value else value,
         )
 
-    st.markdown("---")
+    st.divider()
     st.checkbox(
         t("I have read and agree to the medical disclaimer"),
         value=st.session_state.agree_disclaimer,
@@ -2047,13 +2122,15 @@ if page == "profile":
         st.markdown(
             translate_text(
                 f"""
-            <div style="background: linear-gradient(135deg, #eab308 0%, #dc2626 100%); 
-                        color: #e8f3fc; 
-                        padding: 1rem; 
-                        border-radius: 12px; 
+            <div style="background: linear-gradient(135deg, rgba(255,193,7,0.1) 0%, rgba(220,38,38,0.1) 100%); 
+                        color: #ffd54f; 
+                        padding: 1.2rem 1.25rem; 
+                        border-radius: 18px; 
                         text-align: center; 
-                        font-weight: 600; 
-                        margin: 1.2rem 0;">
+                        font-weight: 700;
+                        margin: 1.5rem 0;
+                        border: 1.5px solid rgba(255,193,7,0.24);
+                        box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 8px 24px rgba(255,193,7,0.1);">
                 ⚠️ {t('Complete the patient profile and disclaimer to continue.')}
             </div>
             """,
@@ -2083,10 +2160,11 @@ if page == "profile":
             disabled=not profile_save_ready,
         )
 
+    st.button(t("Reset profile"), key="reset_profile", on_click=reset_profile)
+    
     if st.session_state.profile_saved:
         st.success(t("Profile saved successfully. You can load it later from Saved profiles."))
-
-    st.button(t("Reset profile"), key="reset_profile", on_click=reset_profile)
+    
     render_footer()
     st.stop()
 
@@ -3179,7 +3257,6 @@ tab_names = [
 if "analysis_requested" not in st.session_state:
     st.session_state.analysis_requested = False
 
-# ------------ Analysis page -------------
 if page == "analysis":
     st.markdown("<div id='page-top'></div>", unsafe_allow_html=True)
     st.markdown(
@@ -3192,16 +3269,10 @@ if page == "analysis":
         """,
         unsafe_allow_html=True,
     )
-    output = []  # Initialize output list
-
-    # keep patient values local in analysis
+    output = []
     patient_name = st.session_state.patient_name or "Unknown"
     patient_age = st.session_state.patient_age or "N/A"
     patient_gender = st.session_state.patient_gender or "N/A"
-
-    if "chat_page" not in st.session_state:
-        st.session_state.chat_page = None
-
 
     st.markdown(
         translate_text(
@@ -3236,7 +3307,6 @@ if page == "analysis":
     )
 
     st.button(t("⬅️ Back to Profile"), key="back_to_profile", on_click=set_page, args=("profile",))
-    expander_placeholder = st.empty()
 
     def render_chat_options():
         st.markdown(
@@ -3284,19 +3354,16 @@ if page == "analysis":
     col1, col2 = st.columns([7, 3], gap="large")
     with col1:
         st.markdown(
-            translate_text(
-                f"""
+            f"""
             <div class='glass-card'>
                 <div class='card-header'><span class='section-icon'>🧩</span> {t('Intake dashboard')}</div>
                 <p class='profile-meta'>{t('Choose a category, enter your core data, and use the dashboard to generate concise insights.')}</p>
             </div>
             """,
-                st.session_state.get("language", "English"),
-            ),
             unsafe_allow_html=True,
         )
 
-        with expander_placeholder.expander(t("Clinical Intake Dashboard"), expanded=True):
+        with st.expander(t("Clinical Intake Dashboard"), expanded=True):
             tabs_objs = st.tabs([x[0] for x in tab_names])
             collected = {}
 
@@ -3323,15 +3390,12 @@ if page == "analysis":
             ) or bool(st.session_state.uploaded_images) or bool(st.session_state.manual_symptoms.strip())
 
         st.markdown(
-            translate_text(
-                f"""
+            f"""
             <div class='upload-panel panel-card'>
                 <div class='panel-title'>{t('Upload clinical images')}</div>
                 <p class='panel-subtitle'>{t('Drag and drop scans, photos, pathology images, or capture a photo directly from your camera for the AI-assisted review.')}</p>
             </div>
             """,
-                st.session_state.get("language", "English"),
-            ),
             unsafe_allow_html=True,
         )
 
@@ -3362,7 +3426,7 @@ if page == "analysis":
             st.session_state.uploaded_images = next_images
 
         if st.session_state.uploaded_images:
-            st.markdown(translate_text("**Preview uploaded images:**", st.session_state.get("language", "English")))
+            st.markdown("**Preview uploaded images:**")
             image_cols = st.columns(3)
             for idx, img in enumerate(st.session_state.uploaded_images):
                 with image_cols[idx % 3]:
@@ -3375,10 +3439,7 @@ if page == "analysis":
                     )
 
             st.markdown(
-                translate_text(
-                    f"<div class='hint-box'>{t('Uploaded {count} file(s) received. They will be included in the generated report.',).format(count=len(st.session_state.uploaded_images))}</div>",
-                    st.session_state.get("language", "English"),
-                ),
+                f"<div class='hint-box'>{t(f'Uploaded {len(st.session_state.uploaded_images)} file(s) received. They will be included in the generated report.')}</div>",
                 unsafe_allow_html=True,
             )
             st.button(t("Clear all uploaded images"), key="clear_uploaded_images", on_click=clear_uploaded_images)
@@ -3402,10 +3463,7 @@ if page == "analysis":
             )
 
         st.markdown(
-            translate_text(
-                "<div class='action-bar'><div class='action-copy'>{text}</div></div>".format(text=t("Primary action will activate once at least one clinical input, manual symptom text, or image is provided.")),
-                st.session_state.get("language", "English"),
-            ),
+            f"<div class='action-bar'><div class='action-copy'>{t('Primary action will activate once at least one clinical input, manual symptom text, or image is provided.')}</div></div>",
             unsafe_allow_html=True,
         )
         action_cols = st.columns([4, 2, 2], gap="large")
