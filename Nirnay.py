@@ -5,13 +5,19 @@ import base64
 import pathlib
 from groq import Groq
 
-logo_path = pathlib.Path(__file__).parent / "893a2625-aa76-4993-af22-650fd069b640-8.png"
-logo_data = base64.b64encode(logo_path.read_bytes()).decode("ascii")
-logo_html = f'<img class="brand-logo" src="data:image/png;base64,{logo_data}" alt="Nirnay logo" />'
+logo_png_path = pathlib.Path(__file__).resolve().parent / "893a2625-aa76-4993-af22-650fd069b640-8.png"
+def _load_logo_html(path: pathlib.Path, fallback_text: str = "Nirnay") -> str:
+    if path.exists():
+        data = base64.b64encode(path.read_bytes()).decode("ascii")
+        return f'<img class="brand-logo" src="data:image/png;base64,{data}" alt="Nirnay logo" />'
+    return f'<div class="brand-logo-fallback">{html.escape(fallback_text)}</div>'
+
+logo_html = _load_logo_html(logo_png_path)
+icon_path = str(logo_png_path) if logo_png_path.exists() else "nirnay.ico"
 
 st.set_page_config(
     page_title="Nirnay | Clinical Diagnostic Workflow",
-    page_icon="nirnay.ico",
+    page_icon=icon_path,
     layout="centered",
     initial_sidebar_state="collapsed"
 )
