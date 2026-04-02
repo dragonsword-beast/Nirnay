@@ -6,14 +6,18 @@ import pathlib
 from groq import Groq
 
 logo_png_path = pathlib.Path(__file__).resolve().parent / "893a2625-aa76-4993-af22-650fd069b640-8.png"
-def _load_logo_html(path: pathlib.Path, fallback_text: str = "Nirnay") -> str:
+logo_image_url = "https://cdn.creativefabrica.com/2020/07/17/Medicine-Logo-Graphics-4647232-1-580x386.jpg"
+
+def _load_logo_html(path: pathlib.Path, remote_url: str, fallback_text: str = "Nirnay") -> str:
     if path.exists():
         data = base64.b64encode(path.read_bytes()).decode("ascii")
         return f'<img class="brand-logo" src="data:image/png;base64,{data}" alt="Nirnay logo" />'
+    if remote_url:
+        return f'<img class="brand-logo" src="{html.escape(remote_url)}" alt="Nirnay logo" />'
     return f'<div class="brand-logo-fallback">{html.escape(fallback_text)}</div>'
 
-logo_html = _load_logo_html(logo_png_path)
-icon_path = str(logo_png_path) if logo_png_path.exists() else "nirnay.ico"
+logo_html = _load_logo_html(logo_png_path, logo_image_url)
+icon_path = logo_image_url if logo_image_url else (str(logo_png_path) if logo_png_path.exists() else "nirnay.ico")
 
 st.set_page_config(
     page_title="Nirnay | Clinical Diagnostic Workflow",
