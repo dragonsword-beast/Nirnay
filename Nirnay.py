@@ -1742,29 +1742,40 @@ if "language" not in st.session_state:
 
 
 def render_language_header(page_title: str = "Nirnay"):
-    col1, col2 = st.columns([5, 2], gap="small")
-    with col1:
-        st.markdown(
-            f"""
-            <div class='topbar'>
-                <div class='topbar-brand'>
-                    <h1 class='main-header'>{html.escape(page_title)}</h1>
-                    <p class='topbar-tagline'>Choose your preferred language for AI responses and page guidance.</p>
-                </div>
+    st.markdown(
+        f"""
+        <div class='topbar'>
+            <div class='topbar-brand'>
+                <h1 class='main-header'>{html.escape(page_title)}</h1>
+                <p class='topbar-tagline'>Choose your preferred language for AI responses and page guidance.</p>
             </div>
-            """,
-            unsafe_allow_html=True,
-        )
-    with col2:
-        st.selectbox(
-            "🌐 Language",
-            language_options,
-            index=language_options.index(st.session_state.language)
-            if st.session_state.language in language_options
-            else 0,
-            key="language",
-            help="Select the preferred language for the website and AI responses.",
-        )
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        """
+        <div class='language-widget'>
+            <div>
+                <strong>Page language</strong>
+                <span>Change UI and AI response language here</span>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+    st.selectbox(
+        "🌐 Language",
+        language_options,
+        index=language_options.index(st.session_state.language)
+        if st.session_state.language in language_options
+        else 0,
+        key="language",
+        help="Select the preferred language for the website and AI responses.",
+    )
+
+
+render_language_header("Nirnay")
 
 
 def set_page(target):
@@ -1846,7 +1857,6 @@ def launch_chat(mode=None):
 if page == "profile":
     # Mobile-first hero landing layout for the initial profile screen.
     st.markdown("<div id='page-top'></div>", unsafe_allow_html=True)
-    render_language_header("Nirnay Intake")
     st.markdown("<script>window.scrollTo({top:0,behavior:'auto'});</script>", unsafe_allow_html=True)
     st.markdown(f"""
         <div class="stepper">
@@ -2711,8 +2721,6 @@ if page == "chat":
         unsafe_allow_html=True,
     )
 
-    render_language_header("Nirnay Chat")
-
     switch_col1, switch_col2 = st.columns([1, 1], gap="small")
     with switch_col1:
         st.button(
@@ -3143,7 +3151,6 @@ if page == "analysis":
         """,
         unsafe_allow_html=True,
     )
-    render_language_header("Nirnay Analysis")
     output = []  # Initialize output list
 
     # keep patient values local in analysis
