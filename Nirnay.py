@@ -64,6 +64,10 @@ language_options = [
     "Hebrew",
 ]
 
+def translate_text(text: str, target_language: str) -> str:
+    return text
+
+
 def t(text: str) -> str:
     return text
 
@@ -795,35 +799,6 @@ st.markdown(
     input::placeholder,
     textarea::placeholder {{
         color: rgba(255,255,255,0.6) !important;
-    }}
-
-    .stCheckbox>div>label {{
-        display: block;
-        width: 100%;
-        color: #f5f7fb;
-        font-weight: 600;
-        background: rgba(255,255,255,0.04);
-        border: 1px solid rgba(255,255,255,0.08);
-        border-radius: 14px;
-        padding: 0.95rem 1rem;
-        margin-bottom: 0.75rem;
-        font-size: 0.98rem;
-    }}
-
-    .stCheckbox>div>label:hover {{
-        background: rgba(79, 209, 197, 0.1);
-        transform: translateY(-1px);
-    }}
-
-    .stTabs [data-baseweb="tab-list"] {{
-        background-color: rgba(18, 36, 55, 0.9);
-        border-radius: 16px;
-        padding: 0.55rem;
-        display: flex;
-        overflow-x: auto;
-        white-space: nowrap;
-        gap: 0.55rem;
-        -webkit-overflow-scrolling: touch;
     }}
 
     .hero-stat {{
@@ -1703,11 +1678,14 @@ st.markdown(
 
 def render_footer():
     st.markdown(
-        """
+        translate_text(
+            """
         <footer class="footer">
             {footer_text}
         </footer>
         """.format(footer_text=t("Created with passion by Aarko Batabyal & Saptak Bhattacharjee")),
+            st.session_state.get("language", "English"),
+        ),
         unsafe_allow_html=True,
     )
 
@@ -1758,7 +1736,8 @@ def render_language_header(page_title: str = "Nirnay"):
         unsafe_allow_html=True,
     )
     st.markdown(
-        """
+        translate_text(
+            """
         <div class='language-widget'>
             <div>
                 <strong>Page language</strong>
@@ -1766,6 +1745,8 @@ def render_language_header(page_title: str = "Nirnay"):
             </div>
         </div>
         """,
+            st.session_state.get("language", "English"),
+        ),
         unsafe_allow_html=True,
     )
     st.selectbox(
@@ -1863,7 +1844,8 @@ if page == "profile":
     st.markdown("<div id='page-top'></div>", unsafe_allow_html=True)
     st.markdown("<script>window.scrollTo({top:0,behavior:'auto'});</script>", unsafe_allow_html=True)
     st.markdown(
-        f"""
+        translate_text(
+            f"""
         <div class="stepper">
             <div class="stepper-step active"><span class="status">{t('Step 1 of 3')}</span>{t('Profile')}</div>
             <div class="stepper-step upcoming"><span class="status">{t('Next')}</span>{t('Analysis')}</div>
@@ -1888,21 +1870,27 @@ if page == "profile":
             </div>
         </div>
         """,
+            st.session_state.get("language", "English"),
+        ),
         unsafe_allow_html=True,
     )
 
     st.markdown(
-        """
+        translate_text(
+            """
         <div class="disclaimer-banner">
             <div><strong>⚠️ Medical disclaimer</strong> This is an AI-assisted clinical workflow, not a clinical diagnosis tool. Please read the full disclaimer before continuing.</div>
         </div>
         """,
+            st.session_state.get("language", "English"),
+        ),
         unsafe_allow_html=True,
     )
 
     with st.expander(t("Read the full medical disclaimer"), expanded=False):
         st.markdown(
-            """
+            translate_text(
+                """
             <div class="disclaimer-text">
                 <strong>IMPORTANT NOTICE:</strong><br>
                 This diagnostic tool is designed to ASSIST and ENHANCE medical sciences.
@@ -1917,11 +1905,14 @@ if page == "profile":
                 <p>By proceeding, you acknowledge and accept full responsibility for your medical decisions and agree to consult with healthcare professionals regarding all diagnostic findings.</p>
             </div>
             """,
+                st.session_state.get("language", "English"),
+            ),
             unsafe_allow_html=True,
         )
 
     st.markdown(
-        f"""
+        translate_text(
+            f"""
         <div class="glass-card profile-card" id="profile-section">
             <div class="card-header"><span class="section-icon">👤</span> {t('Patient profile')}</div>
             <div class="profile-row">
@@ -1947,6 +1938,8 @@ if page == "profile":
             </div>
         </div>
         """,
+            st.session_state.get("language", "English"),
+        ),
         unsafe_allow_html=True,
     )
 
@@ -2008,7 +2001,8 @@ if page == "profile":
 
     if not valid_profile:
         st.markdown(
-            f"""
+            translate_text(
+                f"""
             <div style="background: linear-gradient(135deg, #eab308 0%, #dc2626 100%); 
                         color: #e8f3fc; 
                         padding: 1rem; 
@@ -2019,6 +2013,8 @@ if page == "profile":
                 ⚠️ {t('Complete the patient profile and disclaimer to continue.')}
             </div>
             """,
+                st.session_state.get("language", "English"),
+            ),
             unsafe_allow_html=True,
         )
         if profile_save_ready:
@@ -3139,11 +3135,6 @@ tab_names = [
 if "analysis_requested" not in st.session_state:
     st.session_state.analysis_requested = False
 
-try:
-    expander_target = expander_placeholder
-except NameError:
-    expander_target = st.empty()
-
 # ------------ Analysis page -------------
 if page == "analysis":
     st.markdown("<div id='page-top'></div>", unsafe_allow_html=True)
@@ -3169,7 +3160,8 @@ if page == "analysis":
 
 
     st.markdown(
-        f"""
+        translate_text(
+            f"""
         <div class='dashboard-shell'>
             <div class='dashboard-top-grid'>
                 <div class='glass-card'>
@@ -3194,6 +3186,8 @@ if page == "analysis":
             </div>
         </div>
         """,
+            st.session_state.get("language", "English"),
+        ),
         unsafe_allow_html=True,
     )
 
@@ -3202,7 +3196,8 @@ if page == "analysis":
 
     def render_chat_options():
         st.markdown(
-            """
+            translate_text(
+                """
             <div class='assistant-experience-section'>
                 <div class='assistant-experience-header'>
                     <div class='assistant-experience-title'>""" + t("Choose Your AI Experience") + """</div>
@@ -3231,6 +3226,8 @@ if page == "analysis":
                 </div>
             </div>
             """,
+                st.session_state.get("language", "English"),
+            ),
             unsafe_allow_html=True,
         )
         button_cols = st.columns(2, gap="large")
@@ -3243,12 +3240,15 @@ if page == "analysis":
     col1, col2 = st.columns([7, 3], gap="large")
     with col1:
         st.markdown(
-            f"""
+            translate_text(
+                f"""
             <div class='glass-card'>
                 <div class='card-header'><span class='section-icon'>🧩</span> {t('Intake dashboard')}</div>
                 <p class='profile-meta'>{t('Choose a category, enter your core data, and use the dashboard to generate concise insights.')}</p>
             </div>
             """,
+                st.session_state.get("language", "English"),
+            ),
             unsafe_allow_html=True,
         )
 
@@ -3279,12 +3279,15 @@ if page == "analysis":
             ) or bool(st.session_state.uploaded_images) or bool(st.session_state.manual_symptoms.strip())
 
         st.markdown(
-            f"""
+            translate_text(
+                f"""
             <div class='upload-panel panel-card'>
                 <div class='panel-title'>{t('Upload clinical images')}</div>
                 <p class='panel-subtitle'>{t('Drag and drop scans, photos, pathology images, or capture a photo directly from your camera for the AI-assisted review.')}</p>
             </div>
             """,
+                st.session_state.get("language", "English"),
+            ),
             unsafe_allow_html=True,
         )
 
@@ -3315,7 +3318,7 @@ if page == "analysis":
             st.session_state.uploaded_images = next_images
 
         if st.session_state.uploaded_images:
-            st.markdown("**Preview uploaded images:**")
+            st.markdown(translate_text("**Preview uploaded images:**", st.session_state.get("language", "English")))
             image_cols = st.columns(3)
             for idx, img in enumerate(st.session_state.uploaded_images):
                 with image_cols[idx % 3]:
@@ -3328,7 +3331,10 @@ if page == "analysis":
                     )
 
             st.markdown(
-                f"<div class='hint-box'>{t('Uploaded {count} file(s) received. They will be included in the generated report.',).format(count=len(st.session_state.uploaded_images))}</div>",
+                translate_text(
+                    f"<div class='hint-box'>{t('Uploaded {count} file(s) received. They will be included in the generated report.',).format(count=len(st.session_state.uploaded_images))}</div>",
+                    st.session_state.get("language", "English"),
+                ),
                 unsafe_allow_html=True,
             )
             st.button(t("Clear all uploaded images"), key="clear_uploaded_images", on_click=clear_uploaded_images)
@@ -3344,12 +3350,18 @@ if page == "analysis":
 
         if manual_symptom_text:
             st.markdown(
-                f"<div class='hint-box'>{t('Manual symptom input captured. You can run analysis using symptom labels only.')}</div>",
+                translate_text(
+                    f"<div class='hint-box'>{t('Manual symptom input captured. You can run analysis using symptom labels only.')}</div>",
+                    st.session_state.get("language", "English"),
+                ),
                 unsafe_allow_html=True,
             )
 
         st.markdown(
-            "<div class='action-bar'><div class='action-copy'>{text}</div></div>".format(text=t("Primary action will activate once at least one clinical input, manual symptom text, or image is provided.")),
+            translate_text(
+                "<div class='action-bar'><div class='action-copy'>{text}</div></div>".format(text=t("Primary action will activate once at least one clinical input, manual symptom text, or image is provided.")),
+                st.session_state.get("language", "English"),
+            ),
             unsafe_allow_html=True,
         )
         action_cols = st.columns([4, 2, 2], gap="large")
@@ -3368,7 +3380,8 @@ if page == "analysis":
         if st.session_state.get("analysis_output", "").strip():
             report_text = st.session_state.analysis_output
             st.markdown(
-                f"""
+                translate_text(
+                    f"""
                 <div class='analysis-report-box'>
                     <div class='report-header'>
                         <div>
@@ -3378,6 +3391,8 @@ if page == "analysis":
                         <div class='report-badge'>{t('Ready')}</div>
                     </div>
                 """,
+                    st.session_state.get("language", "English"),
+                ),
                 unsafe_allow_html=True,
             )
             download_cols = st.columns([3, 1])
@@ -3392,12 +3407,15 @@ if page == "analysis":
             if st.session_state.get("uploaded_image_report", "").strip():
                 report_html = html.escape(st.session_state.uploaded_image_report).replace("\n", " ")
                 st.markdown(
-                    f"""
+                    translate_text(
+                        f"""
                     <div class='upload-report-hover'>
                         <span class='upload-report-trigger'>{t('Hover to view uploaded image report')}</span>
                         <div class='upload-report-card'>{report_html}</div>
                     </div>
                     """,
+                        st.session_state.get("language", "English"),
+                    ),
                     unsafe_allow_html=True,
                 )
             for line in report_text.splitlines():
@@ -3417,7 +3435,8 @@ if page == "analysis":
 
     with col2:
         st.markdown(
-            f"""
+            translate_text(
+                f"""
             <div class='assistant-panel sticky'>
                 <div class='assistant-title'>{t('AI Assistant')}</div>
                 <div class='assistant-chip-row'>
@@ -3439,6 +3458,8 @@ if page == "analysis":
                 </div>
             </div>
             """,
+                st.session_state.get("language", "English"),
+            ),
             unsafe_allow_html=True,
         )
         render_chat_options()
