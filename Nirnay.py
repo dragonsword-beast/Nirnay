@@ -20,6 +20,50 @@ def _load_logo_html(path: pathlib.Path, remote_url: str, fallback_text: str = "N
 logo_html = _load_logo_html(logo_png_path, logo_image_url)
 icon_path = logo_image_url if logo_image_url else (str(logo_png_path) if logo_png_path.exists() else "nirnay.ico")
 
+language_options = [
+    "English",
+    "Hindi",
+    "Bengali",
+    "Telugu",
+    "Marathi",
+    "Tamil",
+    "Urdu",
+    "Gujarati",
+    "Kannada",
+    "Malayalam",
+    "Odia",
+    "Punjabi",
+    "Assamese",
+    "Maithili",
+    "Konkani",
+    "Sindhi",
+    "Nepali",
+    "Sanskrit",
+    "Bodo",
+    "Dogri",
+    "Kashmiri",
+    "Arabic",
+    "Chinese (Simplified)",
+    "Chinese (Traditional)",
+    "Spanish",
+    "French",
+    "German",
+    "Russian",
+    "Portuguese",
+    "Japanese",
+    "Korean",
+    "Italian",
+    "Dutch",
+    "Turkish",
+    "Swahili",
+    "Indonesian",
+    "Vietnamese",
+    "Thai",
+    "Malay",
+    "Persian",
+    "Hebrew",
+]
+
 st.set_page_config(
     page_title="Nirnay | Clinical Diagnostic Workflow",
     page_icon=icon_path,
@@ -1693,6 +1737,8 @@ if "uploaded_image_report" not in st.session_state:
     st.session_state.uploaded_image_report = ""
 if "manual_symptoms" not in st.session_state:
     st.session_state.manual_symptoms = ""
+if "language" not in st.session_state:
+    st.session_state.language = "English"
 
 def set_page(target):
     st.session_state.page = target
@@ -1851,6 +1897,10 @@ if page == "profile":
                     <strong>Saved workflows</strong>
                     <span>{len(st.session_state.saved_profiles)} saved profiles</span>
                 </div>
+                <div class="metric-pill">
+                    <strong>Preferred language</strong>
+                    <span>{st.session_state.language or 'English'}</span>
+                </div>
             </div>
         </div>
         """,
@@ -1884,6 +1934,15 @@ if page == "profile":
             if st.session_state.patient_gender in ["", "Male", "Female"]
             else 0,
         )
+
+    st.session_state.language = st.selectbox(
+        "🌐 Preferred language for chatbot responses",
+        language_options,
+        index=language_options.index(st.session_state.language)
+        if st.session_state.language in language_options
+        else 0,
+        help="Select your preferred language for AI responses and communication.",
+    )
 
     st.markdown("---")
     st.checkbox(
@@ -2366,6 +2425,13 @@ def clear_chat_history(mode=None):
         st.experimental_rerun()
 
 
+def get_language_instruction():
+    language = st.session_state.get("language", "English") or "English"
+    if language.lower().startswith("english"):
+        return ""
+    return f"Respond in {language}. Use that language for all user-facing responses."
+
+
 def handle_chat_submit(input_key, mode):
     if not st.session_state.get(input_key, "").strip():
         st.session_state.chat_warning = "Please enter a question before sending."
@@ -2406,11 +2472,14 @@ def handle_chat_submit(input_key, mode):
             else:
                 client = Groq()
 
+            language_instruction = get_language_instruction()
             system_prompt = (
-            "You are a medical assistant. Provide general medical information only, not medical advice. Answer in clear, complete points and full sentences. Avoid using tables. Prefer numbered or bulleted lists when summarizing symptoms, causes, or steps. Do not truncate the reply; complete the answer fully. Always remind users to consult a qualified healthcare provider for final clinical decisions."
-            if mode == "medical"
-            else "You are a medical assistant. Answer briefly and compactly in 1-2 short sentences. Provide general medical information only, not medical advice. Always remind users to consult a qualified healthcare provider for final clinical decisions."
-        )
+                "You are a medical assistant. Provide general medical information only, not medical advice. Answer in clear, complete points and full sentences. Avoid using tables. Prefer numbered or bulleted lists when summarizing symptoms, causes, or steps. Do not truncate the reply; complete the answer fully. Always remind users to consult a qualified healthcare provider for final clinical decisions."
+                if mode == "medical"
+                else "You are a medical assistant. Answer briefly and compactly in 1-2 short sentences. Provide general medical information only, not medical advice. Always remind users to consult a qualified healthcare provider for final clinical decisions."
+            )
+            if language_instruction:
+                system_prompt = f"{system_prompt} {language_instruction}"
 
         completion = client.chat.completions.create(
             model="openai/gpt-oss-120b",
@@ -2419,7 +2488,7 @@ def handle_chat_submit(input_key, mode):
                 {"role": "user", "content": prompt_text},
             ],
             max_completion_tokens=2048 if mode == "medical" else 420,
-            temperature=0.4,
+            temperature=0.6,
             stream=False,
         )
 
@@ -2623,6 +2692,16 @@ if page == "chat":
         unsafe_allow_html=True,
     )
 
+    st.selectbox(
+        "🌍 Chat response language",
+        language_options,
+        index=language_options.index(st.session_state.language)
+        if st.session_state.language in language_options
+        else 0,
+        key="language",
+        help="Change the preferred language for chatbot replies.",
+    )
+
     switch_col1, switch_col2 = st.columns([1, 1], gap="small")
     with switch_col1:
         st.button(
@@ -2648,6 +2727,8 @@ if page == "chat":
         context_items.append(f"Age: {st.session_state.patient_age}")
     if st.session_state.get("patient_gender"):
         context_items.append(f"Gender: {st.session_state.patient_gender}")
+    if st.session_state.get("language"):
+        context_items.append(f"Language: {st.session_state.language}")
     if st.session_state.get("uploaded_images"):
         context_items.append(f"Uploaded files: {len(st.session_state.uploaded_images)}")
     if context_items:
