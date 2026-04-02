@@ -1694,18 +1694,6 @@ if "uploaded_image_report" not in st.session_state:
 if "manual_symptoms" not in st.session_state:
     st.session_state.manual_symptoms = ""
 
-if "last_button_click" not in st.session_state:
-    st.session_state.last_button_click = {"key": None, "time": 0.0}
-
-def click_debounced(key, threshold=0.8):
-    now = time.time()
-    last = st.session_state.last_button_click
-    if last.get("key") == key and now - last.get("time", 0.0) < threshold:
-        return False
-    st.session_state.last_button_click = {"key": key, "time": now}
-    return True
-
-
 def set_page(target):
     st.session_state.page = target
     if hasattr(st, "experimental_rerun"):
@@ -2394,8 +2382,7 @@ def handle_chat_submit(input_key, mode):
     if st.session_state.get("patient_gender"):
         patient_context_parts.append(f"Patient gender: {st.session_state.patient_gender}.")
     if st.session_state.get("uploaded_images"):
-        file_names = ", ".join([img.name for img in st.session_state.uploaded_images])
-        patient_context_parts.append(f"Uploaded clinical image files: {file_names}.")
+        patient_context_parts.append("Clinical imaging is available for this patient.")
 
     if patient_context_parts:
         prompt_text = " ".join(patient_context_parts) + " Question: " + prompt_text
@@ -2469,34 +2456,16 @@ def parse_float(val):
         return None
 
 
-def infer_image_context(filename):
-    lower_name = filename.lower()
-    if any(term in lower_name for term in ["wound", "ulcer", "lesion", "skin", "derm", "dermatology"]):
-        return "Wound / dermatology image"
-    if any(term in lower_name for term in ["xray", "x-ray", "chest", "radiograph", "radiography"]):
-        return "X-ray image"
-    if any(term in lower_name for term in ["ct", "ctscan", "ct-scan", "computed tomography"]):
-        return "CT scan image"
-    if any(term in lower_name for term in ["mri", "magnetic resonance", "mr"]):
-        return "MRI image"
-    if any(term in lower_name for term in ["ultrasound", "us", "sonogram"]):
-        return "Ultrasound image"
-    return "Clinical image"
-
-
 def generate_uploaded_image_insights(uploaded_images, patient_name, patient_age, patient_gender):
     if not uploaded_images:
         return []
 
-    files_description = "\n".join(
-        [f"- {img.type or 'unknown'} image, {img.size // 1024} KB" for img in uploaded_images]
-    )
     prompt = (
         f"Patient: {patient_name or 'Unknown'}, Age: {patient_age or 'N/A'}, Gender: {patient_gender or 'N/A'}. "
-        f"{len(uploaded_images)} clinical image file(s) were uploaded with the following metadata:\n{files_description}\n\n"
-        "Suggest the most likely imaging context and possible findings to review without asking any clinical questions. "
-        "Do not infer any diagnosis or finding from the filename or filename-like labels. "
-        "Do not include any prefix about metadata, file size, or image source. "
+        "One or more clinical images were provided for review. "
+        "Provide a concise analysis of likely findings visible from the images using only the available context. "
+        "Do not mention the image type, file names, metadata details, or file count. "
+        "Do not infer any diagnosis from the filename or filename-like labels. "
         "Present the response as a single concise paragraph."
     )
 
@@ -2524,92 +2493,16 @@ def generate_uploaded_image_insights(uploaded_images, patient_name, patient_age,
 
 
 def summarize_uploaded_files(uploaded_images, patient_name, patient_age, patient_gender):
-    summary = ["\n=== 📷 UPLOADED IMAGE REVIEW ==="]
-    for img in uploaded_images:
-        context = infer_image_context(img.name)
-        summary.append(
-            f"[INFO] {context} attached ({img.type or 'unknown'}, {img.size // 1024} KB)."
-        )
+    summary = ["\n=== 📷 IMAGE REVIEW ==="]
+    summary.append("[INFO] Clinical image analysis has been included in this report.")
 
     ai_text = generate_uploaded_image_insights(uploaded_images, patient_name, patient_age, patient_gender)
     st.session_state.uploaded_image_report = ai_text
     if ai_text:
         summary.append(f"[INFO] {ai_text}")
 
-    summary.append("[INFO] Review the attached files for visual findings and compare them with the clinical data entered.")
+    summary.append("[INFO] Review the analysis and correlate with the clinical data entered.")
     return summary
-
-
-def suggest_analysis_followup_questions(collected):
-    question_map = [
-        (
-            "🧪 Metabolism",
-            collected["🧪 Metabolism"],
-            "Add glucose metrics, lipid markers, or classic diabetes symptoms such as thirst, polyuria, or slow wound healing.",
-        ),
-        (
-            "❤️ Cardiac",
-            collected["❤️ Cardiac"],
-            "Add blood pressure, troponin, BNP, or chest pain/shortness of breath symptoms.",
-        ),
-        (
-            "🧬 Oncology",
-            collected["🧬 Oncology"],
-            "Add mass size, weight loss, lymph node changes, tumor marker values, or new systemic symptoms.",
-        ),
-        (
-            "🧠 Neurology",
-            collected["🧠 Neurology"],
-            "Add headaches, weakness, sensory changes, seizures, dizziness, or focal deficit details.",
-        ),
-        (
-            "👩 Gynecology",
-            collected["👩 Gynecology"],
-            "Add menstrual changes, pelvic pain, discharge, infertility symptoms, or gynecologic exam findings.",
-        ),
-        (
-            "🛡️ Immunology",
-            collected["🛡️ Immunology"],
-            "Add autoimmune markers, recurrent infection history, rashes, joint pain, or lymph node findings.",
-        ),
-        (
-            "🦋 Endocrinology",
-            collected["🦋 Endocrinology"],
-            "Add thyroid labs, cortisol/PTH levels, metabolic symptoms, or hormone-related complaints.",
-        ),
-        (
-            "👶 Pediatric",
-            collected["👶 Pediatric"],
-            "Add growth measures, developmental milestones, feeding issues, fever, or respiratory symptoms.",
-        ),
-        (
-            "🧴 Dermatology",
-            collected["🧴 Dermatology"],
-            "Add rash description, lesion size, itching, scaling, or ulcer characteristics.",
-        ),
-        (
-            "🧠 Psychiatry",
-            collected["🧠 Psychiatry"],
-            "Add mood, anxiety, sleep, cognitive impairment, or suicide risk details.",
-        ),
-        (
-            "💧 Nephrology",
-            collected["💧 Nephrology"],
-            "Add kidney labs, urine changes, edema, blood in urine, or fluid balance concerns.",
-        ),
-        (
-            "🩸 Hematology",
-            collected["🩸 Hematology"],
-            "Add hemoglobin, platelet or white count values, bleeding, bruising, or lymphadenopathy symptoms.",
-        ),
-    ]
-    followups = []
-    for label, section, prompt in question_map:
-        if not has_data(section.values()):
-            followups.append(f"{label}: {prompt}")
-    if not followups:
-        followups.append("If you want a more precise report, add more measurements or symptoms in the relevant tabs and upload any available imaging.")
-    return followups
 
 
 def chunked(values, size):
@@ -2652,48 +2545,6 @@ def val(entry_key, dict_obj):
     if entry_key in dict_obj:
         return dict_obj[entry_key]
     return None
-
-
-def put_message(txt):
-    st.write(txt)
-
-
-def run_groq_chat(prompt, model="openai/gpt-oss-120b"):
-    client = Groq()
-    messages = [
-        {
-            "role": "system",
-            "content": (
-                "You are Nirnay, a professional medical diagnostic assistant. "
-                "Provide concise, clinically responsible guidance and remind users to consult a qualified healthcare provider."
-            ),
-        },
-        {"role": "user", "content": prompt},
-    ]
-
-    completion = client.chat.completions.create(
-        model=model,
-        messages=messages,
-        temperature=1,
-        max_completion_tokens=8192,
-        top_p=1,
-        reasoning_effort="medium",
-        stream=True,
-        stop=None,
-    )
-
-    response = ""
-    for chunk in completion:
-        delta = ""
-        try:
-            delta = chunk.choices[0].delta.content or ""
-        except Exception:
-            try:
-                delta = chunk.choices[0].delta.get("content", "") or ""
-            except Exception:
-                delta = ""
-        response += delta
-        yield response
 
 
 def run_groq_chat_sync(prompt, model="openai/gpt-oss-120b"):
