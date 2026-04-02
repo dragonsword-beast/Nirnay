@@ -20,60 +20,8 @@ def _load_logo_html(path: pathlib.Path, remote_url: str, fallback_text: str = "N
 logo_html = _load_logo_html(logo_png_path, logo_image_url)
 icon_path = logo_image_url if logo_image_url else (str(logo_png_path) if logo_png_path.exists() else "nirnay.ico")
 
-language_options = [
-    "English",
-    "Hindi",
-    "Bengali",
-    "Telugu",
-    "Marathi",
-    "Tamil",
-    "Urdu",
-    "Gujarati",
-    "Kannada",
-    "Malayalam",
-    "Odia",
-    "Punjabi",
-    "Assamese",
-    "Maithili",
-    "Konkani",
-    "Sindhi",
-    "Nepali",
-    "Sanskrit",
-    "Bodo",
-    "Dogri",
-    "Kashmiri",
-    "Arabic",
-    "Chinese (Simplified)",
-    "Chinese (Traditional)",
-    "Spanish",
-    "French",
-    "German",
-    "Russian",
-    "Portuguese",
-    "Japanese",
-    "Korean",
-    "Italian",
-    "Dutch",
-    "Turkish",
-    "Swahili",
-    "Indonesian",
-    "Vietnamese",
-    "Thai",
-    "Malay",
-    "Persian",
-    "Hebrew",
-]
-
-def translate_text(text: str, target_language: str) -> str:
-    return text
-
-
-def t(text: str) -> str:
-    return text
-
-
 st.set_page_config(
-    page_title=t("Nirnay | Clinical Diagnostic Workflow"),
+    page_title="Nirnay | Clinical Diagnostic Workflow",
     page_icon=icon_path,
     layout="centered",
     initial_sidebar_state="collapsed"
@@ -151,36 +99,10 @@ st.markdown(
         gap: 0.8rem;
         margin-bottom: 1rem;
         padding: 0.8rem 1rem;
-        background: rgba(255,255,255,0.08);
-        border: 1px solid rgba(255,255,255,0.16);
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.1);
         border-radius: 18px;
-        box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 3px 12px rgba(0,0,0,0.2);
-        position: sticky;
-        top: 0;
-        z-index: 120;
-        backdrop-filter: blur(8px);
-    }}
-
-    .topbar-actions {{
-        display: flex;
-        gap: 0.55rem;
-        align-items: center;
-    }}
-
-    .nav-btn {{
-        color: #ffffff;
-        background: linear-gradient(135deg, #27c8f1 0%, #1761c1 100%);
-        border: none;
-        border-radius: 999px;
-        padding: 0.45rem 0.85rem;
-        cursor: pointer;
-        font-weight: 700;
-        font-size: 0.9rem;
-    }}
-
-    .nav-btn:hover {{
-        box-shadow: 0 0 12px rgba(37, 200, 241, 0.45);
-        transform: translateY(-1px);
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
     }}
 
     .stepper {{
@@ -189,12 +111,6 @@ st.markdown(
         gap: 0.85rem;
         margin-bottom: 1.75rem;
         padding: 0.75rem 0;
-        animation: stepperFadeIn 0.7s ease-out;
-    }}
-
-    @keyframes stepperFadeIn {{
-        from {{ opacity: 0; transform: translateY(-10px); }}
-        to {{ opacity: 1; transform: translateY(0); }}
     }}
 
     .stepper-step {{
@@ -205,7 +121,7 @@ st.markdown(
         padding: 0.9rem 1rem;
         border-radius: 18px;
         background: rgba(255,255,255,0.06);
-        border: 1.5px solid rgba(255,255,255,0.12);
+        border: 1px solid rgba(255,255,255,0.12);
         color: {surface_frost};
         font-weight: 700;
         font-size: 0.98rem;
@@ -570,21 +486,14 @@ st.markdown(
         display: grid;
         gap: 1.2rem;
         background: linear-gradient(180deg, rgba(8,18,33,0.98), rgba(15,33,57,0.95));
-        border: 2px solid rgba(79,209,197,0.24);
+        border: 1px solid rgba(79,209,197,0.16);
         border-radius: 32px;
         padding: 2.4rem;
         margin-bottom: 1.75rem;
-        box-shadow: 0 28px 70px rgba(0,0,0,0.28), 0 0 60px rgba(79,209,197,0.08);
+        box-shadow: 0 28px 70px rgba(0,0,0,0.28);
         max-width: 1000px;
         margin-left: auto;
         margin-right: auto;
-        backdrop-filter: blur(12px);
-        animation: heroSlideIn 0.8s ease-out;
-    }}
-
-    @keyframes heroSlideIn {{
-        from {{ opacity: 0; transform: translateY(20px); }}
-        to {{ opacity: 1; transform: translateY(0); }}
     }}
 
     .brand-header {{
@@ -722,29 +631,13 @@ st.markdown(
     }}
 
     .profile-card {{
-        background: linear-gradient(135deg, rgba(10,24,45,0.92) 0%, rgba(15,32,55,0.88) 100%);
-        border: 1.5px solid rgba(79,209,197,0.18);
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.12);
         border-radius: 28px;
         padding: 2rem;
         max-width: 980px;
         margin: 0 auto 1.75rem;
-        box-shadow: 0 26px 64px rgba(0,0,0,0.24), inset 0 1px 0 rgba(255,255,255,0.08);
-        animation: cardFadeIn 0.6s ease-out;
-        position: relative;
-    }}
-
-    .profile-card::before {{
-        content: '';
-        position: absolute;
-        inset: 0;
-        border-radius: 28px;
-        background: radial-gradient(circle at top right, rgba(79,209,197,0.05), transparent 60%);
-        pointer-events: none;
-    }}
-
-    @keyframes cardFadeIn {{
-        from {{ opacity: 0; transform: translateY(10px); }}
-        to {{ opacity: 1; transform: translateY(0); }}
+        box-shadow: 0 26px 64px rgba(0,0,0,0.24);
     }}
 
     .profile-card .card-header {{
@@ -789,44 +682,25 @@ st.markdown(
         padding: 0.95rem 1.3rem !important;
         border-radius: 14px !important;
         font-size: 1rem !important;
-        font-weight: 700 !important;
-        letter-spacing: 0.02em !important;
-        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+        font-weight: 600 !important;
+        letter-spacing: 0.01em !important;
+        transition: all 0.2s ease-in-out !important;
         background: linear-gradient(135deg, #06264e 0%, #0d4f8b 100%) !important;
         color: #ffffff !important;
-        border: 1.5px solid rgba(79,209,197,0.24) !important;
-        box-shadow: 0 20px 40px rgba(5, 38, 78, 0.30), 0 0 30px rgba(79,209,197,0.1) !important;
+        border: 1px solid rgba(255,255,255,0.16) !important;
+        box-shadow: 0 20px 40px rgba(5, 38, 78, 0.30) !important;
         text-shadow: 0 1px 2px rgba(0,0,0,0.18) !important;
         cursor: pointer !important;
         transform: translateZ(0);
         backdrop-filter: blur(2px) !important;
-        position: relative;
-    }}
-
-    .stButton>button::before,
-    .stButton>div>button::before,
-    .stButton>div>div>button::before {{
-        content: '';
-        position: absolute;
-        inset: 0;
-        border-radius: 14px;
-        background: linear-gradient(135deg, rgba(79,209,197,0.2), transparent);
-        opacity: 0;
-        transition: opacity 0.3s ease;
     }}
 
     .stButton>button:hover,
     .stButton>div>button:hover,
     .stButton>div>div>button:hover {{
         background: linear-gradient(135deg, #113f78 0%, #3b79b6 100%) !important;
-        box-shadow: 0 30px 60px rgba(15, 66, 110, 0.4), 0 0 40px rgba(79,209,197,0.2) !important;
-        transform: translateY(-3px) scale(1.02) !important;
-    }}
-
-    .stButton>button:hover::before,
-    .stButton>div>button:hover::before,
-    .stButton>div>div>button:hover::before {{
-        opacity: 1;
+        box-shadow: 0 26px 54px rgba(15, 66, 110, 0.36) !important;
+        transform: translateY(-1px) scale(1.02) !important;
     }}
 
     .stButton>button:active,
@@ -841,13 +715,13 @@ st.markdown(
     .stButton>button[disabled],
     .stButton>div>button[disabled],
     .stButton>div>div>button[disabled] {{
-        background: rgba(110,120,140,0.12) !important;
-        color: rgba(255,255,255,0.5) !important;
-        border: 1.5px solid rgba(255,255,255,0.06) !important;
+        background: rgba(110,120,140,0.18) !important;
+        color: rgba(255,255,255,0.75) !important;
+        border: 1px solid rgba(255,255,255,0.08) !important;
         box-shadow: none !important;
         cursor: not-allowed !important;
         transform: none !important;
-        opacity: 0.6 !important;
+        opacity: 0.72 !important;
         pointer-events: none !important;
     }}
 
@@ -864,26 +738,44 @@ st.markdown(
     select {{
         background-color: rgba(12, 24, 39, 0.92) !important;
         color: #ffffff !important;
-        border: 1.5px solid rgba(79,209,197,0.16) !important;
+        border: 1px solid rgba(255,255,255,0.1) !important;
         border-radius: 14px !important;
         padding: 1rem !important;
         font-size: 1rem !important;
-        transition: all 0.3s ease !important;
-    }}
-
-    .stTextInput>div>div>input:focus,
-    .stTextInput>div>div>div>input:focus,
-    div[data-testid="stTextInput"] input:focus,
-    div[data-testid="stNumberInput"] input:focus,
-    input[type="text"]:focus,
-    input[type="number"]:focus {{
-        border-color: rgba(79,209,197,0.4) !important;
-        box-shadow: 0 0 20px rgba(79,209,197,0.15) !important;
     }}
 
     input::placeholder,
     textarea::placeholder {{
         color: rgba(255,255,255,0.6) !important;
+    }}
+
+    .stCheckbox>div>label {{
+        display: block;
+        width: 100%;
+        color: #f5f7fb;
+        font-weight: 600;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 14px;
+        padding: 0.95rem 1rem;
+        margin-bottom: 0.75rem;
+        font-size: 0.98rem;
+    }}
+
+    .stCheckbox>div>label:hover {{
+        background: rgba(79, 209, 197, 0.1);
+        transform: translateY(-1px);
+    }}
+
+    .stTabs [data-baseweb="tab-list"] {{
+        background-color: rgba(18, 36, 55, 0.9);
+        border-radius: 16px;
+        padding: 0.55rem;
+        display: flex;
+        overflow-x: auto;
+        white-space: nowrap;
+        gap: 0.55rem;
+        -webkit-overflow-scrolling: touch;
     }}
 
     .hero-stat {{
@@ -912,21 +804,13 @@ st.markdown(
 
     .hero-metric {{
         padding: 0.8rem 1rem;
-        border-radius: 18px;
-        background: rgba(255,255,255,0.06);
-        border: 1.5px solid rgba(79,209,197,0.16);
+        border-radius: 16px;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.09);
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 0.8rem;
-        transition: all 0.3s ease;
-        box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 4px 12px rgba(0,0,0,0.12);
-    }}
-
-    .hero-metric:hover {{
-        background: rgba(79,209,197,0.08);
-        border-color: rgba(79,209,197,0.28);
-        transform: translateY(-1px);
     }}
 
     .hero-metric strong {{
@@ -949,20 +833,14 @@ st.markdown(
     }}
 
     .disclaimer-banner {{
-        background: linear-gradient(135deg, rgba(255,193,7,0.08) 0%, rgba(220,38,38,0.08) 100%);
-        border: 1.5px solid rgba(255,193,7,0.24);
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.14);
         border-radius: 22px;
-        padding: 1.2rem 1.35rem;
+        padding: 1rem 1.15rem;
         margin: 1rem 0 1.5rem;
         color: #f5f7fb;
-        line-height: 1.6;
-        box-shadow: 0 16px 32px rgba(0,0,0,0.14), inset 0 1px 0 rgba(255,255,255,0.08);
-        animation: disclaimerSlide 0.6s ease-out 0.2s both;
-    }}
-
-    @keyframes disclaimerSlide {{
-        from {{ opacity: 0; transform: translateX(-10px); }}
-        to {{ opacity: 1; transform: translateX(0); }}
+        line-height: 1.55;
+        box-shadow: 0 16px 32px rgba(0,0,0,0.14);
     }}
 
     .disclaimer-banner strong {{
@@ -1134,23 +1012,18 @@ st.markdown(
         display: block;
         width: 100%;
         color: #f5f7fb;
-        font-weight: 600;
-        background: rgba(255,255,255,0.05);
-        border: 1.5px solid rgba(79,209,197,0.16);
+        font-weight: 500;
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.08);
         border-radius: 14px;
-        padding: 1rem 1.1rem;
-        margin-bottom: 0.75rem;
-        font-size: 0.98rem;
-        transition: all 0.3s ease;
-        cursor: pointer;
-        box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 4px 12px rgba(0,0,0,0.12);
+        padding: 0.85rem 1rem;
+        margin-bottom: 0.65rem;
+        transition: background 0.2s ease, transform 0.2s ease;
     }}
 
     .stCheckbox>div>label:hover {{
-        background: rgba(79, 209, 197, 0.12);
-        border-color: rgba(79,209,197,0.28);
+        background: rgba(79, 209, 197, 0.08);
         transform: translateY(-1px);
-        box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), 0 6px 16px rgba(79,209,197,0.1);
     }}
 
     .stTabs [data-baseweb="tab-list"] {{
@@ -1782,9 +1655,9 @@ st.markdown(
 
 def render_footer():
     st.markdown(
-        f"""
+        """
         <footer class="footer">
-            {t('Created with passion by Aarko Batabyal & Saptak Bhattacharjee')}
+            Created with passion by Aarko Batabyal & Saptak Bhattacharjee
         </footer>
         """,
         unsafe_allow_html=True,
@@ -1820,63 +1693,17 @@ if "uploaded_image_report" not in st.session_state:
     st.session_state.uploaded_image_report = ""
 if "manual_symptoms" not in st.session_state:
     st.session_state.manual_symptoms = ""
-if "language" not in st.session_state:
-    st.session_state.language = "English"
 
+if "last_button_click" not in st.session_state:
+    st.session_state.last_button_click = {"key": None, "time": 0.0}
 
-def render_language_header(page_title: str = "Nirnay"):
-    st.markdown(
-        f"""
-        <div class='topbar'>
-            <div class='topbar-brand'>
-                <h1 class='main-header'>{html.escape(page_title)}</h1>
-                <p class='topbar-tagline'>{html.escape(t('Choose your preferred language for AI responses. UI stays in English.'))}</p>
-            </div>
-            <div class='topbar-actions'>
-                <button class='nav-btn' onclick="window.location.reload();">Refresh View</button>
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    # Page navigation quick access, improves UX by reducing scroll friction
-    col1, col2, col3, col4 = st.columns([1, 1, 1, 2])
-    with col1:
-        st.button(t("Profile"), key="nav_profile", on_click=set_page, args=("profile",))
-    with col2:
-        st.button(t("Analysis"), key="nav_analysis", on_click=set_page, args=("analysis",))
-    with col3:
-        st.button(t("Chat"), key="nav_chat", on_click=set_page, args=("chat",))
-    with col4:
-        st.markdown(
-            f"<div class='language-widget'><strong>AI response language:</strong> {html.escape(st.session_state.get('language', 'English'))}</div>",
-            unsafe_allow_html=True,
-        )
-
-    st.markdown(
-        translate_text(
-            """
-        <div class='language-widget'>
-            <div>
-                <strong>AI response language</strong>
-                <span>Change AI response language here (UI remains English)</span>
-            </div>
-        </div>
-        """,
-            st.session_state.get("language", "English"),
-        ),
-        unsafe_allow_html=True,
-    )
-    st.selectbox(
-        "🌐 Language",
-        language_options,
-        index=language_options.index(st.session_state.language)
-        if st.session_state.language in language_options
-        else 0,
-        key="language",
-        help="Select the preferred language for the website and AI responses.",
-    )
+def click_debounced(key, threshold=0.8):
+    now = time.time()
+    last = st.session_state.last_button_click
+    if last.get("key") == key and now - last.get("time", 0.0) < threshold:
+        return False
+    st.session_state.last_button_click = {"key": key, "time": now}
+    return True
 
 
 def set_page(target):
@@ -1953,63 +1780,52 @@ def launch_chat(mode=None):
     st.session_state.chat_mode = mode
     st.session_state.page = "chat"
 
-
-render_language_header("Nirnay")
-
 # ------------ Disclaimer -------------
 
 if page == "profile":
     # Mobile-first hero landing layout for the initial profile screen.
     st.markdown("<div id='page-top'></div>", unsafe_allow_html=True)
     st.markdown("<script>window.scrollTo({top:0,behavior:'auto'});</script>", unsafe_allow_html=True)
-    st.markdown(
-        translate_text(
-            f"""
+    st.markdown(f"""
         <div class="stepper">
-            <div class="stepper-step active"><span class="status">{t('Step 1 of 3')}</span>{t('Profile')}</div>
-            <div class="stepper-step upcoming"><span class="status">{t('Next')}</span>{t('Analysis')}</div>
-            <div class="stepper-step upcoming"><span class="status">{t('Future')}</span>{t('Chat')}</div>
+            <div class="stepper-step active"><span class="status">Step 1 of 3</span>Profile</div>
+            <div class="stepper-step upcoming"><span class="status">Next</span>Analysis</div>
+            <div class="stepper-step upcoming"><span class="status">Future</span>Chat</div>
         </div>
         <div class="site-hero">
             <div class="brand-header">
                 {logo_html}
                 <div class="brand-copy">
                     <h1 class="main-header">Nirnay</h1>
-                    <p class="subtitle">{t("World's Hope, Health's Future")}</p>
+                    <p class="subtitle">World's Hope, Health's Future</p>
                 </div>
             </div>
             <div class="hero-actions">
-                <a class="hero-primary-cta" href="#profile-section">{t('Start Assessment')}</a>
-                <a class="hero-secondary-cta" href="#profile-section">{t('Review patient intake')}</a>
+                <a class="hero-primary-cta" href="#profile-section">Start Assessment</a>
+                <a class="hero-secondary-cta" href="#profile-section">Review patient intake</a>
             </div>
             <div class="hero-trust-row">
-                <div class="hero-trust-item">🤖 {t('AI-assisted, not a doctor')}</div>
-                <div class="hero-trust-item">🔒 {t('Secure by design')}</div>
-                <div class="hero-trust-item">⚡ {t('Fast clinical workflow')}</div>
+                <div class="hero-trust-item">🤖 AI-assisted, not a doctor</div>
+                <div class="hero-trust-item">🔒 Secure by design</div>
+                <div class="hero-trust-item">⚡ Fast clinical workflow</div>
             </div>
         </div>
         """,
-            st.session_state.get("language", "English"),
-        ),
         unsafe_allow_html=True,
     )
 
     st.markdown(
-        translate_text(
-            """
+        """
         <div class="disclaimer-banner">
             <div><strong>⚠️ Medical disclaimer</strong> This is an AI-assisted clinical workflow, not a clinical diagnosis tool. Please read the full disclaimer before continuing.</div>
         </div>
         """,
-            st.session_state.get("language", "English"),
-        ),
         unsafe_allow_html=True,
     )
 
-    with st.expander(t("Read the full medical disclaimer"), expanded=False):
+    with st.expander("Read the full medical disclaimer", expanded=False):
         st.markdown(
-            translate_text(
-                """
+            """
             <div class="disclaimer-text">
                 <strong>IMPORTANT NOTICE:</strong><br>
                 This diagnostic tool is designed to ASSIST and ENHANCE medical sciences.
@@ -2024,41 +1840,32 @@ if page == "profile":
                 <p>By proceeding, you acknowledge and accept full responsibility for your medical decisions and agree to consult with healthcare professionals regarding all diagnostic findings.</p>
             </div>
             """,
-                st.session_state.get("language", "English"),
-            ),
             unsafe_allow_html=True,
         )
 
     st.markdown(
-        translate_text(
-            f"""
+        f"""
         <div class="glass-card profile-card" id="profile-section">
-            <div class="card-header"><span class="section-icon">👤</span> {t('Patient profile')}</div>
+            <div class="card-header"><span class="section-icon">👤</span> Patient profile</div>
             <div class="profile-row">
                 <div>
-                    <div class="profile-name">{t('Patient intake')}</div>
-                    <div class="profile-meta">{t("Complete the patient's core details to launch the diagnostic workup.")}</div>
-                    <div class="status-badge">{t('Ready to assess')}</div>
+                    <div class="profile-name">Patient intake</div>
+                    <div class="profile-meta">Complete the patient's core details to launch the diagnostic workup.</div>
+                    <div class="status-badge">Ready to assess</div>
                 </div>
             </div>
             <div class="metrics-grid">
                 <div class="metric-pill">
-                    <strong>{t('Profile readiness')}</strong>
-                    <span>{t('Complete') if st.session_state.patient_name and st.session_state.patient_age and st.session_state.patient_gender else t('Pending details')}</span>
+                    <strong>Profile readiness</strong>
+                    <span>{'Complete' if st.session_state.patient_name and st.session_state.patient_age and st.session_state.patient_gender else 'Pending details'}</span>
                 </div>
                 <div class="metric-pill">
-                    <strong>{t('Saved workflows')}</strong>
-                    <span>{len(st.session_state.saved_profiles)} {t('saved profiles')}</span>
-                </div>
-                <div class="metric-pill">
-                    <strong>{t('Preferred language')}</strong>
-                    <span>{st.session_state.language or t('English')}</span>
+                    <strong>Saved workflows</strong>
+                    <span>{len(st.session_state.saved_profiles)} saved profiles</span>
                 </div>
             </div>
         </div>
         """,
-            st.session_state.get("language", "English"),
-        ),
         unsafe_allow_html=True,
     )
 
@@ -2066,46 +1873,44 @@ if page == "profile":
     col1, col2, col3 = st.columns(3)
     with col1:
         st.session_state.patient_name = st.text_input(
-            t("👤 Full name"),
+            "👤 Full name",
             value=st.session_state.patient_name,
-            placeholder=t("e.g. Priya Sharma"),
+            placeholder="e.g. Priya Sharma",
         )
     with col2:
         st.session_state.patient_age = str(
             st.number_input(
-                t("🎂 Age"),
+                "🎂 Age",
                 min_value=0,
                 max_value=130,
                 value=age_value,
                 step=1,
-                help=t("Enter the patient's age in years."),
+                help="Enter the patient's age in years.",
             )
         )
     with col3:
-        gender_options = ["", "Male", "Female"]
         st.session_state.patient_gender = st.selectbox(
-            t("⚧ Gender"),
-            gender_options,
-            index=gender_options.index(st.session_state.patient_gender)
-            if st.session_state.patient_gender in gender_options
+            "⚧ Gender",
+            ["", "Male", "Female"],
+            index=["", "Male", "Female"].index(st.session_state.patient_gender)
+            if st.session_state.patient_gender in ["", "Male", "Female"]
             else 0,
-            format_func=lambda value: t(value) if value else value,
         )
 
-    st.divider()
+    st.markdown("---")
     st.checkbox(
-        t("I have read and agree to the medical disclaimer"),
+        "I have read and agree to the medical disclaimer",
         value=st.session_state.agree_disclaimer,
         key="agree_disclaimer",
     )
 
-    with st.expander(t("Saved profiles"), expanded=False):
+    with st.expander("Saved profiles", expanded=False):
         if st.session_state.saved_profiles:
             saved_labels = [f"{p['name']} · {p['age']} · {p['gender']}" for p in st.session_state.saved_profiles]
-            st.selectbox(t("Select a saved profile to load"), [""] + saved_labels, key="selected_saved_profile")
-            st.button(t("Load saved profile"), key="load_saved_profile", on_click=load_saved_profile)
+            st.selectbox("Select a saved profile to load", [""] + saved_labels, key="selected_saved_profile")
+            st.button("Load saved profile", key="load_saved_profile", on_click=load_saved_profile)
         else:
-            st.info(t("No saved profiles yet. Save the current profile after completing the form."))
+            st.info("No saved profiles yet. Save the current profile after completing the form.")
 
     profile_save_ready = bool(
         st.session_state.patient_name.strip()
@@ -2120,51 +1925,45 @@ if page == "profile":
 
     if not valid_profile:
         st.markdown(
-            translate_text(
-                f"""
-            <div style="background: linear-gradient(135deg, rgba(255,193,7,0.1) 0%, rgba(220,38,38,0.1) 100%); 
-                        color: #ffd54f; 
-                        padding: 1.2rem 1.25rem; 
-                        border-radius: 18px; 
+            f"""
+            <div style="background: linear-gradient(135deg, #eab308 0%, #dc2626 100%); 
+                        color: #e8f3fc; 
+                        padding: 1rem; 
+                        border-radius: 12px; 
                         text-align: center; 
-                        font-weight: 700;
-                        margin: 1.5rem 0;
-                        border: 1.5px solid rgba(255,193,7,0.24);
-                        box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 8px 24px rgba(255,193,7,0.1);">
-                ⚠️ {t('Complete the patient profile and disclaimer to continue.')}
+                        font-weight: 600; 
+                        margin: 1.2rem 0;">
+                ⚠️ Complete the patient profile and disclaimer to continue.
             </div>
             """,
-                st.session_state.get("language", "English"),
-            ),
             unsafe_allow_html=True,
         )
         if profile_save_ready:
-            st.info(t("You can still save this profile once the name, age, and gender are filled in."))
-        st.button(t("Reset profile"), key="reset_profile", on_click=reset_profile)
+            st.info("You can still save this profile once the name, age, and gender are filled in.")
+        st.button("Reset profile", key="reset_profile", on_click=reset_profile)
         render_footer()
         st.stop()
 
     col1, col2 = st.columns([3, 2])
     with col1:
         st.button(
-            t("Begin Assessment"),
+            "Begin Assessment",
             key="continue_to_analysis",
             on_click=continue_to_analysis,
             disabled=not valid_profile,
         )
     with col2:
         st.button(
-            t("Save profile"),
+            "Save profile",
             key="save_profile",
             on_click=save_profile,
             disabled=not profile_save_ready,
         )
 
-    st.button(t("Reset profile"), key="reset_profile", on_click=reset_profile)
-    
     if st.session_state.profile_saved:
-        st.success(t("Profile saved successfully. You can load it later from Saved profiles."))
-    
+        st.success("Profile saved successfully. You can load it later from Saved profiles.")
+
+    st.button("Reset profile", key="reset_profile", on_click=reset_profile)
     render_footer()
     st.stop()
 
@@ -2579,16 +2378,9 @@ def clear_chat_history(mode=None):
         st.experimental_rerun()
 
 
-def get_language_instruction():
-    language = st.session_state.get("language", "English") or "English"
-    if language.lower().startswith("english"):
-        return ""
-    return f"Respond in {language}. Use that language for all user-facing responses."
-
-
 def handle_chat_submit(input_key, mode):
     if not st.session_state.get(input_key, "").strip():
-        st.session_state.chat_warning = t("Please enter a question before sending.")
+        st.session_state.chat_warning = "Please enter a question before sending."
         st.session_state.chat_error = ""
         return
 
@@ -2602,7 +2394,8 @@ def handle_chat_submit(input_key, mode):
     if st.session_state.get("patient_gender"):
         patient_context_parts.append(f"Patient gender: {st.session_state.patient_gender}.")
     if st.session_state.get("uploaded_images"):
-        patient_context_parts.append("Clinical imaging is available for this patient.")
+        file_names = ", ".join([img.name for img in st.session_state.uploaded_images])
+        patient_context_parts.append(f"Uploaded clinical image files: {file_names}.")
 
     if patient_context_parts:
         prompt_text = " ".join(patient_context_parts) + " Question: " + prompt_text
@@ -2620,20 +2413,17 @@ def handle_chat_submit(input_key, mode):
         "time": time.time(),
     }
     try:
-        with st.spinner(t("Generating response from Nirnay...")):
+        with st.spinner("Generating response from Nirnay..."):
             if "GROQ_API_KEY" in st.secrets:
                 client = Groq(api_key=st.secrets["GROQ_API_KEY"])
             else:
                 client = Groq()
 
-            language_instruction = get_language_instruction()
             system_prompt = (
-                "You are a medical assistant. Provide general medical information only, not medical advice. Answer in clear, complete points and full sentences. Avoid using tables. Prefer numbered or bulleted lists when summarizing symptoms, causes, or steps. Do not truncate the reply; complete the answer fully. Always remind users to consult a qualified healthcare provider for final clinical decisions."
-                if mode == "medical"
-                else "You are a medical assistant. Answer briefly and compactly in 1-2 short sentences. Provide general medical information only, not medical advice. Always remind users to consult a qualified healthcare provider for final clinical decisions."
-            )
-            if language_instruction:
-                system_prompt = f"{system_prompt} {language_instruction}"
+            "You are a medical assistant. Provide general medical information only, not medical advice. Answer in clear, complete points and full sentences. Avoid using tables. Prefer numbered or bulleted lists when summarizing symptoms, causes, or steps. Do not truncate the reply; complete the answer fully. Always remind users to consult a qualified healthcare provider for final clinical decisions."
+            if mode == "medical"
+            else "You are a medical assistant. Answer briefly and compactly in 1-2 short sentences. Provide general medical information only, not medical advice. Always remind users to consult a qualified healthcare provider for final clinical decisions."
+        )
 
         completion = client.chat.completions.create(
             model="openai/gpt-oss-120b",
@@ -2642,7 +2432,7 @@ def handle_chat_submit(input_key, mode):
                 {"role": "user", "content": prompt_text},
             ],
             max_completion_tokens=2048 if mode == "medical" else 420,
-            temperature=0.6,
+            temperature=0.4,
             stream=False,
         )
 
@@ -2679,16 +2469,34 @@ def parse_float(val):
         return None
 
 
+def infer_image_context(filename):
+    lower_name = filename.lower()
+    if any(term in lower_name for term in ["wound", "ulcer", "lesion", "skin", "derm", "dermatology"]):
+        return "Wound / dermatology image"
+    if any(term in lower_name for term in ["xray", "x-ray", "chest", "radiograph", "radiography"]):
+        return "X-ray image"
+    if any(term in lower_name for term in ["ct", "ctscan", "ct-scan", "computed tomography"]):
+        return "CT scan image"
+    if any(term in lower_name for term in ["mri", "magnetic resonance", "mr"]):
+        return "MRI image"
+    if any(term in lower_name for term in ["ultrasound", "us", "sonogram"]):
+        return "Ultrasound image"
+    return "Clinical image"
+
+
 def generate_uploaded_image_insights(uploaded_images, patient_name, patient_age, patient_gender):
     if not uploaded_images:
         return []
 
+    files_description = "\n".join(
+        [f"- {img.type or 'unknown'} image, {img.size // 1024} KB" for img in uploaded_images]
+    )
     prompt = (
         f"Patient: {patient_name or 'Unknown'}, Age: {patient_age or 'N/A'}, Gender: {patient_gender or 'N/A'}. "
-        "One or more clinical images were provided for review. "
-        "Provide a concise analysis of likely findings visible from the images using only the available context. "
-        "Do not mention the image type, file names, metadata details, or file count. "
-        "Do not infer any diagnosis from the filename or filename-like labels. "
+        f"{len(uploaded_images)} clinical image file(s) were uploaded with the following metadata:\n{files_description}\n\n"
+        "Suggest the most likely imaging context and possible findings to review without asking any clinical questions. "
+        "Do not infer any diagnosis or finding from the filename or filename-like labels. "
+        "Do not include any prefix about metadata, file size, or image source. "
         "Present the response as a single concise paragraph."
     )
 
@@ -2716,16 +2524,92 @@ def generate_uploaded_image_insights(uploaded_images, patient_name, patient_age,
 
 
 def summarize_uploaded_files(uploaded_images, patient_name, patient_age, patient_gender):
-    summary = ["\n=== 📷 IMAGE REVIEW ==="]
-    summary.append("[INFO] Clinical image analysis has been included in this report.")
+    summary = ["\n=== 📷 UPLOADED IMAGE REVIEW ==="]
+    for img in uploaded_images:
+        context = infer_image_context(img.name)
+        summary.append(
+            f"[INFO] {context} attached ({img.type or 'unknown'}, {img.size // 1024} KB)."
+        )
 
     ai_text = generate_uploaded_image_insights(uploaded_images, patient_name, patient_age, patient_gender)
     st.session_state.uploaded_image_report = ai_text
     if ai_text:
         summary.append(f"[INFO] {ai_text}")
 
-    summary.append("[INFO] Review the analysis and correlate with the clinical data entered.")
+    summary.append("[INFO] Review the attached files for visual findings and compare them with the clinical data entered.")
     return summary
+
+
+def suggest_analysis_followup_questions(collected):
+    question_map = [
+        (
+            "🧪 Metabolism",
+            collected["🧪 Metabolism"],
+            "Add glucose metrics, lipid markers, or classic diabetes symptoms such as thirst, polyuria, or slow wound healing.",
+        ),
+        (
+            "❤️ Cardiac",
+            collected["❤️ Cardiac"],
+            "Add blood pressure, troponin, BNP, or chest pain/shortness of breath symptoms.",
+        ),
+        (
+            "🧬 Oncology",
+            collected["🧬 Oncology"],
+            "Add mass size, weight loss, lymph node changes, tumor marker values, or new systemic symptoms.",
+        ),
+        (
+            "🧠 Neurology",
+            collected["🧠 Neurology"],
+            "Add headaches, weakness, sensory changes, seizures, dizziness, or focal deficit details.",
+        ),
+        (
+            "👩 Gynecology",
+            collected["👩 Gynecology"],
+            "Add menstrual changes, pelvic pain, discharge, infertility symptoms, or gynecologic exam findings.",
+        ),
+        (
+            "🛡️ Immunology",
+            collected["🛡️ Immunology"],
+            "Add autoimmune markers, recurrent infection history, rashes, joint pain, or lymph node findings.",
+        ),
+        (
+            "🦋 Endocrinology",
+            collected["🦋 Endocrinology"],
+            "Add thyroid labs, cortisol/PTH levels, metabolic symptoms, or hormone-related complaints.",
+        ),
+        (
+            "👶 Pediatric",
+            collected["👶 Pediatric"],
+            "Add growth measures, developmental milestones, feeding issues, fever, or respiratory symptoms.",
+        ),
+        (
+            "🧴 Dermatology",
+            collected["🧴 Dermatology"],
+            "Add rash description, lesion size, itching, scaling, or ulcer characteristics.",
+        ),
+        (
+            "🧠 Psychiatry",
+            collected["🧠 Psychiatry"],
+            "Add mood, anxiety, sleep, cognitive impairment, or suicide risk details.",
+        ),
+        (
+            "💧 Nephrology",
+            collected["💧 Nephrology"],
+            "Add kidney labs, urine changes, edema, blood in urine, or fluid balance concerns.",
+        ),
+        (
+            "🩸 Hematology",
+            collected["🩸 Hematology"],
+            "Add hemoglobin, platelet or white count values, bleeding, bruising, or lymphadenopathy symptoms.",
+        ),
+    ]
+    followups = []
+    for label, section, prompt in question_map:
+        if not has_data(section.values()):
+            followups.append(f"{label}: {prompt}")
+    if not followups:
+        followups.append("If you want a more precise report, add more measurements or symptoms in the relevant tabs and upload any available imaging.")
+    return followups
 
 
 def chunked(values, size):
@@ -2770,6 +2654,48 @@ def val(entry_key, dict_obj):
     return None
 
 
+def put_message(txt):
+    st.write(txt)
+
+
+def run_groq_chat(prompt, model="openai/gpt-oss-120b"):
+    client = Groq()
+    messages = [
+        {
+            "role": "system",
+            "content": (
+                "You are Nirnay, a professional medical diagnostic assistant. "
+                "Provide concise, clinically responsible guidance and remind users to consult a qualified healthcare provider."
+            ),
+        },
+        {"role": "user", "content": prompt},
+    ]
+
+    completion = client.chat.completions.create(
+        model=model,
+        messages=messages,
+        temperature=1,
+        max_completion_tokens=8192,
+        top_p=1,
+        reasoning_effort="medium",
+        stream=True,
+        stop=None,
+    )
+
+    response = ""
+    for chunk in completion:
+        delta = ""
+        try:
+            delta = chunk.choices[0].delta.content or ""
+        except Exception:
+            try:
+                delta = chunk.choices[0].delta.get("content", "") or ""
+            except Exception:
+                delta = ""
+        response += delta
+        yield response
+
+
 def run_groq_chat_sync(prompt, model="openai/gpt-oss-120b"):
     client = Groq()
     messages = [
@@ -2800,18 +2726,18 @@ def run_groq_chat_sync(prompt, model="openai/gpt-oss-120b"):
 
 if page == "chat":
     mode = st.session_state.get("chat_mode", "medical")
-    header = t("Nirnay Clinical Advisor") if mode == "medical" else t("Nirnay Rapid Triage")
+    header = "Nirnay Clinical Advisor" if mode == "medical" else "Nirnay Rapid Triage"
     subtitle = (
-        t("Ask Nirnay a clinical question about this patient and receive a full assessment response.")
+        "Ask Nirnay a clinical question about this patient and receive a full assessment response."
         if mode == "medical"
-        else t("Ask a short clinical question and receive a focused triage recommendation.")
+        else "Ask a short clinical question and receive a focused triage recommendation."
     )
     prompt_label = (
-        t("Type your clinical question...")
+        "Type your clinical question..."
         if mode == "medical"
-        else t("Type your quick triage question...")
+        else "Type your quick triage question..."
     )
-    send_label = t("Ask Advisor") if mode == "medical" else t("Ask Triage")
+    send_label = "Ask Advisor" if mode == "medical" else "Ask Triage"
     form_key = "nirnay_chat_form" if mode == "medical" else "nirnay_chat_alt_form"
     input_key = "nirnay_chat_prompt" if mode == "medical" else "nirnay_chat_prompt_alt"
 
@@ -2830,13 +2756,13 @@ if page == "chat":
     action_col, _ = st.columns([1, 2], gap="small")
     with action_col:
         st.button(
-            t("🗑️ Clear Conversation"),
+            "🗑️ Clear Conversation",
             key=f"clear_chat_{mode}_button",
             on_click=clear_chat_history,
             args=(mode,),
         )
         st.button(
-            t("⬅️ Back to Analysis"),
+            "⬅️ Back to Analysis",
             key=f"back_{mode}_button",
             on_click=back_to_analysis,
         )
@@ -2849,7 +2775,7 @@ if page == "chat":
     switch_col1, switch_col2 = st.columns([1, 1], gap="small")
     with switch_col1:
         st.button(
-            t("Medical Assistant"),
+            "Medical Assistant",
             key="chat_mode_med_button",
             disabled=mode == "medical",
             on_click=launch_chat,
@@ -2857,7 +2783,7 @@ if page == "chat":
         )
     with switch_col2:
         st.button(
-            t("Quick Assistant"),
+            "Quick Assistant",
             key="chat_mode_quick_button",
             disabled=mode == "quick",
             on_click=launch_chat,
@@ -2866,38 +2792,37 @@ if page == "chat":
 
     context_items = []
     if st.session_state.get("patient_name"):
-        context_items.append(f"{t('Patient')}: {st.session_state.patient_name}")
+        context_items.append(f"Patient: {st.session_state.patient_name}")
     if st.session_state.get("patient_age"):
-        context_items.append(f"{t('Age')}: {st.session_state.patient_age}")
+        context_items.append(f"Age: {st.session_state.patient_age}")
     if st.session_state.get("patient_gender"):
-        context_items.append(f"{t('Gender')}: {st.session_state.patient_gender}")
-    if st.session_state.get("language"):
-        context_items.append(f"{t('Language')}: {st.session_state.language}")
+        context_items.append(f"Gender: {st.session_state.patient_gender}")
     if st.session_state.get("uploaded_images"):
-        context_items.append(f"{t('Uploaded files')}: {len(st.session_state.uploaded_images)}")
+        context_items.append(f"Uploaded files: {len(st.session_state.uploaded_images)}")
     if context_items:
         st.markdown(
-                f"<div class='hint-box'><strong>{t('Session context')}:</strong> {html.escape(' · '.join(context_items))}</div>",
+            f"<div class='hint-box'><strong>Session context:</strong> {html.escape(' · '.join(context_items))}</div>",
+            unsafe_allow_html=True,
         )
 
     st.markdown(
         "<div class='chat-prompt-panel'>"
-        + f"<span class='chat-prompt-chip'>{t('What are the key red flags for this symptom?')}</span>"
-        + f"<span class='chat-prompt-chip'>{t('How should I interpret these lab values?')}</span>"
-        + f"<span class='chat-prompt-chip'>{t('List the top 3 differential diagnoses.')}</span>"
-        + f"<span class='chat-prompt-chip'>{t('What next test is most useful?')}</span>"
+        + "<span class='chat-prompt-chip'>What are the key red flags for this symptom?</span>"
+        + "<span class='chat-prompt-chip'>How should I interpret these lab values?</span>"
+        + "<span class='chat-prompt-chip'>List the top 3 differential diagnoses.</span>"
+        + "<span class='chat-prompt-chip'>What next test is most useful?</span>"
         + "</div>",
         unsafe_allow_html=True,
     )
 
     suggestion_texts = [
-        t("What are the most urgent concerns for this patient?"),
-        t("Which findings need immediate follow-up?"),
-        t("What additional tests are recommended next?"),
+        "What are the most urgent concerns for this patient?",
+        "Which findings need immediate follow-up?",
+        "What additional tests are recommended next?",
     ] if mode == "medical" else [
-        t("Summarize the main concern in one sentence."),
-        t("Give a quick next step for this presentation."),
-        t("What is the likely diagnosis?"),
+        "Summarize the main concern in one sentence.",
+        "Give a quick next step for this presentation.",
+        "What is the likely diagnosis?",
     ]
     suggestion_cols = st.columns(len(suggestion_texts), gap="small")
     for idx, suggestion in enumerate(suggestion_texts):
@@ -2926,7 +2851,7 @@ if page == "chat":
             )
     else:
         welcome_text = (
-            t("Hello! I'm Nirnay. Ask me any clinical question to begin.") if mode == "medical" else t("Hello! I'm Quick Nirnay. Ask me a short clinical question for a compact answer.")
+            "Hello! I'm Nirnay. Ask me any clinical question to begin." if mode == "medical" else "Hello! I'm Quick Nirnay. Ask me a short clinical question for a compact answer."
         )
         st.markdown(
             f"<div class='bubble assistant'>{html.escape(welcome_text)}</div>",
@@ -3257,113 +3182,121 @@ tab_names = [
 if "analysis_requested" not in st.session_state:
     st.session_state.analysis_requested = False
 
+try:
+    expander_target = expander_placeholder
+except NameError:
+    expander_target = st.empty()
+
+# ------------ Analysis page -------------
 if page == "analysis":
     st.markdown("<div id='page-top'></div>", unsafe_allow_html=True)
     st.markdown(
-        f"""
+        """
         <div class="stepper">
-            <div class="stepper-step">{t('1. Profile')}</div>
-            <div class="stepper-step active">{t('2. Analysis')}</div>
-            <div class="stepper-step">{t('3. Chat')}</div>
+            <div class="stepper-step">1. Profile</div>
+            <div class="stepper-step active">2. Analysis</div>
+            <div class="stepper-step">3. Chat</div>
         </div>
         """,
         unsafe_allow_html=True,
     )
-    output = []
+    render_analysis_chat_styles()
+    output = []  # Initialize output list
+
+    # keep patient values local in analysis
     patient_name = st.session_state.patient_name or "Unknown"
     patient_age = st.session_state.patient_age or "N/A"
     patient_gender = st.session_state.patient_gender or "N/A"
 
+    if "chat_page" not in st.session_state:
+        st.session_state.chat_page = None
+
+
     st.markdown(
-        translate_text(
-            f"""
+        f"""
         <div class='dashboard-shell'>
             <div class='dashboard-top-grid'>
                 <div class='glass-card'>
-                    <div class='card-header'><span class='section-icon'>📊</span> {t('Insights console')}</div>
+                    <div class='card-header'><span class='section-icon'>📊</span> Insights console</div>
                     <div class='profile-row'>
                         <div class='avatar'></div>
                         <div>
                             <div class='profile-name'>{patient_name}</div>
-                            <div class='profile-meta'>{t('Age')}: {patient_age} · {t('Gender')}: {patient_gender}</div>
-                            <div class='status-badge'>{t('Active')}</div>
+                            <div class='profile-meta'>Age: {patient_age} · Gender: {patient_gender}</div>
+                            <div class='status-badge'>Active</div>
                         </div>
                     </div>
                     <div class='metrics-grid'>
-                        <div class='metric-pill'><strong>{len(st.session_state.uploaded_images)} {t('assets')}</strong><span><br>{t('Uploaded files ready for review.')}</br></span></div>
-                        <div class='metric-pill'><strong>{len(tab_names)} {t('categories')}</strong><span>   {t('Structured data sections available.')}   </span></div>
+                        <div class='metric-pill'><strong>{len(st.session_state.uploaded_images)} assets</strong><span><br>Uploaded files ready for review.</br></span></div>
+                        <div class='metric-pill'><strong>{len(tab_names)} categories</strong><span>   Structured data sections available.   </span></div>
                     </div>
                 </div>
                 <div class='glass-card action-card'>
-                    <div class='card-header'><span class='section-icon'>⚡</span> {t('Workspace actions')}</div>
-                    <div class='profile-meta'>{t('Run analysis, save progress, or export insights from a polished dashboard experience.')}</div>
+                    <div class='card-header'><span class='section-icon'>⚡</span> Workspace actions</div>
+                    <div class='profile-meta'>Run analysis, save progress, or export insights from a polished dashboard experience.</div>
                 </div>
             </div>
         </div>
         """,
-            st.session_state.get("language", "English"),
-        ),
         unsafe_allow_html=True,
     )
 
-    st.button(t("⬅️ Back to Profile"), key="back_to_profile", on_click=set_page, args=("profile",))
+    st.button("⬅️ Back to Profile", key="back_to_profile", on_click=set_page, args=("profile",))
+    expander_placeholder = st.empty()
 
     def render_chat_options():
         st.markdown(
-            translate_text(
-                """
+            """
             <div class='assistant-experience-section'>
                 <div class='assistant-experience-header'>
-                    <div class='assistant-experience-title'>""" + t("Choose Your AI Experience") + """</div>
-                    <div class='assistant-experience-subtitle'>""" + t("Select how you want to interact with the system") + """</div>
+                    <div class='assistant-experience-title'>Choose Your AI Experience</div>
+                    <div class='assistant-experience-subtitle'>Select how you want to interact with the system</div>
                     <div class='assistant-experience-underline'></div>
                 </div>
                 <div class='assistant-option-grid'>
                     <div class='assistant-option-card recommended'>
                         <div class='assistant-option-icon'>👩‍⚕️</div>
-                        <div class='assistant-option-title'>""" + t("Insights Advisor") + """</div>
-                        <div class='assistant-option-desc'>""" + t("Long-form reasoning, structured recommendations, and guided interpretation.") + """</div>
+                        <div class='assistant-option-title'>Insights Advisor</div>
+                        <div class='assistant-option-desc'>Long-form reasoning, structured recommendations, and guided interpretation.</div>
                         <div class='assistant-option-meta'>
-                            <div class='option-badge'>""" + t("Recommended") + """</div>
+                            <div class='option-badge'>Recommended</div>
                         </div>
                         <div class='assistant-option-action'></div>
                     </div>
                     <div class='assistant-option-card'>
                         <div class='assistant-option-icon'>⚡</div>
-                        <div class='assistant-option-title'>""" + t("Quick Summary") + """</div>
-                        <div class='assistant-option-desc'>""" + t("Short insights, fast clarifications, and high-level findings.") + """</div>
+                        <div class='assistant-option-title'>Quick Summary</div>
+                        <div class='assistant-option-desc'>Short insights, fast clarifications, and high-level findings.</div>
                         <div class='assistant-option-meta'>
-                            <div class='option-badge'>""" + t("Fast response") + """</div>
+                            <div class='option-badge'>Fast response</div>
                         </div>
                         <div class='assistant-option-action'></div>
                     </div>
                 </div>
             </div>
             """,
-                st.session_state.get("language", "English"),
-            ),
             unsafe_allow_html=True,
         )
         button_cols = st.columns(2, gap="large")
         with button_cols[0]:
-            st.button(t("Open Insights Advisor"), key="choose_medical_assistant", on_click=launch_chat, args=("medical",))
+            st.button("Open Insights Advisor", key="choose_medical_assistant", on_click=launch_chat, args=("medical",))
         with button_cols[1]:
-            st.button(t("Open Quick Summary"), key="choose_quick_assistant", on_click=launch_chat, args=("quick",))
+            st.button("Open Quick Summary", key="choose_quick_assistant", on_click=launch_chat, args=("quick",))
 
 
     col1, col2 = st.columns([7, 3], gap="large")
     with col1:
         st.markdown(
-            f"""
+            """
             <div class='glass-card'>
-                <div class='card-header'><span class='section-icon'>🧩</span> {t('Intake dashboard')}</div>
-                <p class='profile-meta'>{t('Choose a category, enter your core data, and use the dashboard to generate concise insights.')}</p>
+                <div class='card-header'><span class='section-icon'>🧩</span> Intake dashboard</div>
+                <p class='profile-meta'>Choose a category, enter your core data, and use the dashboard to generate concise insights.</p>
             </div>
             """,
             unsafe_allow_html=True,
         )
 
-        with st.expander(t("Clinical Intake Dashboard"), expanded=True):
+        with expander_placeholder.expander("Clinical Intake Dashboard", expanded=True):
             tabs_objs = st.tabs([x[0] for x in tab_names])
             collected = {}
 
@@ -3390,10 +3323,10 @@ if page == "analysis":
             ) or bool(st.session_state.uploaded_images) or bool(st.session_state.manual_symptoms.strip())
 
         st.markdown(
-            f"""
+            """
             <div class='upload-panel panel-card'>
-                <div class='panel-title'>{t('Upload clinical images')}</div>
-                <p class='panel-subtitle'>{t('Drag and drop scans, photos, pathology images, or capture a photo directly from your camera for the AI-assisted review.')}</p>
+                <div class='panel-title'>Upload clinical images</div>
+                <p class='panel-subtitle'>Drag and drop scans, photos, pathology images, or capture a photo directly from your camera for the AI-assisted review.</p>
             </div>
             """,
             unsafe_allow_html=True,
@@ -3402,9 +3335,9 @@ if page == "analysis":
         camera_image = None
         if hasattr(st, "camera_input"):
             camera_image = st.camera_input(
-                t("Capture an image from your camera"),
+                "Capture an image from your camera",
                 key="camera_capture",
-                help=t("Use your device camera to upload a photo directly into the diagnostic workflow."),
+                help="Use your device camera to upload a photo directly into the diagnostic workflow.",
             )
             if camera_image:
                 existing_names = [getattr(img, "name", None) for img in st.session_state.uploaded_images]
@@ -3412,11 +3345,11 @@ if page == "analysis":
                     st.session_state.uploaded_images.append(camera_image)
 
         uploaded = st.file_uploader(
-            t("Upload wound photos, X-ray plates, or other scans"),
+            "Upload wound photos, X-ray plates, or other scans",
             type=["png", "jpg", "jpeg", "bmp", "tiff"],
             accept_multiple_files=True,
             key="uploaded_image_files",
-            help=t("Optional: upload patient imaging for reference in the diagnostic report."),
+            help="Optional: upload patient imaging for reference in the diagnostic report.",
         )
         if uploaded:
             next_images = list(uploaded)
@@ -3432,75 +3365,69 @@ if page == "analysis":
                 with image_cols[idx % 3]:
                     st.image(img, caption=img.name, width=300)
                     st.button(
-                        t("Remove"),
+                        "Remove",
                         key=f"remove_uploaded_image_{idx}",
                         on_click=remove_uploaded_image,
                         args=(idx,),
                     )
 
             st.markdown(
-                f"<div class='hint-box'>{t(f'Uploaded {len(st.session_state.uploaded_images)} file(s) received. They will be included in the generated report.')}</div>",
+                f"<div class='hint-box'>Uploaded {len(st.session_state.uploaded_images)} file(s) received. They will be included in the generated report.</div>",
                 unsafe_allow_html=True,
             )
-            st.button(t("Clear all uploaded images"), key="clear_uploaded_images", on_click=clear_uploaded_images)
+            st.button("Clear all uploaded images", key="clear_uploaded_images", on_click=clear_uploaded_images)
 
         manual_symptom_text = st.text_area(
-            t("Manual symptom labels / clinical complaints"),
+            "Manual symptom labels / clinical complaints",
             value=st.session_state.manual_symptoms,
-            placeholder=t("e.g. fever, chest pain, skin rash, fatigue, night sweats"),
-            help=t("Enter symptoms or problem labels when structured measurements are not available."),
+            placeholder="e.g. fever, chest pain, skin rash, fatigue, night sweats",
+            help="Enter symptoms or problem labels when structured measurements are not available.",
             key="manual_symptoms",
             height=140,
         ).strip()
 
         if manual_symptom_text:
             st.markdown(
-                translate_text(
-                    f"<div class='hint-box'>{t('Manual symptom input captured. You can run analysis using symptom labels only.')}</div>",
-                    st.session_state.get("language", "English"),
-                ),
+                f"<div class='hint-box'>Manual symptom input captured. You can run analysis using symptom labels only.</div>",
                 unsafe_allow_html=True,
             )
 
         st.markdown(
-            f"<div class='action-bar'><div class='action-copy'>{t('Primary action will activate once at least one clinical input, manual symptom text, or image is provided.')}</div></div>",
+            "<div class='action-bar'><div class='action-copy'>Primary action will activate once at least one clinical input, manual symptom text, or image is provided.</div></div>",
             unsafe_allow_html=True,
         )
         action_cols = st.columns([4, 2, 2], gap="large")
         with action_cols[0]:
             st.button(
-                t("Run Analysis"),
+                "Run Analysis",
                 key="generate_analysis",
                 disabled=not any_section_data,
                 on_click=request_analysis,
             )
         with action_cols[1]:
-            st.button(t("Save Draft"), key="save_draft")
+            st.button("Save Draft", key="save_draft")
         with action_cols[2]:
-            st.button(t("Reset"), key="reset_analysis")
+            st.button("Reset", key="reset_analysis")
 
         if st.session_state.get("analysis_output", "").strip():
             report_text = st.session_state.analysis_output
             st.markdown(
-                translate_text(
-                    f"""
+                """
                 <div class='analysis-report-box'>
                     <div class='report-header'>
                         <div>
-                            <div class='report-title'>{t('Nirnay Diagnostics Report')}</div>
-                            <div class='report-subtitle'>{t('Structured findings and follow-up guidance generated from the clinical intake.')}</div>
+                            <div class='report-title'>Nirnay Diagnostics Report</div>
+                            <div class='report-subtitle'>Structured findings and follow-up guidance generated from the clinical intake.</div>
                         </div>
-                        <div class='report-badge'>{t('Ready')}</div>
+                        <div class='report-badge'>Ready</div>
                     </div>
                 """,
-                    st.session_state.get("language", "English"),
-                ),
                 unsafe_allow_html=True,
             )
             download_cols = st.columns([3, 1])
             with download_cols[1]:
                 st.download_button(
-                    t("Download Report"),
+                    "Download Report",
                     report_text,
                     file_name="nirnay_diagnostics_report.txt",
                     mime="text/plain",
@@ -3509,15 +3436,12 @@ if page == "analysis":
             if st.session_state.get("uploaded_image_report", "").strip():
                 report_html = html.escape(st.session_state.uploaded_image_report).replace("\n", " ")
                 st.markdown(
-                    translate_text(
-                        f"""
+                    f"""
                     <div class='upload-report-hover'>
-                        <span class='upload-report-trigger'>{t('Hover to view uploaded image report')}</span>
+                        <span class='upload-report-trigger'>Hover to view uploaded image report</span>
                         <div class='upload-report-card'>{report_html}</div>
                     </div>
                     """,
-                        st.session_state.get("language", "English"),
-                    ),
                     unsafe_allow_html=True,
                 )
             for line in report_text.splitlines():
@@ -3537,31 +3461,28 @@ if page == "analysis":
 
     with col2:
         st.markdown(
-            translate_text(
-                f"""
+            """
             <div class='assistant-panel sticky'>
-                <div class='assistant-title'>{t('AI Assistant')}</div>
+                <div class='assistant-title'>AI Assistant</div>
                 <div class='assistant-chip-row'>
-                    <span class='assistant-chip'>{t('Diagnosis')}</span>
-                    <span class='assistant-chip'>{t('Risk')}</span>
-                    <span class='assistant-chip'>{t('Recommendations')}</span>
+                    <span class='assistant-chip'>Diagnosis</span>
+                    <span class='assistant-chip'>Risk</span>
+                    <span class='assistant-chip'>Recommendations</span>
                 </div>
                 <div class='assistant-card'>
-                    <h4>{t('Suggested prompts')}</h4>
+                    <h4>Suggested prompts</h4>
                     <ul>
-                        <li>"{t('Summarize the most urgent clinical findings.')}"</li>
-                        <li>"{t('What are the top three risk factors for this patient?')}"</li>
-                        <li>"{t('Recommend the next diagnostic step.')}"</li>
+                        <li>"Summarize the most urgent clinical findings."</li>
+                        <li>"What are the top three risk factors for this patient?"</li>
+                        <li>"Recommend the next diagnostic step."</li>
                     </ul>
                 </div>
                 <div class='assistant-card'>
-                    <h4>{t('Mini chat')}</h4>
-                    <p>{t('Ask the AI for a concise clinical interpretation of any abnormal metric or uploaded image.')}</p>
+                    <h4>Mini chat</h4>
+                    <p>Ask the AI for a concise clinical interpretation of any abnormal metric or uploaded image.</p>
                 </div>
             </div>
             """,
-                st.session_state.get("language", "English"),
-            ),
             unsafe_allow_html=True,
         )
         render_chat_options()
