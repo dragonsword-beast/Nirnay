@@ -1,4 +1,4 @@
-# Nirnay 
+# Nirnay
 
 A Streamlit-based clinical diagnostic workflow interface for patient intake, image review, and AI-assisted analysis.
 
@@ -18,6 +18,9 @@ A Streamlit-based clinical diagnostic workflow interface for patient intake, ima
 - AI assistant chat options for medical guidance
 - Structured data and image upload workflow
 - Custom CSS styling and polished visual design
+- Upload and preview clinical images
+- Remove individual uploaded images or clear all uploads
+- Generate AI-assisted diagnostic summaries
 
 ## Requirements
 
@@ -27,7 +30,7 @@ Install the required Python packages:
 pip install -r requirements.txt
 ```
 
-The current dependencies are:
+Current dependencies:
 - `streamlit`
 - `groq`
 
@@ -45,6 +48,7 @@ Open the local URL shown in the terminal to access the app.
 
 - `Nirnay.py` — main Streamlit application and UI logic
 - `requirements.txt` — Python dependencies
+- `README.md` — project documentation
 - `893a2625-aa76-4993-af22-650fd069b640-8.png` — brand/logo image asset used in the UI
 - `website code.txt` — backup or extra website code
 
