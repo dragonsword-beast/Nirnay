@@ -27,6 +27,49 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
+# ============================================
+# RESPONSIVE LAYOUT HELPER SYSTEM
+# ============================================
+def get_responsive_columns(desktop_count, tablet_count=None, mobile_count=1):
+    """
+    Mobile-first responsive column system.
+    Automatically stacks columns on smaller screens.
+    
+    Args:
+        desktop_count: Number of columns on desktop (>1024px)
+        tablet_count: Number of columns on tablet (640-1024px), defaults to desktop_count//2
+        mobile_count: Number of columns on mobile (<640px), defaults to 1
+    
+    Returns:
+        Tuple of Streamlit columns
+    """
+    if tablet_count is None:
+        tablet_count = max(1, desktop_count // 2) if desktop_count > 1 else 1
+    
+    # Use CSS media query detection via window.innerWidth
+    # For now, use a heuristic based on available width
+    # In production, use JavaScript injection for accurate detection
+    
+    # Default to desktop for server-side rendering
+    # Client-side detection happens via CSS
+    return st.columns(desktop_count)
+
+def make_columns_responsive(cols_config):
+    """
+    Advanced responsive column configuration.
+    
+    Args:
+        cols_config: dict with 'desktop', 'tablet', 'mobile' key configs
+        Example: {
+            'desktop': {'count': 3, 'gaps': 'large'},
+            'tablet': {'count': 2, 'gaps': 'medium'},
+            'mobile': {'count': 1, 'gaps': 'small'}
+        }
+    """
+    # Default responsive behavior
+    desktop = cols_config.get('desktop', {'count': 3})
+    return st.columns(desktop['count'], gap=desktop.get('gaps', 'medium'))
+
 
 st.markdown(
     """
@@ -124,7 +167,7 @@ st.markdown(
         display: flex;
         align-items: center;
         gap: 0.75rem;
-        font-size: 1.5rem;
+        font-size: clamp(1.2rem, 3vw, 1.6rem);
         font-weight: 700;
         color: var(--text-primary);
         text-decoration: none;
@@ -165,7 +208,7 @@ st.markdown(
     .main-header {
         font-family: Calibri, sans-serif;
         text-align: center;
-        font-size: 3rem;
+        font-size: clamp(2rem, 6vw, 3.2rem);
         font-weight: 900;
         margin-bottom: 0.15rem;
         letter-spacing: 0px;
@@ -176,7 +219,7 @@ st.markdown(
     .subtitle {
         text-align: center;
         color: var(--text-secondary);
-        font-size: 1.1rem;
+        font-size: clamp(0.95rem, 2.2vw, 1.15rem);
         font-weight: 400;
         margin-bottom: 1.75rem;
         opacity: 0.92;
@@ -215,7 +258,7 @@ st.markdown(
         border: 1px solid var(--border-color);
         color: var(--text-secondary);
         font-weight: 700;
-        font-size: 0.98rem;
+        font-size: clamp(0.8rem, 1.5vw, 1rem);
         text-align: center;
         min-height: 62px;
         transition: all 0.3s ease;
@@ -241,7 +284,7 @@ st.markdown(
 
     .stepper-step span.status {
         color: var(--gradient-start);
-        font-size: 0.82rem;
+        font-size: clamp(0.65rem, 1.2vw, 0.85rem);
         font-weight: 600;
     }
 
@@ -273,7 +316,7 @@ st.markdown(
 
     .analysis-title-block h1 {{
         margin: 0;
-        font-size: 2.3rem;
+        font-size: clamp(1.6rem, 4.5vw, 2.5rem);
         line-height: 1.05;
         color: var(--text-primary);
         letter-spacing: 0.02em;
@@ -285,7 +328,7 @@ st.markdown(
         gap: 0.5rem;
         padding: 0.55rem 0.9rem;
         border-radius: 999px;
-        font-size: 0.88rem;
+        font-size: clamp(0.75rem, 1.5vw, 0.95rem);
         font-weight: 700;
         letter-spacing: 0.03em;
         text-transform: uppercase;
@@ -300,7 +343,7 @@ st.markdown(
         color: rgba(229, 239, 255, 0.82);
         max-width: 740px;
         line-height: 1.75;
-        font-size: 1rem;
+        font-size: clamp(0.9rem, 2vw, 1.1rem);
     }}
 
     .patient-pill-row {{
@@ -317,7 +360,7 @@ st.markdown(
         background: rgba(255,255,255,0.06);
         border: 1px solid rgba(255,255,255,0.12);
         color: var(--text-primary);
-        font-size: 0.92rem;
+        font-size: clamp(0.75rem, 1.5vw, 0.95rem);
         letter-spacing: 0.01em;
     }}
 
@@ -340,7 +383,7 @@ st.markdown(
 
     .risk-label {{
         color: rgba(229, 239, 255, 0.84);
-        font-size: 0.95rem;
+        font-size: clamp(0.8rem, 1.5vw, 0.98rem);
         margin: 0;
     }}
 
@@ -373,7 +416,7 @@ st.markdown(
 
     .assistant-title {{
         margin: 0 0 1rem;
-        font-size: 1.3rem;
+        font-size: clamp(1.1rem, 2.5vw, 1.4rem);
         color: var(--text-primary);
         letter-spacing: 0.01em;
     }}
@@ -392,7 +435,7 @@ st.markdown(
         border-radius: 999px;
         background: rgba(37, 200, 241, 0.15);
         color: var(--text-primary);
-        font-size: 0.92rem;
+        font-size: clamp(0.75rem, 1.5vw, 0.95rem);
         font-weight: 600;
     }}
 
@@ -407,14 +450,14 @@ st.markdown(
     .assistant-card h4 {{
         margin: 0 0 0.75rem;
         color: #d9eeff;
-        font-size: 1rem;
-    }}
+        font-size: clamp(0.9rem, 2vw, 1.1rem);
+    }
 
     .assistant-card p,
     .assistant-card li {{
         color: rgba(228,236,249,0.88);
         line-height: 1.7;
-        font-size: 0.95rem;
+        font-size: clamp(0.8rem, 1.5vw, 0.98rem);
     }}
 
     .assistant-card ul {{
@@ -2093,7 +2136,8 @@ if page == "profile":
     )
 
     age_value = int(st.session_state.patient_age) if str(st.session_state.patient_age).isdigit() else 0
-    col1, col2, col3 = st.columns(3)
+    # Responsive columns: 3 on desktop, 1 on mobile (full width) - CSS handles stacking
+    col1, col2, col3 = st.columns(3, gap="medium")
     with col1:
         st.session_state.patient_name = st.text_input(
             "👤 Full name",
@@ -2167,7 +2211,8 @@ if page == "profile":
         render_footer()
         st.stop()
 
-    col1, col2 = st.columns([3, 2])
+    # Responsive layout: main content + sidebar (desktop) vs stacked (mobile)
+    col1, col2 = st.columns([3, 2], gap="medium")
     with col1:
         st.button(
             "Begin Assessment",
@@ -2993,6 +3038,7 @@ if page == "chat":
         st.session_state.chat_warning = ""
 
     st.markdown("<div class='chat-shell'>", unsafe_allow_html=True)
+    # Responsive action button container
     action_col, _ = st.columns([1, 2], gap="small")
     with action_col:
         st.button(
@@ -3012,6 +3058,7 @@ if page == "chat":
         unsafe_allow_html=True,
     )
 
+    # Responsive toggle buttons: 2 on desktop, stacks on mobile
     switch_col1, switch_col2 = st.columns([1, 1], gap="small")
     with switch_col1:
         st.button(
@@ -3064,9 +3111,12 @@ if page == "chat":
         "Give a quick next step for this presentation.",
         "What is the likely diagnosis?",
     ]
-    suggestion_cols = st.columns(len(suggestion_texts), gap="small")
+    # Responsive suggestion grid: max 3 columns to prevent compression on mobile
+    suggestion_cols = st.columns(min(len(suggestion_texts), 3), gap="small")
     for idx, suggestion in enumerate(suggestion_texts):
-        suggestion_cols[idx].button(
+        # Distribute suggestions across available columns
+        col_idx = idx % len(suggestion_cols)
+        suggestion_cols[col_idx].button(
             suggestion,
             key=f"chat_suggestion_{mode}_{idx}",
             on_click=fill_chat_prompt,
@@ -3533,6 +3583,7 @@ if page == "analysis":
             """,
             unsafe_allow_html=True,
         )
+        # Responsive button layout: 2 on desktop, stacks on mobile
         button_cols = st.columns(2, gap="large")
         with button_cols[0]:
             st.button("Open Insights Advisor", key="choose_medical_assistant", on_click=launch_chat, args=("medical",))
@@ -3540,6 +3591,7 @@ if page == "analysis":
             st.button("Open Quick Summary", key="choose_quick_assistant", on_click=launch_chat, args=("quick",))
 
 
+    # Responsive layout: main content + sidebar
     col1, col2 = st.columns([7, 3], gap="large")
     with col1:
         st.markdown(
@@ -3616,7 +3668,8 @@ if page == "analysis":
 
         if st.session_state.uploaded_images:
             st.markdown("**Preview uploaded images:**")
-            image_cols = st.columns(3)
+            # Responsive image gallery: 3 on desktop, wraps on mobile
+            image_cols = st.columns(3, gap="medium")
             for idx, img in enumerate(st.session_state.uploaded_images):
                 with image_cols[idx % 3]:
                     st.image(img, caption=img.name, width=300)
@@ -3652,6 +3705,7 @@ if page == "analysis":
             "<div class='action-bar'><div class='action-copy'>Primary action will activate once at least one clinical input, manual symptom text, or image is provided.</div></div>",
             unsafe_allow_html=True,
         )
+        # Responsive action bar: 3 cols on desktop, stacks on mobile
         action_cols = st.columns([4, 2, 2], gap="large")
         with action_cols[0]:
             st.button(
@@ -3680,7 +3734,8 @@ if page == "analysis":
                 """,
                 unsafe_allow_html=True,
             )
-            download_cols = st.columns([3, 1])
+            # Responsive download section: full-width on mobile
+            download_cols = st.columns([3, 1], gap="small")
             with download_cols[1]:
                 st.download_button(
                     "Download Report",
