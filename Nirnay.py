@@ -23,7 +23,7 @@ icon_path = logo_image_url if logo_image_url else (str(logo_png_path) if logo_pn
 st.set_page_config(
     page_title="Nirnay | Clinical Diagnostic Workflow",
     page_icon=icon_path,
-    layout="centered",
+    layout="wide",
     initial_sidebar_state="collapsed"
 )
 
@@ -2044,6 +2044,73 @@ def render_analysis_chat_styles():
             position: relative;
             z-index: 2;
         }
+        .dashboard-shell {
+            width: 100%;
+            display: grid;
+            gap: 1.2rem;
+            margin-bottom: 1.3rem;
+        }
+        .dashboard-top-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+            gap: 1rem;
+            align-items: start;
+        }
+        .tool-grid {
+            display: grid;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .panel-card,
+        .glass-card,
+        .analysis-action-bar,
+        .analysis-report-box {
+            border-radius: 22px;
+            border: 1px solid rgba(255,255,255,0.12);
+            padding: 1rem 1rem 1.2rem;
+            background: rgba(12, 21, 41, 0.75);
+            box-shadow: 0 16px 40px rgba(0,0,0,0.22);
+        }
+        .analysis-action-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.65rem;
+            justify-content: space-between;
+            margin-top: 1rem;
+        }
+        .analysis-action-bar .action-copy {
+            flex: 1 1 100%;
+            color: rgba(226, 238, 255, 0.88);
+            font-size: 0.92rem;
+            line-height: 1.45;
+            padding: 0.4rem 0.65rem;
+            background: rgba(255,255,255,0.06);
+            border-radius: 12px;
+        }
+        .analysis-report-box {
+            margin-top: 1rem;
+            border-radius: 20px;
+            background: rgba(6, 12, 24, 0.84);
+            color: rgba(238, 244, 255, 0.92);
+        }
+        .analysis-report-box .report-header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.6rem;
+            margin-bottom: 0.8rem;
+        }
+        .analysis-report-box .report-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #e0ecff;
+        }
+        .analysis-report-box .report-subtitle {
+            color: rgba(216, 235, 255, 0.85);
+            font-size: 0.95rem;
+        }
+
         .assistant-option-card {
             position: relative;
             overflow: hidden;
@@ -2166,12 +2233,47 @@ def render_analysis_chat_styles():
             0%, 100% { box-shadow: 0 22px 42px rgba(68, 180, 255, 0.28); }
             50% { box-shadow: 0 26px 56px rgba(68, 180, 255, 0.34); }
         }
+        @media (max-width: 1024px) {
+            .dashboard-top-grid,
+            .analysis-meta-grid,
+            .action-grid,
+            .assistant-option-grid {
+                grid-template-columns: 1fr !important;
+            }
+            .block-container,
+            .dashboard-shell,
+            .assistant-experience-section,
+            .glass-card,
+            .content,
+            .analysis-report-box {
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+            .stButton>button,
+            .stButton>div>button,
+            .stButton>div>div>button {
+                width: 100% !important;
+            }
+        }
         @media (max-width: 840px) {
             .assistant-option-grid {
                 grid-template-columns: 1fr;
             }
             .assistant-experience-section {
                 padding: 1.6rem;
+            }
+            .profile-row {
+                display: block;
+                gap: 0.75rem;
+            }
+            .profile-row .avatar,
+            .profile-row div {
+                width: 100%;
+            }
+            .page-guide,
+            .analysis-report-box .report-title,
+            .analysis-report-box .report-subtitle {
+                font-size: 0.92rem;
             }
         }
         """,
@@ -3285,6 +3387,7 @@ if page == "analysis":
             st.button("Open Quick Summary", key="choose_quick_assistant", on_click=launch_chat, args=("quick",))
 
 
+    st.markdown("<div class='tool-grid'>", unsafe_allow_html=True)
     col1, col2 = st.columns([7, 3], gap="large")
     with col1:
         st.markdown(
@@ -3394,7 +3497,7 @@ if page == "analysis":
             )
 
         st.markdown(
-            "<div class='action-bar'><div class='action-copy'>Primary action will activate once at least one clinical input, manual symptom text, or image is provided.</div></div>",
+            "<div class='analysis-action-bar'><div class='action-copy'>Primary action will activate once at least one clinical input, manual symptom text, or image is provided.</div></div>",
             unsafe_allow_html=True,
         )
         action_cols = st.columns([4, 2, 2], gap="large")
@@ -3487,6 +3590,8 @@ if page == "analysis":
             unsafe_allow_html=True,
         )
         render_chat_options()
+
+    st.markdown("</div>", unsafe_allow_html=True)
 
 v_checks = collected["🧪 Metabolism"]
 c_checks = collected["❤️ Cardiac"]
