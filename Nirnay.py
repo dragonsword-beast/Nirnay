@@ -1389,7 +1389,7 @@ if current_step == 0:
     col1, col2 = st.columns(2)
     with col1:
         name = st.text_input("Patient Name", key="patient_name")
-        age = st.number_input("Age", min_value=0, max_value=120, key="patient_age")
+        age = st.number_input("Age", min_value=0, max_value=120, value=int(st.session_state.patient_age) if st.session_state.patient_age and st.session_state.patient_age.isdigit() else 0, key="patient_age")
         gender = st.selectbox("Gender", ["Select", "Male", "Female", "Other"], key="patient_gender")
 
     with col2:
