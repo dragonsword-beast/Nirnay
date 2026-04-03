@@ -23,7 +23,7 @@ icon_path = logo_image_url if logo_image_url else (str(logo_png_path) if logo_pn
 st.set_page_config(
     page_title="Nirnay | Clinical Diagnostic Workflow",
     page_icon=icon_path,
-    layout="centered",
+    layout="wide",
     initial_sidebar_state="collapsed"
 )
 
@@ -46,13 +46,19 @@ st.markdown(
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
+    /* Hide Streamlit branding */
+    #MainMenu {{visibility: hidden;}}
+    footer {{visibility: hidden;}}
+    header[data-testid="stHeader"] {{visibility: hidden;}}
+    .stDeployButton {{display: none;}}
+
     * {{
         font-family: 'Inter', sans-serif;
     }}
 
     .stApp {{
-        background: radial-gradient(circle at top left, #0d1b2a 0%, #07101d 45%, #050812 100%);
-        color: {primary_cyan};
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #ffffff;
         min-width: 0;
         overflow-x: hidden;
     }}
@@ -62,14 +68,72 @@ st.markdown(
     }}
 
     .block-container {{
-        padding: 1.5rem 1.8rem;
-        max-width: 1180px;
+        padding: 0;
+        max-width: none;
         width: 100%;
-        background: rgba(16, 30, 50, 0.92);
-        border: 1px solid rgba(255,255,255,0.08);
-        border-radius: 20px;
-        box-shadow: 0 18px 40px rgba(0,0,0,0.24);
-        backdrop-filter: blur(14px);
+        background: transparent;
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+        backdrop-filter: none;
+    }}
+
+    /* Custom Navbar */
+    .custom-navbar {{
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        padding: 1rem 2rem;
+        z-index: 1000;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+    }}
+
+    .navbar-brand {{
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1a365d;
+        text-decoration: none;
+    }}
+
+    .navbar-nav {{
+        display: flex;
+        gap: 2rem;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }}
+
+    .nav-link {{
+        color: #4a5568;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.3s ease;
+    }}
+
+    .nav-link:hover {{
+        color: #667eea;
+    }}
+
+    .navbar-logo {{
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
     }}
 
     .main-header {{
@@ -79,13 +143,13 @@ st.markdown(
         font-weight: 900;
         margin-bottom: 0.15rem;
         letter-spacing: 0px;
-        color: {primary_cyan};
-        text-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+        color: #1a365d;
+        text-shadow: none;
     }}
 
     .subtitle {{
         text-align: center;
-        color: {surface_frost};
+        color: #4a5568;
         font-size: 1.1rem;
         font-weight: 400;
         margin-bottom: 1.75rem;
@@ -106,11 +170,12 @@ st.markdown(
     }}
 
     .stepper {{
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        display: flex;
+        justify-content: center;
         gap: 0.85rem;
         margin-bottom: 1.75rem;
         padding: 0.75rem 0;
+        flex-wrap: wrap;
     }}
 
     .stepper-step {{
@@ -120,28 +185,28 @@ st.markdown(
         gap: 0.6rem;
         padding: 0.9rem 1rem;
         border-radius: 18px;
-        background: rgba(255,255,255,0.06);
-        border: 1px solid rgba(255,255,255,0.12);
-        color: {surface_frost};
+        background: #f7fafc;
+        border: 1px solid #e2e8f0;
+        color: #4a5568;
         font-weight: 700;
         font-size: 0.98rem;
         text-align: center;
         min-height: 62px;
         transition: all 0.3s ease;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     }}
 
     .stepper-step.active {{
-        background: linear-gradient(135deg, rgba(19, 71, 135, 0.24) 0%, rgba(11, 32, 58, 0.95) 100%);
-        border-color: rgba(36, 141, 227, 0.45);
-        color: {surface_white};
-        box-shadow: 0 0 26px rgba(37, 200, 241, 0.18), 0 24px 48px rgba(0,0,0,0.22);
-        animation: glowPulse 3.2s ease-in-out infinite;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-color: #667eea;
+        color: #ffffff;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
     }}
 
     .stepper-step.completed {{
-        color: {surface_white};
-        background: rgba(37, 200, 241, 0.08);
-        border-color: rgba(37, 200, 241, 0.18);
+        color: #ffffff;
+        background: #48bb78;
+        border-color: #48bb78;
     }}
 
     .stepper-step.upcoming {{
@@ -149,7 +214,7 @@ st.markdown(
     }}
 
     .stepper-step span.status {{
-        color: {primary_cyan};
+        color: #667eea;
         font-size: 0.82rem;
         font-weight: 600;
     }}
@@ -461,6 +526,55 @@ st.markdown(
             flex-direction: column;
             align-items: stretch;
         }}
+        .custom-navbar {{
+            padding: 1rem;
+        }}
+        .navbar-nav {{
+            display: none;
+        }}
+        .site-hero {{
+            padding: 2rem 1rem;
+            margin: 1rem;
+        }}
+        .main-header {{
+            font-size: 2.5rem;
+        }}
+        .stepper {{
+            flex-direction: column;
+            align-items: center;
+        }}
+        .stepper-step {{
+            width: 100%;
+            max-width: 300px;
+        }}
+    }}
+
+    @media (max-width: 640px) {{
+        .custom-navbar {{
+            padding: 0.75rem 1rem;
+        }}
+        .navbar-brand {{
+            font-size: 1.25rem;
+        }}
+        .site-hero {{
+            padding: 1.5rem 1rem;
+            margin: 1rem 0.5rem;
+        }}
+        .main-header {{
+            font-size: 2rem;
+        }}
+        .subtitle {{
+            font-size: 1rem;
+        }}
+        .stepper-step {{
+            padding: 0.75rem 0.5rem;
+            font-size: 0.9rem;
+            min-height: 50px;
+        }}
+        .footer-content {{
+            grid-template-columns: 1fr;
+            text-align: center;
+        }}
     }}
 
     .topbar-brand {{
@@ -485,15 +599,14 @@ st.markdown(
     .site-hero {{
         display: grid;
         gap: 1.2rem;
-        background: linear-gradient(180deg, rgba(8,18,33,0.98), rgba(15,33,57,0.95));
-        border: 1px solid rgba(79,209,197,0.16);
-        border-radius: 32px;
-        padding: 2.4rem;
-        margin-bottom: 1.75rem;
-        box-shadow: 0 28px 70px rgba(0,0,0,0.28);
+        background: rgba(255, 255, 255, 0.95);
+        border: 1px solid #e2e8f0;
+        border-radius: 24px;
+        padding: 3rem 2rem;
+        margin: 2rem auto 1.75rem;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
         max-width: 1000px;
-        margin-left: auto;
-        margin-right: auto;
+        backdrop-filter: blur(10px);
     }}
 
     .brand-header {{
@@ -679,50 +792,45 @@ st.markdown(
         width: 100% !important;
         max-width: 420px !important;
         min-height: 56px;
-        padding: 0.95rem 1.3rem !important;
-        border-radius: 14px !important;
+        padding: 1rem 1.5rem !important;
+        border-radius: 12px !important;
         font-size: 1rem !important;
         font-weight: 600 !important;
         letter-spacing: 0.01em !important;
-        transition: all 0.2s ease-in-out !important;
-        background: linear-gradient(135deg, #06264e 0%, #0d4f8b 100%) !important;
+        transition: all 0.3s ease !important;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
         color: #ffffff !important;
-        border: 1px solid rgba(255,255,255,0.16) !important;
-        box-shadow: 0 20px 40px rgba(5, 38, 78, 0.30) !important;
-        text-shadow: 0 1px 2px rgba(0,0,0,0.18) !important;
+        border: none !important;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3) !important;
         cursor: pointer !important;
         transform: translateZ(0);
-        backdrop-filter: blur(2px) !important;
     }}
 
     .stButton>button:hover,
     .stButton>div>button:hover,
     .stButton>div>div>button:hover {{
-        background: linear-gradient(135deg, #113f78 0%, #3b79b6 100%) !important;
-        box-shadow: 0 26px 54px rgba(15, 66, 110, 0.36) !important;
-        transform: translateY(-1px) scale(1.02) !important;
+        background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%) !important;
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4) !important;
+        transform: translateY(-2px) !important;
     }}
 
     .stButton>button:active,
     .stButton>div>button:active,
     .stButton>div>div>button:active {{
-        background: linear-gradient(135deg, #062249 0%, #0f3d78 100%) !important;
-        box-shadow: 0 10px 18px rgba(6, 28, 55, 0.30) !important;
-        transform: translateY(1px) scale(0.98) !important;
-        opacity: 0.98 !important;
+        background: linear-gradient(135deg, #4c51bf 0%, #553c9a 100%) !important;
+        box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3) !important;
+        transform: translateY(0) !important;
     }}
 
     .stButton>button[disabled],
     .stButton>div>button[disabled],
     .stButton>div>div>button[disabled] {{
-        background: rgba(110,120,140,0.18) !important;
-        color: rgba(255,255,255,0.75) !important;
-        border: 1px solid rgba(255,255,255,0.08) !important;
+        background: #e2e8f0 !important;
+        color: #a0aec0 !important;
+        border: none !important;
         box-shadow: none !important;
         cursor: not-allowed !important;
         transform: none !important;
-        opacity: 0.72 !important;
-        pointer-events: none !important;
     }}
 
     .stTextInput>div>div>input,
@@ -736,35 +844,54 @@ st.markdown(
     input[type="number"],
     textarea,
     select {{
-        background-color: rgba(12, 24, 39, 0.92) !important;
-        color: #ffffff !important;
-        border: 1px solid rgba(255,255,255,0.1) !important;
-        border-radius: 14px !important;
+        background-color: #ffffff !important;
+        color: #1a365d !important;
+        border: 2px solid #e2e8f0 !important;
+        border-radius: 12px !important;
         padding: 1rem !important;
         font-size: 1rem !important;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease !important;
+    }}
+
+    .stTextInput>div>div>input:focus,
+    .stTextInput>div>div>div>input:focus,
+    div[data-testid="stTextInput"] input:focus,
+    div[data-testid="stNumberInput"] input:focus,
+    div[data-testid="stSearchInput"] input:focus,
+    .stSelectbox>div>div>select:focus,
+    div[data-testid="stSelectbox"] select:focus,
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    textarea:focus,
+    select:focus {{
+        border-color: #667eea !important;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1) !important;
+        outline: none !important;
     }}
 
     input::placeholder,
     textarea::placeholder {{
-        color: rgba(255,255,255,0.6) !important;
+        color: #a0aec0 !important;
     }}
 
     .stCheckbox>div>label {{
         display: block;
         width: 100%;
-        color: #f5f7fb;
+        color: #1a365d;
         font-weight: 600;
-        background: rgba(255,255,255,0.04);
-        border: 1px solid rgba(255,255,255,0.08);
-        border-radius: 14px;
-        padding: 0.95rem 1rem;
+        background: #f7fafc;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 1rem;
         margin-bottom: 0.75rem;
         font-size: 0.98rem;
+        transition: border-color 0.3s ease, background-color 0.3s ease;
+        cursor: pointer;
     }}
 
     .stCheckbox>div>label:hover {{
-        background: rgba(79, 209, 197, 0.1);
-        transform: translateY(-1px);
+        background: #edf2f7;
+        border-color: #cbd5e0;
     }}
 
     .stTabs [data-baseweb="tab-list"] {{
@@ -1263,11 +1390,38 @@ st.markdown(
 
     .footer {{
         text-align: center;
-        color: #dde6f4;
-        opacity: 0.84;
-        margin-top: 3rem;
-        padding-top: 2.5rem;
-        border-top: 1px solid rgba(255,255,255,0.08);
+        background: #1a365d;
+        color: #e2e8f0;
+        padding: 3rem 2rem 2rem;
+        margin-top: 4rem;
+        border-top: 1px solid #e2e8f0;
+    }}
+
+    .footer-content {{
+        max-width: 1200px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }}
+
+    .footer-section h3 {{
+        color: #ffffff;
+        margin-bottom: 1rem;
+        font-size: 1.1rem;
+    }}
+
+    .footer-section p {{
+        margin: 0.5rem 0;
+        line-height: 1.6;
+    }}
+
+    .footer-bottom {{
+        border-top: 1px solid #4a5568;
+        padding-top: 2rem;
+        color: #a0aec0;
+        font-size: 0.9rem;
     }}
 
     @media (max-width: 980px) {{
@@ -1657,7 +1811,34 @@ def render_footer():
     st.markdown(
         """
         <footer class="footer">
-            Created with passion by Aarko Batabyal & Saptak Bhattacharjee
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Nirnay</h3>
+                    <p>AI-powered clinical diagnostic workflow for modern healthcare professionals.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Features</h3>
+                    <p>Multi-specialty analysis</p>
+                    <p>Image processing</p>
+                    <p>AI chat assistance</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Support</h3>
+                    <p>Clinical guidelines</p>
+                    <p>Medical resources</p>
+                    <p>Help & documentation</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact</h3>
+                    <p>Professional use only</p>
+                    <p>Consult healthcare providers</p>
+                    <p>Not for emergency use</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>Created with passion by Aarko Batabyal & Saptak Bhattacharjee | © 2024 Nirnay. All rights reserved.</p>
+                <p>This tool is for educational and professional use. Always consult qualified healthcare providers for medical decisions.</p>
+            </div>
         </footer>
         """,
         unsafe_allow_html=True,
@@ -1783,6 +1964,22 @@ def launch_chat(mode=None):
 # ------------ Disclaimer -------------
 
 if page == "profile":
+    # Custom Navbar
+    st.markdown("""
+        <nav class="custom-navbar">
+            <a href="#" class="navbar-brand">
+                <div class="navbar-logo">N</div>
+                <span>Nirnay</span>
+            </a>
+            <ul class="navbar-nav">
+                <li><a href="#" class="nav-link">Home</a></li>
+                <li><a href="#" class="nav-link">Features</a></li>
+                <li><a href="#" class="nav-link">About</a></li>
+                <li><a href="#" class="nav-link">Contact</a></li>
+            </ul>
+        </nav>
+    """, unsafe_allow_html=True)
+
     # Mobile-first hero landing layout for the initial profile screen.
     st.markdown("<div id='page-top'></div>", unsafe_allow_html=True)
     st.markdown("<script>window.scrollTo({top:0,behavior:'auto'});</script>", unsafe_allow_html=True)
@@ -2726,6 +2923,22 @@ def run_groq_chat_sync(prompt, model="openai/gpt-oss-120b"):
     return getattr(completion.choices[0], "text", "") or ""
 
 if page == "chat":
+    # Custom Navbar
+    st.markdown("""
+        <nav class="custom-navbar">
+            <a href="#" class="navbar-brand">
+                <div class="navbar-logo">N</div>
+                <span>Nirnay</span>
+            </a>
+            <ul class="navbar-nav">
+                <li><a href="#" class="nav-link">Home</a></li>
+                <li><a href="#" class="nav-link">Features</a></li>
+                <li><a href="#" class="nav-link">About</a></li>
+                <li><a href="#" class="nav-link">Contact</a></li>
+            </ul>
+        </nav>
+    """, unsafe_allow_html=True)
+
     mode = st.session_state.get("chat_mode", "medical")
     header = "Nirnay Clinical Advisor" if mode == "medical" else "Nirnay Rapid Triage"
     subtitle = (
@@ -3190,6 +3403,22 @@ except NameError:
 
 # ------------ Analysis page -------------
 if page == "analysis":
+    # Custom Navbar
+    st.markdown("""
+        <nav class="custom-navbar">
+            <a href="#" class="navbar-brand">
+                <div class="navbar-logo">N</div>
+                <span>Nirnay</span>
+            </a>
+            <ul class="navbar-nav">
+                <li><a href="#" class="nav-link">Home</a></li>
+                <li><a href="#" class="nav-link">Features</a></li>
+                <li><a href="#" class="nav-link">About</a></li>
+                <li><a href="#" class="nav-link">Contact</a></li>
+            </ul>
+        </nav>
+    """, unsafe_allow_html=True)
+
     st.markdown("<div id='page-top'></div>", unsafe_allow_html=True)
     st.markdown(
         """
