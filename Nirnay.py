@@ -1085,7 +1085,7 @@ if page == "profile":
         unsafe_allow_html=True,
     )
 
-    with st.expander("Read the full medical disclaimer", expanded=False):
+    with st.expander("Read the full medical disclaimer", expanded=True):
         st.markdown(
             """
             <div class="disclaimer-text">
