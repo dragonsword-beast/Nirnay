@@ -818,7 +818,7 @@ if "chat_history_quick" not in st.session_state:
 if "patient_name" not in st.session_state:
     st.session_state.patient_name = ""
 if "patient_age" not in st.session_state:
-    st.session_state.patient_age = ""
+    st.session_state.patient_age = 0
 if "patient_gender" not in st.session_state:
     st.session_state.patient_gender = ""
 if "agree_disclaimer" not in st.session_state:
@@ -869,7 +869,7 @@ def clear_uploaded_images():
 def save_profile():
     profile = {
         "name": st.session_state.patient_name.strip(),
-        "age": st.session_state.patient_age.strip(),
+        "age": str(st.session_state.patient_age),
         "gender": st.session_state.patient_gender,
     }
     if profile["name"] and profile["age"] and profile["gender"]:
@@ -886,7 +886,7 @@ def load_saved_profile():
     for p in st.session_state.saved_profiles:
         if f"{p['name']} · {p['age']} · {p['gender']}" == label:
             st.session_state.patient_name = p["name"]
-            st.session_state.patient_age = p["age"]
+            st.session_state.patient_age = int(p["age"]) if p["age"].isdigit() else 0
             st.session_state.patient_gender = p["gender"]
             break
     if hasattr(st, "experimental_rerun"):
@@ -899,7 +899,7 @@ def continue_to_analysis():
 
 def reset_profile():
     st.session_state.patient_name = ""
-    st.session_state.patient_age = ""
+    st.session_state.patient_age = 0
     st.session_state.patient_gender = ""
     st.session_state.agree_disclaimer = False
     if hasattr(st, "experimental_rerun"):
@@ -1131,7 +1131,7 @@ if page == "profile":
             unsafe_allow_html=True,
         )
 
-        age_value = int(st.session_state.patient_age) if str(st.session_state.patient_age).isdigit() else 0
+        age_value = st.session_state.patient_age
         col1, col2, col3 = st.columns(3)
         with col1:
             st.session_state.patient_name = st.text_input(
@@ -1140,15 +1140,13 @@ if page == "profile":
                 placeholder="e.g. Priya Sharma",
             )
         with col2:
-            st.session_state.patient_age = str(
-                st.number_input(
-                    "🎂 Age",
-                    min_value=0,
-                    max_value=130,
-                    value=age_value,
-                    step=1,
-                    help="Enter the patient's age in years.",
-                )
+            st.session_state.patient_age = st.number_input(
+                "🎂 Age",
+                min_value=0,
+                max_value=130,
+                value=age_value,
+                step=1,
+                help="Enter the patient's age in years.",
             )
         with col3:
             st.session_state.patient_gender = st.selectbox(
@@ -1176,7 +1174,7 @@ if page == "profile":
 
         profile_save_ready = bool(
             st.session_state.patient_name.strip()
-            and st.session_state.patient_age.strip()
+            and st.session_state.patient_age > 0
             and st.session_state.patient_gender != ""
         )
 
@@ -1389,7 +1387,7 @@ if current_step == 0:
     col1, col2 = st.columns(2)
     with col1:
         name = st.text_input("Patient Name", key="patient_name")
-        age = st.number_input("Age", min_value=0, max_value=120, value=int(st.session_state.patient_age) if st.session_state.patient_age and st.session_state.patient_age.isdigit() else 0, key="patient_age")
+        age = st.number_input("Age", min_value=0, max_value=120, key="patient_age")
         gender = st.selectbox("Gender", ["Select", "Male", "Female", "Other"], key="patient_gender")
 
     with col2:
@@ -1837,7 +1835,7 @@ with st.expander("Read the full medical disclaimer", expanded=False):
         unsafe_allow_html=True,
     )
 
-    age_value = int(st.session_state.patient_age) if str(st.session_state.patient_age).isdigit() else 0
+    age_value = st.session_state.patient_age
     col1, col2, col3 = st.columns(3)
     with col1:
         st.session_state.patient_name = st.text_input(
@@ -1846,15 +1844,13 @@ with st.expander("Read the full medical disclaimer", expanded=False):
             placeholder="e.g. Priya Sharma",
         )
     with col2:
-        st.session_state.patient_age = str(
-            st.number_input(
-                "🎂 Age",
-                min_value=0,
-                max_value=130,
-                value=age_value,
-                step=1,
-                help="Enter the patient's age in years.",
-            )
+        st.session_state.patient_age = st.number_input(
+            "🎂 Age",
+            min_value=0,
+            max_value=130,
+            value=age_value,
+            step=1,
+            help="Enter the patient's age in years.",
         )
     with col3:
         st.session_state.patient_gender = st.selectbox(
@@ -1882,7 +1878,7 @@ with st.expander("Read the full medical disclaimer", expanded=False):
 
     profile_save_ready = bool(
         st.session_state.patient_name.strip()
-        and st.session_state.patient_age.strip()
+        and st.session_state.patient_age > 0
         and st.session_state.patient_gender != ""
     )
 
