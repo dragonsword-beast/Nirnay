@@ -1972,310 +1972,157 @@ def render_analysis_chat_styles():
     st.markdown(
         """
         <style>
-        .assistant-experience-section {
-            position: relative;
-            z-index: 1;
-            width: 100%;
-            max-width: 100%;
-            margin: 1.5rem 0 1.5rem;
-            padding: 1.8rem 1.5rem;
+        .analysis-tool-shell {
+            background: linear-gradient(135deg, rgba(8, 17, 34, 0.95), rgba(18, 34, 60, 0.90));
+            border: 1px solid rgba(90, 190, 255, 0.2);
             border-radius: 22px;
-            background: rgba(10, 18, 34, 0.84);
-            border: 1px solid rgba(94, 202, 255, 0.15);
-            box-shadow: 0 24px 80px rgba(4, 18, 38, 0.28);
-            backdrop-filter: blur(18px);
-            overflow: hidden;
-            box-sizing: border-box;
+            padding: 1rem;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto 1rem;
+            box-shadow: 0 22px 58px rgba(2, 8, 18, 0.31);
         }
-        .assistant-experience-section::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(circle at 10% 10%, rgba(45, 207, 255, 0.12), transparent 20%),
-                        radial-gradient(circle at 85% 20%, rgba(142, 96, 255, 0.10), transparent 18%),
-                        radial-gradient(circle at 50% 90%, rgba(89, 183, 255, 0.08), transparent 22%);
-            pointer-events: none;
-            filter: blur(10px);
-            opacity: 0.9;
+        .tool-grid-wrap {
+            display: grid;
+            gap: 1rem;
         }
-        .assistant-experience-section::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background-image: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.00) 100%);
-            opacity: 0.18;
-            pointer-events: none;
+        .stColumns {
+            display: grid !important;
+            gap: 1rem !important;
+            grid-template-columns: 1fr;
         }
-        .assistant-experience-header {
-            position: relative;
-            z-index: 2;
-            text-align: center;
-            max-width: 740px;
-            margin: 0 auto 1.85rem;
+        .col-left, .col-right {
+            width: 100%;
         }
-        .assistant-experience-title {
-            margin: 0 auto;
-            color: #f8fbff;
-            font-size: 2rem;
+        .analysis-panel, .assistant-panel, .analysis-report-box, .glass-card, .panel-card {
+            border-radius: 16px;
+            border: 1px solid rgba(221, 234, 255, 0.15);
+            background: rgba(9, 14, 28, 0.82);
+            box-shadow: 0 12px 26px rgba(2, 6, 14, 0.25);
+            padding: 0.95rem;
+            color: #eaf2ff;
+        }
+        .analysis-heading {
+            font-size: 1.42rem;
             font-weight: 800;
-            letter-spacing: -0.02em;
-            text-shadow: 0 0 24px rgba(38, 209, 255, 0.18);
+            margin-bottom: 0.45rem;
+            color: #e2f2ff;
         }
-        .assistant-experience-subtitle {
-            margin: 0.8rem auto 0;
-            max-width: 640px;
-            color: rgba(220, 236, 255, 0.78);
-            font-size: 1rem;
-            line-height: 1.8;
-            letter-spacing: 0.01em;
-        }
-        .assistant-experience-underline {
-            width: 90px;
-            height: 4px;
-            margin: 1.2rem auto 0;
-            border-radius: 999px;
-            background: linear-gradient(90deg, rgba(52, 211, 255, 0.95), rgba(126, 78, 255, 0.95));
-            box-shadow: 0 0 22px rgba(52, 211, 255, 0.25);
-        }
-        .assistant-option-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.25rem;
-            position: relative;
-            z-index: 2;
-        }
-        .dashboard-shell {
-            width: 100%;
-            display: grid;
-            gap: 1.2rem;
-            margin-bottom: 1.3rem;
-        }
-        .dashboard-top-grid {
-            display: grid;
-            grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
-            gap: 1rem;
-            align-items: start;
-        }
-        .tool-grid {
-            display: grid;
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-        .panel-card,
-        .glass-card,
-        .analysis-action-bar,
-        .analysis-report-box {
-            border-radius: 22px;
-            border: 1px solid rgba(255,255,255,0.12);
-            padding: 1rem 1rem 1.2rem;
-            background: rgba(12, 21, 41, 0.75);
-            box-shadow: 0 16px 40px rgba(0,0,0,0.22);
+        .analysis-subheading {
+            margin: 0 0 0.9rem;
+            color: rgba(218, 230, 252, 0.83);
+            font-size: 0.94rem;
         }
         .analysis-action-bar {
             display: flex;
             flex-wrap: wrap;
-            gap: 0.65rem;
+            gap: 0.6rem;
             justify-content: space-between;
-            margin-top: 1rem;
-        }
-        .analysis-action-bar .action-copy {
-            flex: 1 1 100%;
-            color: rgba(226, 238, 255, 0.88);
-            font-size: 0.92rem;
-            line-height: 1.45;
-            padding: 0.4rem 0.65rem;
+            align-items: center;
+            margin-top: 0.8rem;
+            padding: 0.75rem;
             background: rgba(255,255,255,0.06);
-            border-radius: 12px;
+            border: 1px solid rgba(145, 180, 255, 0.15);
+            border-radius: 14px;
         }
-        .analysis-report-box {
-            margin-top: 1rem;
-            border-radius: 20px;
-            background: rgba(6, 12, 24, 0.84);
-            color: rgba(238, 244, 255, 0.92);
+        .analysis-action-buttons .stButton>button,
+        .analysis-action-buttons .stButton>div>button,
+        .analysis-action-buttons .stButton>div>div>button {
+            min-width: 140px !important;
+            width: auto !important;
+            padding: 0.70rem 1rem !important;
+            border-radius: 12px !important;
+            font-size: 0.90rem !important;
         }
-        .analysis-report-box .report-header {
+        .assistant-panel {
+            position: sticky;
+            top: 1rem;
+            z-index: 1;
+        }
+        .assistant-panel .assistant-title {
+            font-size: 1.17rem;
+            font-weight: 800;
+            margin-bottom: 0.6rem;
+            color: #e7f4ff;
+        }
+        .assistant-panel .assistant-chip-row {
             display: flex;
             flex-wrap: wrap;
-            align-items: center;
-            justify-content: space-between;
-            gap: 0.6rem;
+            gap: 0.5rem;
             margin-bottom: 0.8rem;
         }
-        .analysis-report-box .report-title {
-            font-size: 1.15rem;
-            font-weight: 700;
-            color: #e0ecff;
-        }
-        .analysis-report-box .report-subtitle {
-            color: rgba(216, 235, 255, 0.85);
-            font-size: 0.95rem;
-        }
-
-        .assistant-option-card {
-            position: relative;
-            overflow: hidden;
-            border-radius: 28px;
-            min-height: 260px;
-            padding: 1.85rem 1.75rem;
-            background: linear-gradient(180deg, rgba(7, 17, 34, 0.92), rgba(12, 25, 48, 0.78));
-            border: 1px solid rgba(86, 216, 255, 0.14);
-            box-shadow: 0 28px 72px rgba(6, 18, 38, 0.26);
-            backdrop-filter: blur(14px);
-            transition: transform 0.32s ease, box-shadow 0.32s ease, border-color 0.32s ease;
-            animation: assistantFadeIn 0.75s ease both;
-        }
-        .assistant-option-card:nth-child(1) {
-            animation-delay: 0.08s;
-        }
-        .assistant-option-card:nth-child(2) {
-            animation-delay: 0.16s;
-        }
-        .assistant-option-card::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            pointer-events: none;
-            background: radial-gradient(circle at top left, rgba(40, 199, 255, 0.12), transparent 28%),
-                        radial-gradient(circle at bottom right, rgba(142, 96, 255, 0.08), transparent 24%);
-        }
-        .assistant-option-card:hover {
-            transform: translateY(-6px) scale(1.01);
-            border-color: rgba(37, 212, 255, 0.32);
-            box-shadow: 0 34px 96px rgba(8, 24, 52, 0.32);
-        }
-        .assistant-option-card:hover .assistant-option-icon {
-            transform: translateY(-2px) scale(1.04);
-            box-shadow: 0 0 22px rgba(37, 212, 255, 0.25);
-        }
-        .assistant-option-card .assistant-option-icon {
-            width: 56px;
-            height: 56px;
-            display: grid;
-            place-items: center;
-            border-radius: 18px;
-            background: rgba(34, 153, 255, 0.13);
-            color: #b5f3ff;
-            font-size: 1.45rem;
-            border: 1px solid rgba(255,255,255,0.12);
-            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06);
-            transition: transform 0.28s ease, box-shadow 0.28s ease;
-        }
-        .assistant-option-card .assistant-option-title {
-            margin: 1.25rem 0 0.6rem;
-            color: #eff7ff;
-            font-size: 1.35rem;
-            font-weight: 800;
-            letter-spacing: -0.02em;
-            line-height: 1.1;
-        }
-        .assistant-option-card .assistant-option-desc {
-            margin: 0;
-            color: rgba(197, 214, 237, 0.78);
-            font-size: 0.98rem;
-            line-height: 1.75;
-            max-width: 95%;
-        }
-        .assistant-option-card .assistant-option-meta {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-top: 1.5rem;
-            gap: 1rem;
-        }
-        .assistant-option-card .option-badge {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0.45rem 0.9rem;
+        .assistant-panel .assistant-chip {
+            padding: 0.3rem 0.7rem;
             border-radius: 999px;
-            background: rgba(37, 212, 255, 0.14);
-            color: #c9f7ff;
-            font-size: 0.82rem;
+            background: rgba(34, 155, 255, 0.18);
+            color: #d7f3ff;
+            font-size: 0.75rem;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.08em;
+            letter-spacing: 0.03em;
         }
-        .assistant-option-card .assistant-option-action {
-            width: 100%;
-            margin-top: 0.85rem;
+        .assistant-panel .assistant-card {
+            margin-bottom: 0.85rem;
+            padding: 0.85rem;
+            border-radius: 16px;
+            background: rgba(17, 28, 50, 0.95);
+            border: 1px solid rgba(88, 170, 255, 0.17);
         }
-        .assistant-option-card .assistant-option-action .stButton > button,
-        .assistant-option-card .assistant-option-action .stButton > div > button,
-        .assistant-option-card .assistant-option-action .stButton > div > div > button {
-            width: 100% !important;
-            padding: 0.95rem 1.2rem !important;
-            border-radius: 18px !important;
-            background: linear-gradient(135deg, rgba(64,236,255,0.92), rgba(121, 90, 255, 0.94)) !important;
-            color: #03111f !important;
-            font-weight: 700 !important;
-            letter-spacing: 0.01em !important;
-            box-shadow: 0 18px 40px rgba(26, 151, 219, 0.24) !important;
-            border: 1px solid rgba(255,255,255,0.18) !important;
-            transition: transform 0.24s ease, box-shadow 0.24s ease, background 0.24s ease !important;
+        .analysis-report-box {
+            border-radius: 16px;
+            border: 1px solid rgba(180, 225, 255, 0.16);
+            background: rgba(6, 12, 22, 0.86);
         }
-        .assistant-option-card .assistant-option-action .stButton > button:hover,
-        .assistant-option-card .assistant-option-action .stButton > div > button:hover,
-        .assistant-option-card .assistant-option-action .stButton > div > div > button:hover {
-            transform: translateY(-1px) !important;
-            background: linear-gradient(135deg, rgba(75,244,255,0.98), rgba(171, 100, 255, 0.95)) !important;
-            box-shadow: 0 24px 48px rgba(54, 188, 255, 0.28) !important;
+        .upload-report-hover {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+            color: #c6dcff;
         }
-        .assistant-option-card .assistant-option-action .stButton > button:focus,
-        .assistant-option-card .assistant-option-action .stButton > div > button:focus,
-        .assistant-option-card .assistant-option-action .stButton > div > div > button:focus {
-            animation: assistantPulse 1.8s infinite;
+        .upload-report-hover .upload-report-card {
+            display: none;
+            position: absolute;
+            top: 120%;
+            left: 0;
+            width: 360px;
+            padding: 0.7rem;
+            border: 1px solid rgba(180, 225, 255, 0.24);
+            background: rgba(8, 17, 33, 0.96);
+            border-radius: 12px;
+            box-shadow: 0 14px 30px rgba(0, 0, 0, 0.35);
+            z-index: 10;
         }
-        @keyframes assistantFadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        .upload-report-hover:hover .upload-report-card {
+            display: block;
         }
-        @keyframes assistantPulse {
-            0%, 100% { box-shadow: 0 22px 42px rgba(68, 180, 255, 0.28); }
-            50% { box-shadow: 0 26px 56px rgba(68, 180, 255, 0.34); }
-        }
-        @media (max-width: 1024px) {
-            .dashboard-top-grid,
-            .analysis-meta-grid,
-            .action-grid,
-            .assistant-option-grid {
+        @media (max-width: 980px) {
+            .stColumns {
                 grid-template-columns: 1fr !important;
             }
-            .block-container,
-            .dashboard-shell,
-            .assistant-experience-section,
-            .glass-card,
-            .content,
-            .analysis-report-box {
-                width: 100% !important;
-                max-width: 100% !important;
+            .analysis-action-bar {
+                flex-direction: column;
+                align-items: stretch;
             }
-            .stButton>button,
-            .stButton>div>button,
-            .stButton>div>div>button {
-                width: 100% !important;
+            .assistant-panel {
+                position: static;
+                top: auto;
             }
         }
-        @media (max-width: 840px) {
-            .assistant-option-grid {
-                grid-template-columns: 1fr;
+        @media (max-width: 680px) {
+            .analysis-tool-shell {
+                padding: 0.5rem;
             }
-            .assistant-experience-section {
-                padding: 1.6rem;
+            .analysis-action-bar {
+                gap: 0.5rem;
             }
-            .profile-row {
-                display: block;
-                gap: 0.75rem;
+            .assistant-panel .assistant-chip-row {
+                justify-content: flex-start;
             }
-            .profile-row .avatar,
-            .profile-row div {
-                width: 100%;
-            }
-            .page-guide,
-            .analysis-report-box .report-title,
-            .analysis-report-box .report-subtitle {
-                font-size: 0.92rem;
+            .assistant-panel .assistant-card {
+                padding: 0.7rem;
             }
         }
+        </style>
         """,
         unsafe_allow_html=True,
     )
@@ -3304,6 +3151,7 @@ if page == "analysis":
         unsafe_allow_html=True,
     )
     render_analysis_chat_styles()
+    st.markdown("<div class='analysis-tool-shell'>", unsafe_allow_html=True)
     output = []  # Initialize output list
 
     # keep patient values local in analysis
@@ -3387,9 +3235,11 @@ if page == "analysis":
             st.button("Open Quick Summary", key="choose_quick_assistant", on_click=launch_chat, args=("quick",))
 
 
-    st.markdown("<div class='tool-grid'>", unsafe_allow_html=True)
+    st.markdown("<div class='tool-grid-wrap'>", unsafe_allow_html=True)
+    st.markdown("<div class='stColumns'>", unsafe_allow_html=True)
     col1, col2 = st.columns([7, 3], gap="large")
     with col1:
+        st.markdown("<div class='col-left'>", unsafe_allow_html=True)
         st.markdown(
             """
             <div class='glass-card'>
@@ -3562,8 +3412,10 @@ if page == "analysis":
                     line_class = "ok"
                 st.markdown(f"<div class='result-line {line_class}'>{safe_line}</div>", unsafe_allow_html=True)
             st.markdown("</div>", unsafe_allow_html=True)
+            st.markdown("</div>", unsafe_allow_html=True)  # close col-left
 
     with col2:
+        st.markdown("<div class='col-right'>", unsafe_allow_html=True)
         st.markdown(
             """
             <div class='assistant-panel sticky'>
@@ -3590,8 +3442,10 @@ if page == "analysis":
             unsafe_allow_html=True,
         )
         render_chat_options()
-
-    st.markdown("</div>", unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)  # close col-right
+        st.markdown("</div>", unsafe_allow_html=True)  # close stColumns
+        st.markdown("</div>", unsafe_allow_html=True)  # close tool-grid-wrap
+        st.markdown("</div>", unsafe_allow_html=True)  # close analysis-tool-shell
 
 v_checks = collected["🧪 Metabolism"]
 c_checks = collected["❤️ Cardiac"]
