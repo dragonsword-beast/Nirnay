@@ -1755,28 +1755,32 @@ st.markdown(
         color: {primary_cyan};
     }}
 
-    /* Navbar buttons (Streamlit buttons) */
-    .stButton > button {{
-        background: transparent !important;
-        border: 1px solid rgba(255,255,255,0.1) !important;
-        color: {surface_frost} !important;
-        border-radius: 8px !important;
-        padding: 0.5rem 1rem !important;
-        transition: all 0.3s ease !important;
-        font-weight: 500 !important;
+    .navbar-nav {{
+        display: flex;
+        gap: 1rem;
     }}
 
-    .stButton > button:hover {{
-        background: rgba(37, 200, 241, 0.1) !important;
-        border-color: rgba(37, 200, 241, 0.3) !important;
-        color: {primary_cyan} !important;
+    .nav-btn {{
+        background: transparent;
+        border: 1px solid rgba(255,255,255,0.1);
+        color: {surface_frost};
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        transition: all 0.3s ease;
+        font-weight: 500;
+        cursor: pointer;
     }}
 
-    .stButton > button:disabled {{
-        background: rgba(37, 200, 241, 0.2) !important;
-        border-color: rgba(37, 200, 241, 0.5) !important;
-        color: {primary_cyan} !important;
-        opacity: 1 !important;
+    .nav-btn:hover {{
+        background: rgba(37, 200, 241, 0.1);
+        border-color: rgba(37, 200, 241, 0.3);
+        color: {primary_cyan};
+    }}
+
+    .nav-btn.active {{
+        background: rgba(37, 200, 241, 0.2);
+        border-color: rgba(37, 200, 241, 0.5);
+        color: {primary_cyan};
     }}
 
     /* Main Content */
@@ -3688,26 +3692,18 @@ def reset_profile():
 def render_navbar():
     current_page = st.session_state.get("page", "profile")
     
-    # Create navbar using Streamlit columns
-    col1, col2, col3, col4 = st.columns([1, 2, 2, 2])
+    nav_html = f'''
+    <nav class="custom-navbar">
+        <div class="navbar-brand">{logo_html}<span>Nirnay</span></div>
+        <div class="navbar-nav">
+            <button class="nav-btn {'active' if current_page == 'profile' else ''}" onclick="javascript:void(0)">Home</button>
+            <button class="nav-btn {'active' if current_page == 'analysis' else ''}" onclick="javascript:void(0)">Analysis</button>
+            <button class="nav-btn {'active' if current_page == 'chat' else ''}" onclick="javascript:void(0)">Chat</button>
+        </div>
+    </nav>
+    '''
     
-    with col1:
-        st.markdown(f'<div class="navbar-brand">{logo_html}<span>Nirnay</span></div>', unsafe_allow_html=True)
-    
-    with col2:
-        if st.button("Home", key="nav_home", use_container_width=True, 
-                    disabled=(current_page == "profile")):
-            set_page("profile")
-    
-    with col3:
-        if st.button("Analysis", key="nav_analysis", use_container_width=True,
-                    disabled=(current_page == "analysis")):
-            set_page("analysis")
-    
-    with col4:
-        if st.button("Chat", key="nav_chat", use_container_width=True,
-                    disabled=(current_page == "chat")):
-            set_page("chat")
+    st.markdown(nav_html, unsafe_allow_html=True)
 
 
 def render_custom_footer():
