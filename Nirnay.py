@@ -922,6 +922,314 @@ def launch_chat(mode):
 # ============================================
 
 # ============================================
+# PROFILE PAGE (INTAKE FORM)
+# ============================================
+if page == "profile":
+    # ============================================
+    # NAVIGATION BAR
+    # ============================================
+    st.markdown(
+        """
+        <nav class="navbar">
+            <div class="navbar-container">
+                <a href="#" class="navbar-brand">
+                    <div class="navbar-logo">N</div>
+                    Nirnay
+                </a>
+                <ul class="navbar-nav">
+                    <li><a href="#features" class="nav-link">Features</a></li>
+                    <li><a href="#tool" class="nav-link">Tool</a></li>
+                    <li><a href="#chat" class="nav-link">AI Chat</a></li>
+                </ul>
+            </div>
+        </nav>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    # ============================================
+    # HERO SECTION
+    # ============================================
+    st.markdown(
+        """
+        <section class="hero-section">
+            <div class="hero-container">
+                <h1 class="hero-title">AI-Powered Clinical Diagnostic Workflow</h1>
+                <p class="hero-subtitle">
+                    Transform your medical assessment process with intelligent automation, comprehensive analysis,
+                    and real-time AI assistance for healthcare professionals.
+                </p>
+                <a href="#tool" class="hero-cta">Start Assessment →</a>
+            </div>
+        </section>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    # ============================================
+    # FEATURES SECTION
+    # ============================================
+    st.markdown(
+        """
+        <section class="features-section" id="features">
+            <div class="features-container">
+                <div class="features-header">
+                    <h2 class="features-title">Why Choose Nirnay?</h2>
+                    <p class="features-subtitle">
+                        Advanced AI technology meets clinical excellence to streamline your diagnostic workflow.
+                    </p>
+                </div>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">🧠</div>
+                        <h3 class="feature-title">AI-Powered Analysis</h3>
+                        <p class="feature-description">
+                            Leverage advanced machine learning algorithms for comprehensive symptom analysis and risk assessment.
+                        </p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">⚡</div>
+                        <h3 class="feature-title">Rapid Assessment</h3>
+                        <p class="feature-description">
+                            Complete patient evaluations in minutes with our streamlined, intuitive workflow interface.
+                        </p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🤖</div>
+                        <h3 class="feature-title">24/7 AI Assistant</h3>
+                        <p class="feature-description">
+                            Get instant answers to clinical questions and access evidence-based medical insights anytime.
+                        </p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🔒</div>
+                        <h3 class="feature-title">Secure & Private</h3>
+                        <p class="feature-description">
+                            Enterprise-grade security with HIPAA-compliant data handling and privacy protection.
+                        </p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📊</div>
+                        <h3 class="feature-title">Comprehensive Reports</h3>
+                        <p class="feature-description">
+                            Generate detailed clinical reports with differential diagnoses and treatment recommendations.
+                        </p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📱</div>
+                        <h3 class="feature-title">Mobile Optimized</h3>
+                        <p class="feature-description">
+                            Fully responsive design that works seamlessly across all devices and screen sizes.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    # ============================================
+    # TOOL SECTION (INTAKE FORM)
+    # ============================================
+    st.markdown(
+        """
+        <section class="tool-section" id="tool">
+            <div class="tool-container">
+                <div class="tool-header">
+                    <h2 class="tool-title">Patient Intake Form</h2>
+                    <p class="tool-subtitle">
+                        Begin your clinical assessment by providing patient information and symptoms.
+                    </p>
+                </div>
+            </div>
+        </section>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    st.markdown(
+        f"""
+                <div class="stepper-step active"><span class="status">Step 1 of 3</span>Profile</div>
+                <div class="stepper-step upcoming"><span class="status">Next</span>Analysis</div>
+                <div class="stepper-step upcoming"><span class="status">Future</span>Chat</div>
+            </div>
+            <div class="site-hero">
+                <div class="brand-header">
+                    {logo_html}
+                    <div class="brand-copy">
+                        <h1 class="main-header">Nirnay</h1>
+                        <p class="subtitle">World's Hope, Health's Future</p>
+                    </div>
+                </div>
+                <div class="hero-actions">
+                    <a class="hero-primary-cta" href="#profile-section">Start Assessment</a>
+                    <a class="hero-secondary-cta" href="#profile-section">Review patient intake</a>
+                </div>
+                <div class="hero-trust-row">
+                    <div class="hero-trust-item">🤖 AI-assisted, not a doctor</div>
+                    <div class="hero-trust-item">🔒 Secure by design</div>
+                    <div class="hero-trust-item">⚡ Fast clinical workflow</div>
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+    st.markdown(
+        """
+        <div class="disclaimer-banner">
+            <div><strong>⚠️ Medical disclaimer</strong> This is an AI-assisted clinical workflow, not a clinical diagnosis tool. Please read the full disclaimer before continuing.</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    with st.expander("Read the full medical disclaimer", expanded=False):
+        st.markdown(
+            """
+            <div class="disclaimer-text">
+                <strong>IMPORTANT NOTICE:</strong><br>
+                This diagnostic tool is designed to ASSIST and ENHANCE medical sciences.
+                It is NOT a replacement for professional medical diagnosis, treatment, or advice from a qualified healthcare provider.
+                <ul>
+                    <li>All diagnostic findings and insights provided by this tool must be CORRELATED with a qualified physician or medical specialist.</li>
+                    <li>Users should NOT rely solely on this tool for medical decisions.</li>
+                    <li>Always consult your doctor before making any healthcare decisions based on this tool's output.</li>
+                    <li>This tool is for educational and informational purposes only.</li>
+                    <li>In case of medical emergencies, seek immediate professional medical attention.</li>
+                </ul>
+                <p>By proceeding, you acknowledge and accept full responsibility for your medical decisions and agree to consult with healthcare professionals regarding all diagnostic findings.</p>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+        st.markdown(
+            f"""
+            <div class="glass-card profile-card" id="profile-section">
+                <div class="card-header"><span class="section-icon">👤</span> Patient profile</div>
+                <div class="profile-row">
+                    <div>
+                        <div class="profile-name">Patient intake</div>
+                        <div class="profile-meta">Complete the patient's core details to launch the diagnostic workup.</div>
+                        <div class="status-badge">Ready to assess</div>
+                    </div>
+                </div>
+                <div class="metrics-grid">
+                    <div class="metric-pill">
+                        <strong>Profile readiness</strong>
+                        <span>{'Complete' if st.session_state.patient_name and st.session_state.patient_age and st.session_state.patient_gender else 'Pending details'}</span>
+                    </div>
+                    <div class="metric-pill">
+                        <strong>Saved workflows</strong>
+                        <span>{len(st.session_state.saved_profiles)} saved profiles</span>
+                    </div>
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+        age_value = int(st.session_state.patient_age) if str(st.session_state.patient_age).isdigit() else 0
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.session_state.patient_name = st.text_input(
+                "👤 Full name",
+                value=st.session_state.patient_name,
+                placeholder="e.g. Priya Sharma",
+            )
+        with col2:
+            st.session_state.patient_age = str(
+                st.number_input(
+                    "🎂 Age",
+                    min_value=0,
+                    max_value=130,
+                    value=age_value,
+                    step=1,
+                    help="Enter the patient's age in years.",
+                )
+            )
+        with col3:
+            st.session_state.patient_gender = st.selectbox(
+                "⚧ Gender",
+                ["", "Male", "Female"],
+                index=["", "Male", "Female"].index(st.session_state.patient_gender)
+                if st.session_state.patient_gender in ["", "Male", "Female"]
+                else 0,
+            )
+
+        st.markdown("---")
+        st.checkbox(
+            "I have read and agree to the medical disclaimer",
+            value=st.session_state.agree_disclaimer,
+            key="agree_disclaimer",
+        )
+
+        with st.expander("Saved profiles", expanded=False):
+            if st.session_state.saved_profiles:
+                saved_labels = [f"{p['name']} · {p['age']} · {p['gender']}" for p in st.session_state.saved_profiles]
+                st.selectbox("Select a saved profile to load", [""] + saved_labels, key="selected_saved_profile")
+                st.button("Load saved profile", key="load_saved_profile", on_click=load_saved_profile)
+            else:
+                st.info("No saved profiles yet. Save the current profile after completing the form.")
+
+        profile_save_ready = bool(
+            st.session_state.patient_name.strip()
+            and st.session_state.patient_age.strip()
+            and st.session_state.patient_gender != ""
+        )
+
+        valid_profile = bool(
+            profile_save_ready
+            and st.session_state.agree_disclaimer
+        )
+
+        if not valid_profile:
+            st.markdown(
+                f"""
+                <div style="background: linear-gradient(135deg, #eab308 0%, #dc2626 100%); 
+                            color: #e8f3fc; 
+                            padding: 1rem; 
+                            border-radius: 12px; 
+                            text-align: center; 
+                            font-weight: 600; 
+                            margin: 1.2rem 0;">
+                    ⚠️ Complete the patient profile and disclaimer to continue.
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+            if profile_save_ready:
+                st.info("You can still save this profile once the name, age, and gender are filled in.")
+            st.button("Reset profile", key="reset_profile", on_click=reset_profile)
+            render_footer()
+            st.stop()
+
+        col1, col2 = st.columns([3, 2])
+        with col1:
+            st.button(
+                "Begin Assessment",
+                key="continue_to_analysis",
+                on_click=continue_to_analysis,
+                disabled=not valid_profile,
+            )
+        with col2:
+            st.button(
+                "Save profile",
+                key="save_profile",
+                on_click=save_profile,
+                disabled=not profile_save_ready,
+            )
+
+        if st.session_state.profile_saved:
+            st.success("Profile saved successfully. You can load it later from Saved profiles.")
+
+        st.button("Reset profile", key="reset_profile", on_click=reset_profile)
+        render_footer()
+        st.stop()
+
+# ============================================
 # NAVIGATION BAR
 # ============================================
 st.markdown(
