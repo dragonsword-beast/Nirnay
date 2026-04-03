@@ -9,11 +9,6 @@ from groq import Groq
 logo_png_path = pathlib.Path(__file__).resolve().parent / "893a2625-aa76-4993-af22-650fd069b640-8.png"
 logo_image_url = "https://cdn.creativefabrica.com/2020/07/17/Medicine-Logo-Graphics-4647232-1-580x386.jpg"
 
-# Sanitize session state to prevent type errors
-if "patient_age" in st.session_state:
-    if not isinstance(st.session_state.patient_age, int) or st.session_state.patient_age < 0:
-        st.session_state.patient_age = 0
-
 def _load_logo_html(path: pathlib.Path, remote_url: str, fallback_text: str = "Nirnay") -> str:
     if path.exists():
         data = base64.b64encode(path.read_bytes()).decode("ascii")
@@ -28,758 +23,1631 @@ icon_path = logo_image_url if logo_image_url else (str(logo_png_path) if logo_pn
 st.set_page_config(
     page_title="Nirnay | Clinical Diagnostic Workflow",
     page_icon=icon_path,
-    layout="wide",
+    layout="centered",
     initial_sidebar_state="collapsed"
 )
 
-# ============================================
-# MODERN SAAS WEBSITE DESIGN
-# ============================================
+# --- THEME COLORS---
+neutral_light = "#e8f3fc"
+highlight_gold = "#f3c136"
+surface_white = "#f5f7fb"
+surface_frost = "#dde6f4"
+primary_cyan = "#27c8f1"
+primary_ink = "#1761c1"
+border_ink = "#1f3042"
+text_night = "#020617"
+success_mint = "#22c55e"
+warning_amber = "#eab308"
+danger_crimson = "#dc2626"
+
 
 st.markdown(
-    """
+    f"""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-    /* Hide Streamlit branding */
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    header[data-testid="stHeader"] {visibility: hidden;}
-    .stDeployButton {display: none;}
+    * {{
+        font-family: 'Inter', sans-serif;
+    }}
 
-    :root {
-        /* Light theme colors */
-        --primary-bg: #ffffff;
-        --secondary-bg: #f8fafc;
-        --surface-bg: #ffffff;
-        --card-bg: #ffffff;
-        --text-primary: #1a365d;
-        --text-secondary: #4a5568;
-        --text-muted: #718096;
-        --border-color: #e2e8f0;
-        --border-hover: #cbd5e0;
-        --shadow: rgba(0, 0, 0, 0.1);
-        --shadow-hover: rgba(0, 0, 0, 0.15);
-        --navbar-bg: rgba(255, 255, 255, 0.95);
-        --navbar-border: rgba(0, 0, 0, 0.1);
-        --gradient-start: #667eea;
-        --gradient-end: #764ba2;
-        --accent-primary: #3b82f6;
-        --accent-secondary: #06b6d4;
-    }
-
-    [data-theme="dark"] {
-        /* Dark theme colors */
-        --primary-bg: #0f172a;
-        --secondary-bg: #1e293b;
-        --surface-bg: #1e293b;
-        --card-bg: rgba(30, 41, 59, 0.8);
-        --text-primary: #f1f5f9;
-        --text-secondary: #cbd5e1;
-        --text-muted: #94a3b8;
-        --border-color: rgba(148, 163, 184, 0.2);
-        --border-hover: rgba(148, 163, 184, 0.3);
-        --shadow: rgba(0, 0, 0, 0.3);
-        --shadow-hover: rgba(0, 0, 0, 0.4);
-        --navbar-bg: rgba(15, 23, 42, 0.95);
-        --navbar-border: rgba(148, 163, 184, 0.2);
-        --gradient-start: #3b82f6;
-        --gradient-end: #1e40af;
-        --accent-primary: #60a5fa;
-        --accent-secondary: #22d3ee;
-    }
-
-    * {
-        box-sizing: border-box;
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    }
-
-    body {
-        background: var(--primary-bg);
-        color: var(--text-primary);
-        line-height: 1.6;
-        margin: 0;
-        padding: 0;
+    .stApp {{
+        background: radial-gradient(circle at top left, #0d1b2a 0%, #07101d 45%, #050812 100%);
+        color: {primary_cyan};
+        min-width: 0;
         overflow-x: hidden;
-    }
+    }}
 
-    /* ============================================
-       NAVIGATION BAR
-       ============================================ */
-    .navbar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        z-index: 1000;
-        background: var(--navbar-bg);
-        backdrop-filter: blur(10px);
-        border-bottom: 1px solid var(--navbar-border);
-        padding: 0;
-        transition: all 0.3s ease;
-    }
+    body, .stApp, .main, .block-container {{
+        box-sizing: border-box;
+    }}
 
-    .navbar-container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 0 2rem;
+    .block-container {{
+        padding: 1.5rem 1.8rem;
+        max-width: 1180px;
+        width: 100%;
+        background: rgba(16, 30, 50, 0.92);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 20px;
+        box-shadow: 0 18px 40px rgba(0,0,0,0.24);
+        backdrop-filter: blur(14px);
+    }}
+
+    .main-header {{
+        font-family: Calibri, sans-serif;
+        text-align: center;
+        font-size: 3rem;
+        font-weight: 900;
+        margin-bottom: 0.15rem;
+        letter-spacing: 0px;
+        color: {primary_cyan};
+        text-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+    }}
+
+    .subtitle {{
+        text-align: center;
+        color: {surface_frost};
+        font-size: 1.1rem;
+        font-weight: 400;
+        margin-bottom: 1.75rem;
+        opacity: 0.92;
+    }}
+
+    .topbar {{
         display: flex;
         justify-content: space-between;
         align-items: center;
-        height: 70px;
-    }
+        gap: 0.8rem;
+        margin-bottom: 1rem;
+        padding: 0.8rem 1rem;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 18px;
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
+    }}
 
-    .navbar-brand {
+    .stepper {{
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.85rem;
+        margin-bottom: 1.75rem;
+        padding: 0.75rem 0;
+    }}
+
+    .stepper-step {{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.6rem;
+        padding: 0.9rem 1rem;
+        border-radius: 18px;
+        background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(255,255,255,0.12);
+        color: {surface_frost};
+        font-weight: 700;
+        font-size: 0.98rem;
+        text-align: center;
+        min-height: 62px;
+        transition: all 0.3s ease;
+    }}
+
+    .stepper-step.active {{
+        background: linear-gradient(135deg, rgba(19, 71, 135, 0.24) 0%, rgba(11, 32, 58, 0.95) 100%);
+        border-color: rgba(36, 141, 227, 0.45);
+        color: {surface_white};
+        box-shadow: 0 0 26px rgba(37, 200, 241, 0.18), 0 24px 48px rgba(0,0,0,0.22);
+        animation: glowPulse 3.2s ease-in-out infinite;
+    }}
+
+    .stepper-step.completed {{
+        color: {surface_white};
+        background: rgba(37, 200, 241, 0.08);
+        border-color: rgba(37, 200, 241, 0.18);
+    }}
+
+    .stepper-step.upcoming {{
+        opacity: 0.75;
+    }}
+
+    .stepper-step span.status {{
+        color: {primary_cyan};
+        font-size: 0.82rem;
+        font-weight: 600;
+    }}
+
+    @keyframes glowPulse {{
+        0%, 100% {{
+            box-shadow: 0 0 0 rgba(37, 200, 241, 0.0);
+        }}
+        50% {{
+            box-shadow: 0 0 26px rgba(37, 200, 241, 0.18);
+        }}
+    }}
+
+    .analysis-shell {{
+        display: grid;
+        gap: 1.25rem;
+        margin-bottom: 1.6rem;
+        padding: 1.4rem;
+        background: rgba(7, 14, 28, 0.75);
+        border: 1px solid rgba(37, 200, 241, 0.14);
+        border-radius: 28px;
+        box-shadow: 0 30px 90px rgba(0, 0, 0, 0.26);
+        backdrop-filter: blur(18px);
+    }}
+
+    .analysis-header {{
+        display: grid;
+        gap: 1rem;
+    }}
+
+    .analysis-title-block h1 {{
+        margin: 0;
+        font-size: 2.3rem;
+        line-height: 1.05;
+        color: {surface_white};
+        letter-spacing: 0.02em;
+    }}
+
+    .step-label {{
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.55rem 0.9rem;
+        border-radius: 999px;
+        font-size: 0.88rem;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        background: rgba(37, 200, 241, 0.12);
+        color: {primary_cyan};
+        border: 1px solid rgba(37, 200, 241, 0.2);
+        width: fit-content;
+    }}
+
+    .page-guide {{
+        margin: 0.75rem 0 0;
+        color: rgba(229, 239, 255, 0.82);
+        max-width: 740px;
+        line-height: 1.75;
+        font-size: 1rem;
+    }}
+
+    .patient-pill-row {{
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.65rem;
+    }}
+
+    .patient-pill {{
+        display: inline-flex;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        border-radius: 999px;
+        background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(255,255,255,0.12);
+        color: {surface_white};
+        font-size: 0.92rem;
+        letter-spacing: 0.01em;
+    }}
+
+    .analysis-meta-grid {{
+        display: grid;
+        grid-template-columns: 1fr minmax(260px, 340px);
+        gap: 1rem;
+        align-items: start;
+    }}
+
+    .risk-card {{
+        display: grid;
+        gap: 0.85rem;
+        padding: 1.25rem;
+        border-radius: 24px;
+        border: 1px solid rgba(37, 200, 241, 0.14);
+        background: rgba(7, 14, 28, 0.88);
+        box-shadow: 0 18px 40px rgba(0,0,0,0.18);
+    }}
+
+    .risk-label {{
+        color: rgba(229, 239, 255, 0.84);
+        font-size: 0.95rem;
+        margin: 0;
+    }}
+
+    .risk-pill {{
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 94px;
+        padding: 0.65rem 0.95rem;
+        border-radius: 999px;
+        font-weight: 700;
+        letter-spacing: 0.01em;
+        color: #020617;
+        background: linear-gradient(135deg, #27c8f1 0%, #1761c1 100%);
+    }}
+
+    .assistant-panel {{
+        padding: 1.35rem;
+        border-radius: 28px;
+        background: rgba(9, 18, 35, 0.95);
+        border: 1px solid rgba(37, 200, 241, 0.18);
+        box-shadow: 0 24px 56px rgba(0,0,0,0.24);
+        backdrop-filter: blur(20px);
+    }}
+
+    .assistant-panel.sticky {{
+        position: sticky;
+        top: 1.6rem;
+    }}
+
+    .assistant-title {{
+        margin: 0 0 1rem;
+        font-size: 1.3rem;
+        color: {surface_white};
+        letter-spacing: 0.01em;
+    }}
+
+    .assistant-chip-row {{
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.6rem;
+        margin-bottom: 1rem;
+    }}
+
+    .assistant-chip {{
+        display: inline-flex;
+        align-items: center;
+        padding: 0.55rem 0.9rem;
+        border-radius: 999px;
+        background: rgba(37, 200, 241, 0.15);
+        color: {surface_white};
+        font-size: 0.92rem;
+        font-weight: 600;
+    }}
+
+    .assistant-card {{
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 22px;
+        padding: 1rem 1.1rem;
+        margin-bottom: 1rem;
+    }}
+
+    .assistant-card h4 {{
+        margin: 0 0 0.75rem;
+        color: #d9eeff;
+        font-size: 1rem;
+    }}
+
+    .assistant-card p,
+    .assistant-card li {{
+        color: rgba(228,236,249,0.88);
+        line-height: 1.7;
+        font-size: 0.95rem;
+    }}
+
+    .assistant-card ul {{
+        margin: 0;
+        padding-left: 1.2rem;
+    }}
+
+    .panel-card {{
+        background: rgba(15, 29, 45, 0.96);
+        border: 1px solid rgba(37, 200, 241, 0.14);
+        border-radius: 24px;
+        padding: 1.4rem;
+        box-shadow: 0 18px 42px rgba(0,0,0,0.22);
+        backdrop-filter: blur(16px);
+        margin-bottom: 1.25rem;
+    }}
+
+    .panel-title {{
+        margin: 0 0 0.75rem;
+        color: {primary_cyan};
+        font-size: 1.15rem;
+        letter-spacing: 0.01em;
+    }}
+
+    .panel-subtitle {{
+        margin: 0;
+        color: rgba(229, 239, 255, 0.8);
+        line-height: 1.7;
+        font-size: 0.96rem;
+    }}
+
+    .field-note {{
+        margin-top: 1rem;
+        color: rgba(229, 239, 255, 0.72);
+        font-size: 0.92rem;
+    }}
+
+    .upload-panel {{
+        position: relative;
+    }}
+
+    .upload-panel::before {{
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 24px;
+        background: linear-gradient(135deg, rgba(37, 200, 241, 0.08), rgba(51, 116, 206, 0.05));
+        pointer-events: none;
+    }}
+
+    .action-bar {{
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 1rem 1.2rem;
+        margin-top: 1.25rem;
+        border-radius: 22px;
+        background: rgba(7, 14, 28, 0.92);
+        border: 1px solid rgba(37, 200, 241, 0.14);
+        box-shadow: 0 22px 55px rgba(0,0,0,0.28);
+        position: sticky;
+        bottom: 0;
+        z-index: 12;
+    }}
+
+    .action-copy {{
+        color: rgba(229, 239, 255, 0.86);
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }}
+
+    .status-pill {{
+        display: inline-flex;
+        align-items: center;
+        padding: 0.65rem 0.95rem;
+        border-radius: 999px;
+        background: rgba(37, 200, 241, 0.14);
+        color: {surface_white};
+        font-weight: 700;
+        letter-spacing: 0.01em;
+    }}
+
+    .field-grid {{
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1rem;
+    }}
+
+    .symptom-panel {{
+        background: rgba(22, 38, 62, 0.92);
+        border: 1px solid rgba(37, 200, 241, 0.14);
+        border-radius: 24px;
+        padding: 1.25rem;
+    }}
+
+    .symptom-grid {{
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+        gap: 0.75rem;
+    }}
+
+    .symptom-chip {{
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.85rem 1rem;
+        border-radius: 999px;
+        border: 1px solid rgba(255,255,255,0.08);
+        color: rgba(229,239,255,0.88);
+        background: rgba(255,255,255,0.04);
+        transition: transform 0.22s ease, background 0.22s ease, border-color 0.22s ease;
+        cursor: pointer;
+    }}
+
+    .symptom-chip:hover {{
+        transform: translateY(-1px);
+        border-color: rgba(37, 200, 241, 0.3);
+        background: rgba(37, 200, 241, 0.08);
+    }}
+
+    .symptom-chip.selected {{
+        background: rgba(37, 200, 241, 0.18);
+        border-color: rgba(37, 200, 241, 0.28);
+        color: #ffffff;
+    }}
+
+    @media (max-width: 980px) {{
+        .analysis-meta-grid,
+        .analysis-shell,
+        .analysis-grid {{
+            display: block;
+        }}
+        .action-bar {{
+            flex-direction: column;
+            align-items: stretch;
+        }}
+    }}
+
+    .topbar-brand {{
         display: flex;
         align-items: center;
         gap: 0.75rem;
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--text-primary);
-        text-decoration: none;
-    }
+    }}
 
-    .navbar-logo {
-        width: 40px;
-        height: 40px;
-        background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
-        border-radius: 50%;
+    .topbar-brand h1 {{
+        margin: 0;
+        font-size: 1.4rem;
+        letter-spacing: 0.08em;
+        color: {surface_white};
+    }}
+
+    .topbar-tagline {{
+        color: {surface_frost};
+        font-size: 0.95rem;
+        margin: 0;
+    }}
+
+    .site-hero {{
+        display: grid;
+        gap: 1.2rem;
+        background: linear-gradient(180deg, rgba(8,18,33,0.98), rgba(15,33,57,0.95));
+        border: 1px solid rgba(79,209,197,0.16);
+        border-radius: 32px;
+        padding: 2.4rem;
+        margin-bottom: 1.75rem;
+        box-shadow: 0 28px 70px rgba(0,0,0,0.28);
+        max-width: 1000px;
+        margin-left: auto;
+        margin-right: auto;
+    }}
+
+    .brand-header {{
         display: flex;
         align-items: center;
         justify-content: center;
-        color: white;
-        font-weight: bold;
-        font-size: 1.2rem;
-    }
+        gap: 0.55rem;
+        width: 100%;
+        flex-wrap: wrap;
+    }}
 
-    .navbar-nav {
+    .brand-logo {{
+        width: 88px;
+        height: 88px;
+        min-width: 88px;
+        border-radius: 20px;
+        background: linear-gradient(135deg, rgba(37, 200, 241, 0.24), rgba(23, 97, 193, 0.96));
+        padding: 0.7rem;
+        border: 1px solid rgba(79, 209, 197, 0.3);
+        box-shadow: 0 16px 30px rgba(0,0,0,0.14);
         display: flex;
-        gap: 2rem;
-        list-style: none;
+        align-items: center;
+        justify-content: center;
+    }}
+
+    .brand-copy {{
+        display: grid;
+        gap: 0.2rem;
+        max-width: 720px;
+        justify-items: start;
+        text-align: left;
+    }}
+
+    .brand-logo img {{
+        width: 100%;
+        height: 100%;
+        border-radius: 18px;
+        object-fit: contain;
+    }}
+
+    .brand-copy {{
+        display: grid;
+        gap: 0.35rem;
+        max-width: 720px;
+        justify-items: center;
+    }}
+
+    .site-hero > div:first-child {{
+        max-width: 860px;
+    }}
+
+    .site-hero h1,
+    .main-header {{
         margin: 0;
-        padding: 0;
-    }
-
-    .nav-link {
-        color: var(--text-secondary);
-        text-decoration: none;
-        font-weight: 500;
-        transition: color 0.3s ease;
-    }
-
-    .nav-link:hover {
-        color: var(--accent-primary);
-    }
-
-    /* ============================================
-       HERO SECTION
-       ============================================ */
-    .hero-section {
-        padding: 120px 2rem 80px;
+        color: {surface_white};
+        font-size: clamp(2.8rem, 4vw, 4.2rem);
+        line-height: 1.02;
+        font-weight: 900;
         text-align: center;
-        background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
-        color: white;
-        margin-top: 70px;
-    }
+    }}
 
-    .hero-container {
-        max-width: 800px;
-        margin: 0 auto;
-    }
+    .site-hero p,
+    .subtitle {{
+        margin: 0;
+        color: rgba(235, 247, 255, 0.88);
+        font-size: 1.05rem;
+        line-height: 1.75;
+        text-align: center;
+        max-width: 760px;
+    }}
 
-    .hero-title {
-        font-size: clamp(2.5rem, 5vw, 4rem);
-        font-weight: 800;
-        margin-bottom: 1rem;
-        line-height: 1.1;
-        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-    }
+    .hero-actions {{
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-top: 1rem;
+    }}
 
-    .hero-subtitle {
-        font-size: clamp(1.1rem, 2.5vw, 1.3rem);
-        font-weight: 400;
-        margin-bottom: 2rem;
-        opacity: 0.9;
-        line-height: 1.6;
-    }
-
-    .hero-cta {
+    .hero-primary-cta,
+    .hero-secondary-cta {{
         display: inline-flex;
         align-items: center;
-        padding: 1rem 2rem;
-        background: rgba(255, 255, 255, 0.2);
-        border: 2px solid rgba(255, 255, 255, 0.3);
-        border-radius: 50px;
-        color: white;
+        justify-content: center;
+        padding: 1rem 1.6rem;
+        border-radius: 999px;
+        font-weight: 700;
+        letter-spacing: 0.01em;
+        transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
         text-decoration: none;
-        font-weight: 600;
-        font-size: 1.1rem;
-        transition: all 0.3s ease;
-        backdrop-filter: blur(10px);
-    }
+    }}
 
-    .hero-cta:hover {
-        background: rgba(255, 255, 255, 0.3);
+    .hero-primary-cta {{
+        background: linear-gradient(135deg, #05254e 0%, #0d4b8a 100%);
+        color: #ffffff;
+        box-shadow: 0 22px 46px rgba(5, 37, 78, 0.32);
+    }}
+
+    .hero-primary-cta:hover {{
+        transform: translateY(-2px) scale(1.02);
+        background: linear-gradient(135deg, #0a3f7d 0%, #2f75b2 100%);
+        box-shadow: 0 28px 58px rgba(9, 57, 100, 0.34);
+    }}
+
+    .hero-secondary-cta {{
+        background: rgba(8,32,60,0.14);
+        color: rgba(236,242,255,0.95);
+        border: 1px solid rgba(58, 96, 150, 0.36);
+    }}
+
+    .hero-secondary-cta:hover {{
         transform: translateY(-2px);
-    }
+        background: rgba(16, 50, 85, 0.28);
+        border-color: rgba(72, 112, 182, 0.54);
+        color: #ffffff;
+    }}
 
-    /* ============================================
-       FEATURES SECTION
-       ============================================ */
-    .features-section {
-        padding: 80px 2rem;
-        background: var(--secondary-bg);
-    }
-
-    .features-container {
-        max-width: 1200px;
-        margin: 0 auto;
-    }
-
-    .features-header {
-        text-align: center;
-        margin-bottom: 3rem;
-    }
-
-    .features-title {
-        font-size: clamp(2rem, 4vw, 2.5rem);
-        font-weight: 700;
-        color: var(--text-primary);
-        margin-bottom: 1rem;
-    }
-
-    .features-subtitle {
-        font-size: 1.1rem;
-        color: var(--text-secondary);
-        max-width: 600px;
-        margin: 0 auto;
-    }
-
-    .features-grid {
+    .hero-trust-row {{
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 2rem;
-        margin-top: 3rem;
-    }
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 0.85rem;
+        margin-top: 1rem;
+    }}
 
-    .feature-card {
-        background: var(--card-bg);
-        border: 1px solid var(--border-color);
-        border-radius: 16px;
-        padding: 2rem;
-        text-align: center;
-        box-shadow: 0 4px 6px var(--shadow);
-        transition: all 0.3s ease;
-    }
-
-    .feature-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 8px 25px var(--shadow-hover);
-    }
-
-    .feature-icon {
-        width: 64px;
-        height: 64px;
-        margin: 0 auto 1rem;
-        background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
-        border-radius: 50%;
+    .hero-trust-item {{
         display: flex;
         align-items: center;
-        justify-content: center;
-        font-size: 1.5rem;
-    }
+        gap: 0.75rem;
+        padding: 0.95rem 1rem;
+        border-radius: 18px;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.08);
+        color: {surface_frost};
+        font-size: 0.95rem;
+    }}
 
-    .feature-title {
-        font-size: 1.25rem;
-        font-weight: 600;
-        color: var(--text-primary);
-        margin-bottom: 0.75rem;
-    }
+    .profile-card {{
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.12);
+        border-radius: 28px;
+        padding: 2rem;
+        max-width: 980px;
+        margin: 0 auto 1.75rem;
+        box-shadow: 0 26px 64px rgba(0,0,0,0.24);
+    }}
 
-    .feature-description {
-        color: var(--text-secondary);
-        line-height: 1.6;
-    }
-
-    /* ============================================
-       MAIN TOOL SECTION
-       ============================================ */
-    .tool-section {
-        padding: 80px 2rem;
-        background: var(--primary-bg);
-    }
-
-    .tool-container {
-        max-width: 1200px;
-        margin: 0 auto;
-    }
-
-    .tool-header {
-        text-align: center;
-        margin-bottom: 3rem;
-    }
-
-    .tool-title {
-        font-size: clamp(2rem, 4vw, 2.5rem);
-        font-weight: 700;
-        color: var(--text-primary);
+    .profile-card .card-header {{
         margin-bottom: 1rem;
-    }
+        font-size: 1.45rem;
+        color: {primary_cyan};
+    }}
 
-    .tool-subtitle {
-        font-size: 1.1rem;
-        color: var(--text-secondary);
-        max-width: 600px;
-        margin: 0 auto;
-    }
-
-    /* ============================================
-       STEP-BY-STEP WORKFLOW
-       ============================================ */
-    .workflow-container {
-        background: var(--surface-bg);
-        border: 1px solid var(--border-color);
-        border-radius: 20px;
-        padding: 3rem;
-        margin: 2rem 0;
-        box-shadow: 0 4px 6px var(--shadow);
-    }
-
-    .stepper {
+    .profile-group {{
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1rem;
-        margin-bottom: 2rem;
-    }
-
-    .stepper-step {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-        padding: 1rem;
-        border-radius: 12px;
-        background: var(--secondary-bg);
-        border: 1px solid var(--border-color);
-        color: var(--text-secondary);
-        font-weight: 600;
-        font-size: 0.9rem;
-        text-align: center;
-        transition: all 0.3s ease;
-    }
-
-    .stepper-step.active {
-        background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
-        color: white;
-        border-color: var(--gradient-start);
-        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-    }
-
-    .stepper-step.completed {
-        background: var(--accent-primary);
-        color: white;
-        border-color: var(--accent-primary);
-    }
-
-    .stepper-step .status {
-        font-size: 0.8rem;
-        font-weight: bold;
-    }
-
-    /* ============================================
-       FORM ELEMENTS
-       ============================================ */
-    .form-card {
-        background: var(--card-bg);
-        border: 1px solid var(--border-color);
-        border-radius: 16px;
-        padding: 2rem;
-        margin: 2rem 0;
-        box-shadow: 0 4px 6px var(--shadow);
-    }
-
-    .form-title {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--text-primary);
-        margin-bottom: 1rem;
-        text-align: center;
-    }
-
-    /* ============================================
-       RESULTS SECTION
-       ============================================ */
-    .results-container {
-        background: var(--surface-bg);
-        border: 1px solid var(--border-color);
-        border-radius: 20px;
-        padding: 3rem;
-        margin: 2rem 0;
-        box-shadow: 0 4px 6px var(--shadow);
-    }
-
-    .results-header {
-        text-align: center;
-        margin-bottom: 2rem;
-    }
-
-    .results-title {
-        font-size: 2rem;
-        font-weight: 700;
-        color: var(--text-primary);
-        margin-bottom: 0.5rem;
-    }
-
-    .results-subtitle {
-        color: var(--text-secondary);
-        font-size: 1.1rem;
-    }
-
-    .result-card {
-        background: var(--card-bg);
-        border: 1px solid var(--border-color);
-        border-radius: 12px;
-        padding: 1.5rem;
-        margin: 1rem 0;
-        box-shadow: 0 2px 4px var(--shadow);
-    }
-
-    .result-title {
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: var(--text-primary);
-        margin-bottom: 0.75rem;
-    }
-
-    .result-content {
-        color: var(--text-secondary);
-        line-height: 1.6;
-    }
-
-    /* ============================================
-       CHAT INTERFACE
-       ============================================ */
-    .chat-section {
-        padding: 80px 2rem;
-        background: var(--secondary-bg);
-    }
-
-    .chat-container {
-        max-width: 800px;
-        margin: 0 auto;
-    }
-
-    .chat-header {
-        text-align: center;
-        margin-bottom: 2rem;
-    }
-
-    .chat-title {
-        font-size: 2rem;
-        font-weight: 700;
-        color: var(--text-primary);
-        margin-bottom: 0.5rem;
-    }
-
-    .chat-subtitle {
-        color: var(--text-secondary);
-        font-size: 1.1rem;
-    }
-
-    .chat-messages {
-        background: var(--card-bg);
-        border: 1px solid var(--border-color);
-        border-radius: 16px;
-        padding: 1.5rem;
-        margin: 2rem 0;
-        max-height: 400px;
-        overflow-y: auto;
-        box-shadow: 0 4px 6px var(--shadow);
-    }
-
-    .message {
-        display: flex;
-        gap: 1rem;
-        margin-bottom: 1rem;
-        align-items: flex-start;
-    }
-
-    .message-avatar {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.2rem;
-        flex-shrink: 0;
-    }
-
-    .message.user .message-avatar {
-        background: var(--accent-primary);
-        color: white;
-    }
-
-    .message.assistant .message-avatar {
-        background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
-        color: white;
-    }
-
-    .message-content {
-        flex: 1;
-        background: var(--secondary-bg);
-        border-radius: 12px;
-        padding: 1rem;
-        color: var(--text-primary);
-        line-height: 1.6;
-    }
-
-    .chat-input-container {
-        display: flex;
         gap: 1rem;
         margin-top: 1rem;
-    }
+    }}
 
-    /* ============================================
-       FOOTER
-       ============================================ */
-    .footer {
-        background: var(--text-primary);
-        color: white;
-        padding: 3rem 2rem 2rem;
-        margin-top: 4rem;
-    }
+    .profile-group h3 {{
+        margin: 0;
+        font-size: 1.1rem;
+        color: {surface_white};
+    }}
 
-    .footer-container {
-        max-width: 1200px;
-        margin: 0 auto;
-    }
+    .profile-group p {{
+        margin: 0.5rem 0 0;
+        color: {surface_frost};
+        line-height: 1.7;
+    }}
 
-    .footer-content {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 2rem;
-        margin-bottom: 2rem;
-    }
-
-    .footer-section h3 {
-        font-size: 1.25rem;
-        font-weight: 600;
-        margin-bottom: 1rem;
-    }
-
-    .footer-section p {
-        color: rgba(255, 255, 255, 0.8);
-        line-height: 1.6;
-    }
-
-    .footer-links {
+    .button-block {{
         display: flex;
-        gap: 2rem;
         justify-content: center;
-        margin-bottom: 1rem;
-    }
+        flex-wrap: wrap;
+        gap: 0.85rem;
+        margin-top: 1.5rem;
+    }}
 
-    .footer-link {
-        color: rgba(255, 255, 255, 0.8);
-        text-decoration: none;
-        transition: color 0.3s ease;
-    }
+    .stButton>button,
+    .stButton>div>button,
+    .stButton>div>div>button {{
+        display: block !important;
+        width: 100% !important;
+        max-width: 420px !important;
+        min-height: 56px;
+        padding: 0.95rem 1.3rem !important;
+        border-radius: 14px !important;
+        font-size: 1rem !important;
+        font-weight: 600 !important;
+        letter-spacing: 0.01em !important;
+        transition: all 0.2s ease-in-out !important;
+        background: linear-gradient(135deg, #06264e 0%, #0d4f8b 100%) !important;
+        color: #ffffff !important;
+        border: 1px solid rgba(255,255,255,0.16) !important;
+        box-shadow: 0 20px 40px rgba(5, 38, 78, 0.30) !important;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.18) !important;
+        cursor: pointer !important;
+        transform: translateZ(0);
+        backdrop-filter: blur(2px) !important;
+    }}
 
-    .footer-link:hover {
-        color: white;
-    }
+    .stButton>button:hover,
+    .stButton>div>button:hover,
+    .stButton>div>div>button:hover {{
+        background: linear-gradient(135deg, #113f78 0%, #3b79b6 100%) !important;
+        box-shadow: 0 26px 54px rgba(15, 66, 110, 0.36) !important;
+        transform: translateY(-1px) scale(1.02) !important;
+    }}
 
-    .footer-bottom {
-        text-align: center;
-        padding-top: 1rem;
-        border-top: 1px solid rgba(255, 255, 255, 0.1);
-        color: rgba(255, 255, 255, 0.6);
-    }
+    .stButton>button:active,
+    .stButton>div>button:active,
+    .stButton>div>div>button:active {{
+        background: linear-gradient(135deg, #062249 0%, #0f3d78 100%) !important;
+        box-shadow: 0 10px 18px rgba(6, 28, 55, 0.30) !important;
+        transform: translateY(1px) scale(0.98) !important;
+        opacity: 0.98 !important;
+    }}
 
-    /* ============================================
-       RESPONSIVE DESIGN
-       ============================================ */
-    @media (max-width: 768px) {
-        .navbar-container {
-            padding: 0 1rem;
-        }
+    .stButton>button[disabled],
+    .stButton>div>button[disabled],
+    .stButton>div>div>button[disabled] {{
+        background: rgba(110,120,140,0.18) !important;
+        color: rgba(255,255,255,0.75) !important;
+        border: 1px solid rgba(255,255,255,0.08) !important;
+        box-shadow: none !important;
+        cursor: not-allowed !important;
+        transform: none !important;
+        opacity: 0.72 !important;
+        pointer-events: none !important;
+    }}
 
-        .navbar-nav {
-            display: none;
-        }
+    .stTextInput>div>div>input,
+    .stTextInput>div>div>div>input,
+    div[data-testid="stTextInput"] input,
+    div[data-testid="stNumberInput"] input,
+    div[data-testid="stSearchInput"] input,
+    .stSelectbox>div>div>select,
+    div[data-testid="stSelectbox"] select,
+    input[type="text"],
+    input[type="number"],
+    textarea,
+    select {{
+        background-color: rgba(12, 24, 39, 0.92) !important;
+        color: #ffffff !important;
+        border: 1px solid rgba(255,255,255,0.1) !important;
+        border-radius: 14px !important;
+        padding: 1rem !important;
+        font-size: 1rem !important;
+    }}
 
-        .hero-section {
-            padding: 100px 1rem 60px;
-        }
+    input::placeholder,
+    textarea::placeholder {{
+        color: rgba(255,255,255,0.6) !important;
+    }}
 
-        .hero-title {
-            font-size: 2.5rem;
-        }
+    .stCheckbox>div>label {{
+        display: block;
+        width: 100%;
+        color: #f5f7fb;
+        font-weight: 600;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 14px;
+        padding: 0.95rem 1rem;
+        margin-bottom: 0.75rem;
+        font-size: 0.98rem;
+    }}
 
-        .features-section,
-        .tool-section,
-        .chat-section {
-            padding: 60px 1rem;
-        }
+    .stCheckbox>div>label:hover {{
+        background: rgba(79, 209, 197, 0.1);
+        transform: translateY(-1px);
+    }}
 
-        .features-grid {
-            grid-template-columns: 1fr;
-        }
+    .stTabs [data-baseweb="tab-list"] {{
+        background-color: rgba(18, 36, 55, 0.9);
+        border-radius: 16px;
+        padding: 0.55rem;
+        display: flex;
+        overflow-x: auto;
+        white-space: nowrap;
+        gap: 0.55rem;
+        -webkit-overflow-scrolling: touch;
+    }}
 
-        .stepper {
-            grid-template-columns: 1fr;
-        }
+    .hero-stat {{
+        display: grid;
+        gap: 0.9rem;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 22px;
+        padding: 1rem;
+    }}
 
-        .workflow-container,
-        .results-container {
-            padding: 2rem 1rem;
-        }
+    .hero-stat h3 {{
+        margin: 0;
+        color: #27c8f1;
+        font-size: 1rem;
+        font-weight: 700;
+    }}
 
-        .footer-content {
-            grid-template-columns: 1fr;
-            text-align: center;
-        }
+    .hero-stat p {{
+        margin: 0;
+        color: #f5f7fb;
+        line-height: 1.55;
+        opacity: 0.95;
+        font-size: 0.95rem;
+    }}
 
-        .footer-links {
-            flex-direction: column;
-            gap: 1rem;
-        }
+    .hero-metric {{
+        padding: 0.8rem 1rem;
+        border-radius: 16px;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.09);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.8rem;
+    }}
 
-        .chat-input-container {
-            flex-direction: column;
-        }
+    .hero-metric strong {{
+        color: #1761c1;
+        font-size: 1.15rem;
+        display: block;
+    }}
 
-        .message {
-            gap: 0.75rem;
-        }
+    .hero-metric span {{
+        color: #dde6f4;
+        font-size: 0.88rem;
+    }}
 
-        .message-content {
-            padding: 0.75rem;
-        }
-    }
+    .section-card {{
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 22px;
+        padding: 1.1rem;
+        margin-top: 1rem;
+    }}
 
-    @media (max-width: 480px) {
-        .hero-title {
-            font-size: 2rem;
-        }
+    .disclaimer-banner {{
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.14);
+        border-radius: 22px;
+        padding: 1rem 1.15rem;
+        margin: 1rem 0 1.5rem;
+        color: #f5f7fb;
+        line-height: 1.55;
+        box-shadow: 0 16px 32px rgba(0,0,0,0.14);
+    }}
 
-        .workflow-container,
-        .results-container {
-            margin: 1rem 0;
-            padding: 1.5rem 0.75rem;
-        }
+    .disclaimer-banner strong {{
+        color: #27c8f1;
+    }}
 
-        .form-card {
-            padding: 1.5rem 1rem;
-        }
+    .hint-box {{
+        background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(255,255,255,0.14);
+        border-radius: 22px;
+        padding: 1.15rem 1.2rem;
+        margin: 1rem 0;
+        color: #f5f7fb;
+        line-height: 1.6;
+    }}
 
-        .chat-messages {
-            padding: 1rem;
-        }
-    }
+    .hint-box strong {{
+        color: #27c8f1;
+    }}
 
-    /* ============================================
-       UTILITY CLASSES
-       ============================================ */
-    .container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 0 2rem;
-    }
-
-    .text-center {
-        text-align: center;
-    }
-
-    .mb-2 { margin-bottom: 1rem; }
-    .mb-3 { margin-bottom: 1.5rem; }
-    .mb-4 { margin-bottom: 2rem; }
-
-    .mt-2 { margin-top: 1rem; }
-    .mt-3 { margin-top: 1.5rem; }
-    .mt-4 { margin-top: 2rem; }
-
-    /* Hide Streamlit elements */
-    .stApp > header {
-        display: none;
-    }
-
-    .stApp > footer {
-        display: none;
-    }
-
-    .stMain {
+    .section-card h3 {{
         margin-top: 0;
-    }
+        margin-bottom: 0.9rem;
+        color: #f5f7fb;
+        font-size: 1.2rem;
+        font-weight: 700;
+    }}
 
-    /* Custom scrollbar */
-    ::-webkit-scrollbar {
-        width: 8px;
-    }
+    .section-row {{
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        margin-top: 1rem;
+    }}
 
-    ::-webkit-scrollbar-track {
-        background: var(--secondary-bg);
-    }
+    .section-pill {{
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.12);
+        border-radius: 999px;
+        padding: 0.7rem 1rem;
+        color: #f5f7fb;
+        font-size: 0.93rem;
+        opacity: 0.92;
+    }}
 
-    ::-webkit-scrollbar-thumb {
-        background: var(--border-color);
-        border-radius: 4px;
-    }
+    .analysis-banner {{
+        display: grid;
+        grid-template-columns: minmax(0, 1.4fr) minmax(260px, 0.95fr);
+        gap: 1rem;
+        margin-bottom: 1.2rem;
+        padding: 1rem;
+        background: rgba(5, 12, 24, 0.92);
+        border: 1px solid rgba(79, 209, 197, 0.16);
+        border-radius: 26px;
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
+        backdrop-filter: blur(16px);
+    }}
 
-    ::-webkit-scrollbar-thumb:hover {
-        background: var(--border-hover);
-    }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
+    .analysis-summary {{
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.18);
+        border-radius: 24px;
+        padding: 1.5rem;
+        min-height: 220px;
+        box-shadow: inset 0 0 0 1px rgba(79, 209, 197, 0.05);
+    }}
 
-# ============================================
-# MODERN SAAS WEBSITE CONTENT
-# ============================================
+    .analysis-summary .card-header {{
+        margin-top: 0;
+        color: #27c8f1;
+        font-size: 1.35rem;
+        letter-spacing: 0.02em;
+    }}
 
-# Initialize session state
-if 'current_step' not in st.session_state:
-    st.session_state.current_step = 0
-if 'patient_data' not in st.session_state:
-    st.session_state.patient_data = {}
-if 'analysis_results' not in st.session_state:
-    st.session_state.analysis_results = {}
-if 'is_processing' not in st.session_state:
-    st.session_state.is_processing = False
-if 'chat_messages' not in st.session_state:
-    st.session_state.chat_messages = []
-if 'chat_input' not in st.session_state:
-    st.session_state.chat_input = ""
+    .analysis-summary p {{
+        margin: 0.8rem 0 1rem;
+        color: #dde6f4;
+        line-height: 1.75;
+    }}
 
-# ============================================
-# NAVIGATION BAR
-# ============================================
-st.markdown(
-    """
-    <nav class="navbar">
-        <div class="navbar-container">
-            <a href="#" class="navbar-brand">
-                <div class="navbar-logo">N</div>
-                Nirnay
-            </a>
-            <ul class="navbar-nav">
-                <li><a href="#features" class="nav-link">Features</a></li>
-                <li><a href="#tool" class="nav-link">Tool</a></li>
-                <li><a href="#chat" class="nav-link">AI Chat</a></li>
-            </ul>
-        </div>
-    </nav>
-    """,
-    unsafe_allow_html=True,
-)
+    .analysis-summary ul {{
+        margin: 0;
+        padding-left: 1.3rem;
+        color: #f5f7fb;
+        line-height: 1.85;
+        list-style: disc inside;
+    }}
 
-# ============================================
-# HERO SECTION
-# ============================================
-st.markdown(
-    """
+    .analysis-summary li {{
+        margin-bottom: 0.85rem;
+    }}
+
+    .analysis-sidebar-card {{
+        background: rgba(12, 24, 41, 0.96);
+        border: 1px solid rgba(79, 209, 197, 0.18);
+        border-radius: 24px;
+        padding: 1.5rem;
+        min-height: 220px;
+        display: grid;
+        gap: 0.8rem;
+        box-shadow: 0 20px 44px rgba(0,0,0,0.24);
+    }}
+
+    .analysis-sidebar-card h3 {{
+        margin: 0;
+        color: #1761c1;
+        font-size: 1.2rem;
+        letter-spacing: 0.02em;
+    }}
+
+    .analysis-sidebar-card p {{
+        margin: 0.65rem 0;
+        color: rgba(255,255,255,0.88);
+        line-height: 1.75;
+    }}
+
+    .analysis-sidebar-card strong {{
+        color: #f5f7fb;
+    }}
+
+    .card {{
+        background: rgba(20, 38, 58, 0.92);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 20px;
+        padding: 1.75rem;
+        margin: 1rem 0;
+        box-shadow: 0 16px 38px rgba(0,0,0,0.24);
+        backdrop-filter: blur(14px);
+    }}
+
+    .card-header {{
+        color: #27c8f1;
+        font-size: 1.35rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        border-bottom: 1px solid rgba(79, 209, 197, 0.24);
+        padding-bottom: 0.65rem;
+    }}
+
+    .info-card {{
+        background: rgba(19, 32, 49, 0.95);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 18px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }}
+
+    .info-card h2 {{
+        color: #1761c1;
+        margin-bottom: 0.5rem;
+    }}
+
+    .info-card ul {{
+        margin: 0.75rem 0 0 1.2rem;
+        color: #f5f7fb;
+        line-height: 1.75;
+    }}
+
+    .stTextInput>div>div>input, .stSelectbox>div>div>select {{
+        background-color: rgba(12, 24, 39, 0.9);
+        color: #f5f7fb;
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 12px;
+        padding: 0.85rem;
+        box-shadow: inset 0 1px 5px rgba(0,0,0,0.22);
+    }}
+
+    .stCheckbox>div>label {{
+        display: block;
+        width: 100%;
+        color: #f5f7fb;
+        font-weight: 500;
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 14px;
+        padding: 0.85rem 1rem;
+        margin-bottom: 0.65rem;
+        transition: background 0.2s ease, transform 0.2s ease;
+    }}
+
+    .stCheckbox>div>label:hover {{
+        background: rgba(79, 209, 197, 0.08);
+        transform: translateY(-1px);
+    }}
+
+    .stTabs [data-baseweb="tab-list"] {{
+        background-color: rgba(18, 36, 55, 0.9);
+        border-radius: 16px;
+        padding: 0.55rem;
+        display: flex;
+        overflow-x: auto;
+        white-space: nowrap;
+        gap: 0.55rem;
+        -webkit-overflow-scrolling: touch;
+    }}
+
+    .stTabs [data-baseweb="tab-list"]::-webkit-scrollbar {{
+        height: 8px;
+    }}
+
+    .stTabs [data-baseweb="tab-list"]::-webkit-scrollbar-thumb {{
+        background: rgba(79, 209, 197, 0.4);
+        border-radius: 999px;
+    }}
+
+    .stTabs [data-baseweb="tab-list"]::-webkit-scrollbar-track {{
+        background: rgba(255,255,255,0.05);
+    }}
+
+    .stTabs [data-baseweb="tab"] {{
+        background-color: rgba(255, 255, 255, 0.04);
+        color: #f5f7fb;
+        border-radius: 12px;
+        padding: 0.85rem 1.4rem;
+        font-weight: 600;
+        min-width: 140px;
+    }}
+
+    .stTabs [aria-selected="true"] {{
+        background: linear-gradient(135deg, #27c8f1 0%, #1761c1 100%);
+        color: #020617 !important;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.28);
+    }}
+
+    .patient-info {{
+        background: rgba(7, 16, 28, 0.96);
+        border: 1px solid rgba(79, 209, 197, 0.16);
+        color: #f5f7fb;
+        padding: 1rem 1.25rem;
+        border-radius: 16px;
+        text-align: center;
+        font-weight: 700;
+        margin: 1rem 0;
+    }}
+
+    .disclaimer-text {{
+        line-height: 1.75;
+        color: #dde6f4;
+        user-select: none;
+    }}
+
+    .disclaimer-text strong {{
+        color: #27c8f1;
+    }}
+
+    .dashboard-overview {{
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+    }}
+
+    .dashboard-tile {{
+        background: rgba(15, 29, 45, 0.95);
+        border: 1px solid rgba(79, 209, 197, 0.14);
+        border-radius: 20px;
+        padding: 1.4rem;
+        min-height: 160px;
+        box-shadow: 0 14px 30px rgba(0,0,0,0.18);
+    }}
+
+    .dashboard-tile h3 {{
+        margin-top: 0;
+        margin-bottom: 0.9rem;
+        color: #27c8f1;
+        font-size: 1.1rem;
+    }}
+
+    .dashboard-tile p {{
+        margin: 0.45rem 0;
+        color: #f5f7fb;
+        opacity: 0.92;
+        line-height: 1.7;
+    }}
+
+    .result-card {{
+        background: rgba(12, 24, 39, 0.95);
+        border: 1px solid rgba(79, 209, 197, 0.18);
+        border-radius: 24px;
+        padding: 2rem;
+        margin: 1.5rem 0;
+        box-shadow: 0 22px 60px rgba(0,0,0,0.28);
+    }}
+
+    .analysis-report-box {{
+        background: linear-gradient(135deg, rgba(13, 31, 48, 0.96), rgba(5, 12, 24, 0.92));
+        border: 1px solid rgba(79, 209, 197, 0.24);
+        border-radius: 28px;
+        padding: 2rem;
+        margin: 1.5rem auto;
+        max-width: 1140px;
+        box-shadow: 0 28px 90px rgba(0, 0, 0, 0.32);
+        backdrop-filter: blur(18px);
+    }}
+
+    .report-header {{
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }}
+
+    .report-title {{
+        color: #27c8f1;
+        font-size: 2rem;
+        font-weight: 900;
+        margin: 0;
+        letter-spacing: 0.02em;
+    }}
+
+    .report-subtitle {{
+        color: #dde6f4;
+        font-size: 1rem;
+        margin: 0.35rem 0 0;
+        line-height: 1.7;
+    }}
+
+    .report-badge {{
+        padding: 0.95rem 1.15rem;
+        border-radius: 999px;
+        background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(255,255,255,0.08);
+        color: #f5f7fb;
+        font-size: 0.95rem;
+        font-weight: 600;
+        white-space: nowrap;
+    }}
+
+    .upload-report-hover {{
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        margin-bottom: 1rem;
+    }}
+
+    .upload-report-trigger {{
+        cursor: pointer;
+        font-weight: 700;
+        color: #76d7ff;
+        text-decoration: underline;
+    }}
+
+    .upload-report-card {{
+        visibility: hidden;
+        opacity: 0;
+        position: absolute;
+        top: 140%;
+        left: 0;
+        width: 360px;
+        max-width: calc(100vw - 3rem);
+        padding: 1rem 1.1rem;
+        border-radius: 22px;
+        background: rgba(8, 18, 34, 0.96);
+        border: 1px solid rgba(37, 200, 241, 0.22);
+        box-shadow: 0 22px 48px rgba(0, 0, 0, 0.38);
+        transition: all 0.2s ease;
+        z-index: 999;
+        line-height: 1.65;
+        color: #f5f8ff;
+        pointer-events: none;
+    }}
+
+    .upload-report-hover:hover .upload-report-card {{
+        visibility: visible;
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+    }}
+
+    .result-body {{
+        display: grid;
+        gap: 0.9rem;
+    }}
+
+    .result-line {{
+        display: block;
+        padding: 1rem 1.1rem;
+        border-radius: 18px;
+        border: 1px solid rgba(255,255,255,0.08);
+        background: rgba(10, 18, 32, 0.85);
+        color: #f5f7fb;
+        line-height: 1.65;
+        font-size: 0.98rem;
+        white-space: pre-wrap;
+    }}
+
+    .result-line.critical {{
+        border-color: rgba(255, 94, 94, 0.35);
+        background: rgba(95, 15, 15, 0.55);
+    }}
+
+    .result-line.alert {{
+        border-color: rgba(255, 161, 60, 0.35);
+        background: rgba(86, 55, 14, 0.45);
+    }}
+
+    .result-line.warning {{
+        border-color: rgba(255, 214, 80, 0.35);
+        background: rgba(86, 79, 27, 0.40);
+    }}
+
+    .result-line.ok {{
+        border-color: rgba(86, 214, 166, 0.30);
+        background: rgba(14, 38, 41, 0.58);
+    }}
+
+    .result-line.heading {{
+        border: none;
+        background: transparent;
+        color: #27c8f1;
+        font-weight: 700;
+        font-size: 1.02rem;
+        padding-left: 0;
+    }}
+
+    .footer {{
+        text-align: center;
+        color: #dde6f4;
+        opacity: 0.84;
+        margin-top: 3rem;
+        padding-top: 2.5rem;
+        border-top: 1px solid rgba(255,255,255,0.08);
+    }}
+
+    @media (max-width: 980px) {{
+        .block-container {{
+            padding: 1rem 0.9rem;
+            max-width: 100%;
+            margin: 0 auto;
+        }}
+
+        .site-hero,
+        .hero-card,
+        .analysis-banner,
+        .summary-card,
+        .card,
+        .info-card,
+        .result-card,
+        .analysis-summary,
+        .analysis-sidebar-card,
+        .profile-card {{
+            width: 100%;
+            padding: 1rem;
+            margin: 0 0 1rem;
+        }}
+
+        .site-hero {{
+            padding: 1.5rem;
+        }}
+
+        .stat-grid,
+        .feature-grid {{
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        }}
+
+        .stTextInput>div>div>input,
+        .stTextInput>div>div>div>input,
+        div[data-testid="stTextInput"] input,
+        div[data-testid="stNumberInput"] input,
+        div[data-testid="stSearchInput"] input,
+        .stSelectbox>div>div>select,
+        div[data-testid="stSelectbox"] select {{
+            width: 100%;
+            font-size: 1rem;
+        }}
+
+        .stCheckbox>div>label {{
+            width: 100%;
+            font-size: 1rem;
+        }}
+    }}
+
+    @media (max-width: 640px) {{
+        .block-container {{
+            padding: 0.9rem 0.75rem;
+        }}
+
+        .main-header {{
+            font-size: 2.1rem;
+        }}
+
+        .subtitle {{
+            font-size: 0.98rem;
+        }}
+
+        .site-hero,
+        .hero-card,
+        .analysis-banner {{
+            gap: 1rem;
+        }}
+
+        .feature-grid,
+        .stat-grid {{
+            grid-template-columns: 1fr;
+        }}
+
+        .section-title {{
+            font-size: 1.35rem;
+            margin-top: 1.5rem;
+        }}
+
+        .button-block {{
+            width: 100%;
+        }}
+
+        /* Premium dashboard theme */
+        .stApp {{
+            background: radial-gradient(circle at top left, #061323 0%, #051426 38%, #030f1e 100%);
+            color: #e8faff;
+        }}
+
+        .block-container {{
+            background: rgba(6, 14, 26, 0.92);
+            border: 1px solid rgba(24, 109, 171, 0.18);
+            box-shadow: 0 32px 96px rgba(0, 0, 0, 0.35);
+            backdrop-filter: blur(26px);
+            border-radius: 26px;
+            padding: 2rem 2.2rem;
+        }}
+
+        .main-header {{
+            color: #d4f5ff;
+            text-shadow: 0 0 24px rgba(60, 190, 245, 0.16);
+            letter-spacing: 0.02em;
+        }}
+
+        .subtitle {{
+            color: rgba(225, 243, 255, 0.78);
+            line-height: 1.75;
+        }}
+
+        .glass-card {{
+            background: rgba(10, 20, 37, 0.86);
+            border: 1px solid rgba(58, 152, 224, 0.18);
+            border-radius: 24px;
+            box-shadow: 0 26px 74px rgba(8, 22, 46, 0.30);
+            backdrop-filter: blur(20px);
+            transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
+            overflow: hidden;
+        }}
+
+        .glass-card:hover {{
+            transform: translateY(-3px) scale(1.004);
+            border-color: rgba(36, 200, 255, 0.28);
+            box-shadow: 0 34px 98px rgba(36, 148, 222, 0.22);
+        }}
+
+        .glass-card .card-header {{
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.1rem;
+            color: #a0f4ff;
+            font-size: 1.38rem;
+            font-weight: 700;
+            letter-spacing: 0.01em;
+        }}
+
+        .section-icon {{
+            width: 42px;
+            height: 42px;
+            border-radius: 16px;
+            display: grid;
+            place-items: center;
+            background: rgba(38, 205, 255, 0.16);
+            color: #c9f5ff;
+            font-size: 1.1rem;
+        }}
+
+        .profile-row {{
+            display: block;
+            gap: 1rem;
+        }}
+
+        .avatar {{
+            width: 76px;
+            height: 76px;
+            border-radius: 24px;
+            display: grid;
+            place-items: center;
+            font-size: 1.65rem;
+            font-weight: 800;
+            color: #ffffff;
+            background: linear-gradient(135deg, rgba(54, 200, 255, 0.92), rgba(124, 79, 252, 0.86));
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.16), 0 18px 38px rgba(32, 131, 218, 0.22);
+        }}
+
+        .profile-name {{
+            font-size: 1.55rem;
+            font-weight: 800;
+            color: #ffffff !important;
+            margin-bottom: 0.22rem;
+        }}
+
+        .profile-meta {{
+            color: #ffffff !important;
+            font-size: 0.98rem;
+            line-height: 1.65;
+        }}
+
+        .status-badge {{
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.55rem 0.95rem;
+            border-radius: 999px;
+            background: rgba(37, 200, 241, 0.14);
+            color: #ffffff !important;
+            border: 1px solid rgba(37, 200, 241, 0.22);
+            font-size: 0.88rem;
+            font-weight: 700;
+            margin-top: 0.85rem;
+        }}
+
+        .metrics-grid {{
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.92rem;
+            margin-top: 1.35rem;
+        }}
+
+        .metric-pill {{
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 1rem 1rem;
+        }}
+
+        .metric-pill strong {{
+            display: block;
+            color: #ffffff !important;
+            font-size: 1.05rem;
+            margin-bottom: 0.3rem;
+        }}
+
+        .metric-pill span {{
+            color: #ffffff !important;
+            font-size: 0.92rem;
+            line-height: 1.65;
+        }}
+
+        .dashboard-shell {{
+            display: grid;
+            gap: 1.4rem;
+            animation: fadeInUp 0.84s ease both;
+        }}
+
+        .dashboard-top-grid {{
+            display: grid;
+            grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+            gap: 1.2rem;
+        }}
+
+        .insights-grid {{
+            display: grid;
+            gap: 0.9rem;
+            margin-top: 1rem;
+        }}
+
+        .insight-item {{
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 0.9rem;
+            align-items: center;
+            padding: 0.95rem 1rem;
+            border-radius: 18px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+        }}
+
+        .insight-icon {{
+            width: 44px;
+            height: 44px;
+            display: grid;
+            place-items: center;
+            border-radius: 16px;
+            background: linear-gradient(135deg, rgba(43, 210, 255, 0.16), rgba(110, 85, 255, 0.16));
+            color: #b6f6ff;
+            font-size: 1.1rem;
+        }}
+
+        .insight-item strong {{
+            color: #ffffff;
+            font-size: 1rem;
+            margin-bottom: 0.2rem;
+        }}
+
+        .insight-item p {{
+            margin: 0;
+            color: rgba(241,248,255,0.78);
+            font-size: 0.95rem;
+            line-height: 1.65;
+        }}
+
+        .data-card, .notes-card, .action-card {{
+            background: rgba(11, 20, 36, 0.82);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 24px;
+            padding: 1.4rem;
+            box-shadow: 0 20px 50px rgba(8, 18, 36, 0.24);
+            margin-top: 1rem;
+        }}
+
+        .data-card h3,
+        .notes-card h3,
+        .action-card h3 {{
+            margin-top: 0;
+            margin-bottom: 0.9rem;
+            color: #d8f7ff;
+            font-size: 1.25rem;
+        }}
+
+        .data-card ul,
+        .notes-card ul {{
+            margin: 0.9rem 0 0 1.2rem;
+            padding-left: 1.1rem;
+            color: rgba(232,245,255,0.9);
+            line-height: 1.8;
+        }}
+
+        .data-card li,
+        .notes-card li {{
+            margin-bottom: 0.85rem;
+            font-size: 0.96rem;
+        }}
+
+        .progress-group {{
+            display: grid;
+            gap: 0.85rem;
+            margin-top: 1rem;
+        }}
+
+        .progress-label {{
+            display: flex;
+            justify-content: space-between;
+            color: rgba(242,250,255,0.76);
+            font-size: 0.94rem;
+            margin-bottom: 0.32rem;
+        }}
+
+        .progress-bar {{
+            height: 12px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.08);
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+        }}
+
+        .progress-fill {{
+            height: 100%;
+            width: 72%;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #2bd4ff 0%, #9866ff 100%);
+            box-shadow: 0 0 22px rgba(46, 206, 255, 0.22);
+        }}
+
+        .notes-card details {{
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 18px;
+            padding: 0.95rem 1rem;
+            margin-top: 0.95rem;
+        }}
+
+        .notes-card summary {{
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #ffffff;
+            list-style: none;
+        }}
+
+        .notes-card summary::marker {{
+            color: rgba(37,200,241,0.9);
+        }}
+
+        .action-grid {{
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 0.85rem;
+            margin-top: 1rem;
+        }}
+
+        .stButton>button,
+        .stButton>div>button,
+        .stButton>div>div>button {{
+            transition: transform 0.22s ease, box-shadow 0.22s ease, background 0.22s ease !important;
+        }}
+
+        .stButton>button:hover,
+        .stButton>div>button:hover,
+        .stButton>div>div>button:hover {{
+            box-shadow: 0 24px 62px rgba(46, 170, 232, 0.28) !important;
+            transform: translateY(-2px) scale(1.01) !important;
+        }}
+
+        @keyframes fadeInUp {{
+            from {{ opacity: 0; transform: translateY(18px); }}
+            to {{ opacity: 1; transform: translateY(0); }}
+        }}
+    }}
+
     </style>
     """,
     unsafe_allow_html=True,
@@ -791,21 +1659,6 @@ def render_footer():
         <footer class="footer">
             Created with passion by Aarko Batabyal & Saptak Bhattacharjee
         </footer>
-        """,
-        unsafe_allow_html=True,
-    )
-
-
-def render_analysis_chat_styles():
-    # Styles used in the Analysis + Chat pages. Add or extend custom CSS as needed.
-    st.markdown(
-        """
-        <style>
-        .dashboard-shell { margin-bottom: 20px; }
-        .glass-card { border-radius: 12px; }
-        .analysis-report-box { padding: 10px; }
-        .assistant-panel { border: 1px solid #ddd; padding: 10px; }
-        </style>
         """,
         unsafe_allow_html=True,
     )
@@ -822,8 +1675,8 @@ if "chat_history_quick" not in st.session_state:
 
 if "patient_name" not in st.session_state:
     st.session_state.patient_name = ""
-if "patient_age" not in st.session_state or not isinstance(st.session_state.patient_age, int) or st.session_state.patient_age < 0:
-    st.session_state.patient_age = 0
+if "patient_age" not in st.session_state:
+    st.session_state.patient_age = ""
 if "patient_gender" not in st.session_state:
     st.session_state.patient_gender = ""
 if "agree_disclaimer" not in st.session_state:
@@ -874,7 +1727,7 @@ def clear_uploaded_images():
 def save_profile():
     profile = {
         "name": st.session_state.patient_name.strip(),
-        "age": str(st.session_state.patient_age),
+        "age": st.session_state.patient_age.strip(),
         "gender": st.session_state.patient_gender,
     }
     if profile["name"] and profile["age"] and profile["gender"]:
@@ -891,7 +1744,7 @@ def load_saved_profile():
     for p in st.session_state.saved_profiles:
         if f"{p['name']} · {p['age']} · {p['gender']}" == label:
             st.session_state.patient_name = p["name"]
-            st.session_state.patient_age = int(p["age"]) if p["age"].isdigit() else 0
+            st.session_state.patient_age = p["age"]
             st.session_state.patient_gender = p["gender"]
             break
     if hasattr(st, "experimental_rerun"):
@@ -904,7 +1757,7 @@ def continue_to_analysis():
 
 def reset_profile():
     st.session_state.patient_name = ""
-    st.session_state.patient_age = 0
+    st.session_state.patient_age = ""
     st.session_state.patient_gender = ""
     st.session_state.agree_disclaimer = False
     if hasattr(st, "experimental_rerun"):
@@ -918,847 +1771,23 @@ def back_to_analysis():
 def request_analysis():
     st.session_state.analysis_requested = True
 
-def launch_chat(mode):
+
+def launch_chat(mode=None):
+    if mode is None:
+        mode = (
+            "medical" if st.session_state.get("chat_choice") == "Medical Assistant" else "quick"
+        )
     st.session_state.chat_mode = mode
     st.session_state.page = "chat"
 
-# ============================================
-# MODERN SAAS WEBSITE CONTENT
-# ============================================
+# ------------ Disclaimer -------------
 
-# ============================================
-# PROFILE PAGE (INTAKE FORM)
-# ============================================
 if page == "profile":
-    # ============================================
-    # NAVIGATION BAR
-    # ============================================
-    st.markdown(
-        """
-        <nav class="navbar">
-            <div class="navbar-container">
-                <a href="#" class="navbar-brand">
-                    <div class="navbar-logo">N</div>
-                    Nirnay
-                </a>
-                <ul class="navbar-nav">
-                    <li><a href="#features" class="nav-link">Features</a></li>
-                    <li><a href="#tool" class="nav-link">Tool</a></li>
-                    <li><a href="#chat" class="nav-link">AI Chat</a></li>
-                </ul>
-            </div>
-        </nav>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    # ============================================
-    # HERO SECTION
-    # ============================================
-    st.markdown(
-        """
-        <section class="hero-section">
-            <div class="hero-container">
-                <h1 class="hero-title">AI-Powered Clinical Diagnostic Workflow</h1>
-                <p class="hero-subtitle">
-                    Transform your medical assessment process with intelligent automation, comprehensive analysis,
-                    and real-time AI assistance for healthcare professionals.
-                </p>
-                <a href="#tool" class="hero-cta">Start Assessment →</a>
-            </div>
-        </section>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    # ============================================
-    # FEATURES SECTION
-    # ============================================
-    st.markdown(
-        """
-        <section class="features-section" id="features">
-            <div class="features-container">
-                <div class="features-header">
-                    <h2 class="features-title">Why Choose Nirnay?</h2>
-                    <p class="features-subtitle">
-                        Advanced AI technology meets clinical excellence to streamline your diagnostic workflow.
-                    </p>
-                </div>
-                <div class="features-grid">
-                    <div class="feature-card">
-                        <div class="feature-icon">🧠</div>
-                        <h3 class="feature-title">AI-Powered Analysis</h3>
-                        <p class="feature-description">
-                            Leverage advanced machine learning algorithms for comprehensive symptom analysis and risk assessment.
-                        </p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">⚡</div>
-                        <h3 class="feature-title">Rapid Assessment</h3>
-                        <p class="feature-description">
-                            Complete patient evaluations in minutes with our streamlined, intuitive workflow interface.
-                        </p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">🤖</div>
-                        <h3 class="feature-title">24/7 AI Assistant</h3>
-                        <p class="feature-description">
-                            Get instant answers to clinical questions and access evidence-based medical insights anytime.
-                        </p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">🔒</div>
-                        <h3 class="feature-title">Secure & Private</h3>
-                        <p class="feature-description">
-                            Enterprise-grade security with HIPAA-compliant data handling and privacy protection.
-                        </p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">📊</div>
-                        <h3 class="feature-title">Comprehensive Reports</h3>
-                        <p class="feature-description">
-                            Generate detailed clinical reports with differential diagnoses and treatment recommendations.
-                        </p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">📱</div>
-                        <h3 class="feature-title">Mobile Optimized</h3>
-                        <p class="feature-description">
-                            Fully responsive design that works seamlessly across all devices and screen sizes.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </section>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    # ============================================
-    # TOOL SECTION (INTAKE FORM)
-    # ============================================
-    st.markdown(
-        """
-        <section class="tool-section" id="tool">
-            <div class="tool-container">
-                <div class="tool-header">
-                    <h2 class="tool-title">Patient Intake Form</h2>
-                    <p class="tool-subtitle">
-                        Begin your clinical assessment by providing patient information and symptoms.
-                    </p>
-                </div>
-            </div>
-        </section>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    st.markdown(
-        f"""
-                <div class="stepper-step active"><span class="status">Step 1 of 3</span>Profile</div>
-                <div class="stepper-step upcoming"><span class="status">Next</span>Analysis</div>
-                <div class="stepper-step upcoming"><span class="status">Future</span>Chat</div>
-            </div>
-            <div class="site-hero">
-                <div class="brand-header">
-                    {logo_html}
-                    <div class="brand-copy">
-                        <h1 class="main-header">Nirnay</h1>
-                        <p class="subtitle">World's Hope, Health's Future</p>
-                    </div>
-                </div>
-                <div class="hero-actions">
-                    <a class="hero-primary-cta" href="#profile-section">Start Assessment</a>
-                    <a class="hero-secondary-cta" href="#profile-section">Review patient intake</a>
-                </div>
-                <div class="hero-trust-row">
-                    <div class="hero-trust-item">🤖 AI-assisted, not a doctor</div>
-                    <div class="hero-trust-item">🔒 Secure by design</div>
-                    <div class="hero-trust-item">⚡ Fast clinical workflow</div>
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
-    st.markdown(
-        """
-        <div class="disclaimer-banner">
-            <div><strong>⚠️ Medical disclaimer</strong> This is an AI-assisted clinical workflow, not a clinical diagnosis tool. Please read the full disclaimer before continuing.</div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    with st.expander("Read the full medical disclaimer", expanded=True):
-        st.markdown(
-            """
-            <div class="disclaimer-text">
-                <strong>IMPORTANT NOTICE:</strong><br>
-                This diagnostic tool is designed to ASSIST and ENHANCE medical sciences.
-                It is NOT a replacement for professional medical diagnosis, treatment, or advice from a qualified healthcare provider.
-                <ul>
-                    <li>All diagnostic findings and insights provided by this tool must be CORRELATED with a qualified physician or medical specialist.</li>
-                    <li>Users should NOT rely solely on this tool for medical decisions.</li>
-                    <li>Always consult your doctor before making any healthcare decisions based on this tool's output.</li>
-                    <li>This tool is for educational and informational purposes only.</li>
-                    <li>In case of medical emergencies, seek immediate professional medical attention.</li>
-                </ul>
-                <p>By proceeding, you acknowledge and accept full responsibility for your medical decisions and agree to consult with healthcare professionals regarding all diagnostic findings.</p>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
-        st.markdown(
-            f"""
-            <div class="glass-card profile-card" id="profile-section">
-                <div class="card-header"><span class="section-icon">👤</span> Patient profile</div>
-                <div class="profile-row">
-                    <div>
-                        <div class="profile-name">Patient intake</div>
-                        <div class="profile-meta">Complete the patient's core details to launch the diagnostic workup.</div>
-                        <div class="status-badge">Ready to assess</div>
-                    </div>
-                </div>
-                <div class="metrics-grid">
-                    <div class="metric-pill">
-                        <strong>Profile readiness</strong>
-                        <span>{'Complete' if st.session_state.patient_name and st.session_state.patient_age and st.session_state.patient_gender else 'Pending details'}</span>
-                    </div>
-                    <div class="metric-pill">
-                        <strong>Saved workflows</strong>
-                        <span>{len(st.session_state.saved_profiles)} saved profiles</span>
-                    </div>
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
-        age_value = max(0, st.session_state.patient_age) if isinstance(st.session_state.patient_age, (int, float)) else 0
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            st.session_state.patient_name = st.text_input(
-                "👤 Full name",
-                value=st.session_state.patient_name,
-                placeholder="e.g. Priya Sharma",
-            )
-        with col2:
-            st.session_state.patient_age = st.number_input(
-                "🎂 Age",
-                min_value=0,
-                max_value=130,
-                value=age_value,
-                step=1,
-                help="Enter the patient's age in years.",
-            )
-        with col3:
-            st.session_state.patient_gender = st.selectbox(
-                "⚧ Gender",
-                ["", "Male", "Female"],
-                index=["", "Male", "Female"].index(st.session_state.patient_gender)
-                if st.session_state.patient_gender in ["", "Male", "Female"]
-                else 0,
-            )
-
-        st.markdown("---")
-        st.checkbox(
-            "I have read and agree to the medical disclaimer",
-            value=st.session_state.agree_disclaimer,
-            key="agree_disclaimer",
-        )
-
-        with st.expander("Saved profiles", expanded=False):
-            if st.session_state.saved_profiles:
-                saved_labels = [f"{p['name']} · {p['age']} · {p['gender']}" for p in st.session_state.saved_profiles]
-                st.selectbox("Select a saved profile to load", [""] + saved_labels, key="selected_saved_profile")
-                st.button("Load saved profile", key="load_saved_profile", on_click=load_saved_profile)
-            else:
-                st.info("No saved profiles yet. Save the current profile after completing the form.")
-
-        profile_save_ready = bool(
-            st.session_state.patient_name.strip()
-            and st.session_state.patient_age > 0
-            and st.session_state.patient_gender != ""
-        )
-
-        valid_profile = bool(
-            profile_save_ready
-            and st.session_state.agree_disclaimer
-        )
-
-        if not valid_profile:
-            st.markdown(
-                f"""
-                <div style="background: linear-gradient(135deg, #eab308 0%, #dc2626 100%); 
-                            color: #e8f3fc; 
-                            padding: 1rem; 
-                            border-radius: 12px; 
-                            text-align: center; 
-                            font-weight: 600; 
-                            margin: 1.2rem 0;">
-                    ⚠️ Complete the patient profile and disclaimer to continue.
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
-            if profile_save_ready:
-                st.info("You can still save this profile once the name, age, and gender are filled in.")
-            st.button("Reset profile", key="reset_profile", on_click=reset_profile)
-            render_footer()
-            st.stop()
-
-        col1, col2 = st.columns([3, 2])
-        with col1:
-            st.button(
-                "Begin Assessment",
-                key="continue_to_analysis",
-                on_click=continue_to_analysis,
-                disabled=not valid_profile,
-            )
-        with col2:
-            st.button(
-                "Save profile",
-                key="save_profile",
-                on_click=save_profile,
-                disabled=not profile_save_ready,
-            )
-
-        if st.session_state.profile_saved:
-            st.success("Profile saved successfully. You can load it later from Saved profiles.")
-
-        st.button("Reset profile", key="reset_profile", on_click=reset_profile)
-        render_footer()
-        st.stop()
-
-# ============================================
-# NAVIGATION BAR
-# ============================================
-st.markdown(
-    """
-    <nav class="navbar">
-        <div class="navbar-container">
-            <a href="#" class="navbar-brand">
-                <div class="navbar-logo">N</div>
-                Nirnay
-            </a>
-            <ul class="navbar-nav">
-                <li><a href="#features" class="nav-link">Features</a></li>
-                <li><a href="#tool" class="nav-link">Tool</a></li>
-                <li><a href="#chat" class="nav-link">AI Chat</a></li>
-            </ul>
-        </div>
-    </nav>
-    """,
-    unsafe_allow_html=True,
-)
-
-# ============================================
-# HERO SECTION
-# ============================================
-st.markdown(
-    """
-    <section class="hero-section">
-        <div class="hero-container">
-            <h1 class="hero-title">AI-Powered Clinical Diagnostic Workflow</h1>
-            <p class="hero-subtitle">
-                Transform your medical assessment process with intelligent automation, comprehensive analysis,
-                and real-time AI assistance for healthcare professionals.
-            </p>
-            <a href="#tool" class="hero-cta">Start Assessment →</a>
-        </div>
-    </section>
-    """,
-    unsafe_allow_html=True,
-)
-
-# ============================================
-# FEATURES SECTION
-# ============================================
-st.markdown(
-    """
-    <section class="features-section" id="features">
-        <div class="features-container">
-            <div class="features-header">
-                <h2 class="features-title">Why Choose Nirnay?</h2>
-                <p class="features-subtitle">
-                    Advanced AI technology meets clinical excellence to streamline your diagnostic workflow.
-                </p>
-            </div>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">🧠</div>
-                    <h3 class="feature-title">AI-Powered Analysis</h3>
-                    <p class="feature-description">
-                        Leverage advanced machine learning algorithms for comprehensive symptom analysis and risk assessment.
-                    </p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">⚡</div>
-                    <h3 class="feature-title">Rapid Assessment</h3>
-                    <p class="feature-description">
-                        Complete patient evaluations in minutes with our streamlined, intuitive workflow interface.
-                    </p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🤖</div>
-                    <h3 class="feature-title">24/7 AI Assistant</h3>
-                    <p class="feature-description">
-                        Get instant answers to clinical questions and access evidence-based medical insights anytime.
-                    </p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🔒</div>
-                    <h3 class="feature-title">Secure & Private</h3>
-                    <p class="feature-description">
-                        Enterprise-grade security with HIPAA-compliant data handling and privacy protection.
-                    </p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">📊</div>
-                    <h3 class="feature-title">Comprehensive Reports</h3>
-                    <p class="feature-description">
-                        Generate detailed clinical reports with differential diagnoses and treatment recommendations.
-                    </p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">📱</div>
-                    <h3 class="feature-title">Mobile Optimized</h3>
-                    <p class="feature-description">
-                        Fully responsive design that works seamlessly across all devices and screen sizes.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </section>
-    """,
-    unsafe_allow_html=True,
-)
-
-# ============================================
-# STEP-BY-STEP WORKFLOW
-# ============================================
-
-# Stepper Navigation
-steps = ["Patient Intake", "Assessment", "Analysis", "Results"]
-current_step = st.session_state.current_step
-
-st.markdown('<div class="workflow-container">', unsafe_allow_html=True)
-
-st.markdown('<div class="stepper">', unsafe_allow_html=True)
-
-step_cols = st.columns(len(steps), gap="small")
-for i, step in enumerate(steps):
-    with step_cols[i]:
-        if i < current_step:
-            status = "completed"
-            status_text = "✓"
-        elif i == current_step:
-            status = "active"
-            status_text = str(i + 1)
-        else:
-            status = "upcoming"
-            status_text = str(i + 1)
-
-        st.markdown(
-            f"""
-            <div class="stepper-step {status}">
-                <span class="status">{status_text}</span>
-                {step}
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
-st.markdown('</div>', unsafe_allow_html=True)
-
-# ============================================
-# STEP 0: PATIENT INTAKE FORM
-# ============================================
-if current_step == 0:
-    st.markdown(
-        """
-        <div class="form-card">
-            <h2 class="form-title">Patient Information</h2>
-            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 2rem;">
-                Please provide the patient's basic information to begin the assessment.
-            </p>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    col1, col2 = st.columns(2)
-    with col1:
-        name = st.text_input("Patient Name", key="patient_name")
-        age = st.number_input("Age", min_value=0, max_value=120, key="patient_age")
-        gender = st.selectbox("Gender", ["Select", "Male", "Female", "Other"], key="patient_gender")
-
-    with col2:
-        symptoms = st.text_area("Chief Complaint/Symptoms", height=100, key="patient_symptoms")
-        duration = st.text_input("Duration of Symptoms", placeholder="e.g., 3 days, 2 weeks", key="symptom_duration")
-
-    # Next button
-    if st.button("Begin Assessment →", key="next_step_0", use_container_width=True, type="primary"):
-        if name and symptoms:
-            st.session_state.patient_data = {
-                "name": name,
-                "age": age,
-                "gender": gender,
-                "symptoms": symptoms,
-                "duration": duration
-            }
-            st.session_state.current_step = 1
-            st.rerun()
-
-# ============================================
-# STEP 1: ASSESSMENT
-# ============================================
-elif current_step == 1:
-    patient = st.session_state.patient_data
-
-    st.markdown(
-        f"""
-        <div class="form-card">
-            <h2 class="form-title">Assessment: {patient.get('name', 'Patient')}</h2>
-            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 2rem;">
-                Please provide additional assessment details for a comprehensive analysis.
-            </p>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    col1, col2 = st.columns(2)
-    with col1:
-        severity = st.selectbox("Severity", ["Mild", "Moderate", "Severe", "Critical"], key="severity")
-        pain_level = st.slider("Pain Level (1-10)", 1, 10, 5, key="pain_level")
-        onset = st.selectbox("Onset", ["Sudden", "Gradual", "Unknown"], key="onset")
-
-    with col2:
-        associated_symptoms = st.text_area("Associated Symptoms", height=100, placeholder="e.g., fever, nausea, fatigue", key="associated_symptoms")
-        medical_history = st.text_area("Relevant Medical History", height=100, placeholder="e.g., allergies, medications, past conditions", key="medical_history")
-
-    col1, col2 = st.columns(2)
-    with col1:
-        if st.button("← Back to Intake", key="back_step_1"):
-            st.session_state.current_step = 0
-            st.rerun()
-
-    with col2:
-        if st.button("Generate Analysis →", key="next_step_1", use_container_width=True, type="primary"):
-            st.session_state.patient_data.update({
-                "severity": severity,
-                "pain_level": pain_level,
-                "onset": onset,
-                "associated_symptoms": associated_symptoms,
-                "medical_history": medical_history
-            })
-            st.session_state.current_step = 2
-            st.session_state.is_processing = True
-            st.rerun()
-
-# ============================================
-# STEP 2: ANALYSIS PROCESSING
-# ============================================
-elif current_step == 2:
-    patient = st.session_state.patient_data
-
-    st.markdown(
-        """
-        <div class="form-card">
-            <h2 class="form-title">AI Analysis in Progress</h2>
-            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 2rem;">
-                Our AI is analyzing the patient data and generating clinical recommendations.
-            </p>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    # Progress bar
-    progress_bar = st.progress(0)
-    status_text = st.empty()
-
-    if st.session_state.is_processing:
-        for i in range(101):
-            progress_bar.progress(i)
-            if i < 30:
-                status_text.text("📊 Gathering patient information...")
-            elif i < 60:
-                status_text.text("🧠 Analyzing symptoms and medical history...")
-            elif i < 90:
-                status_text.text("⚡ Generating risk assessment...")
-            else:
-                status_text.text("✅ Finalizing clinical recommendations...")
-
-            time.sleep(0.05)
-
-        # Generate analysis
-        patient_summary = f"""
-        Patient: {patient.get('name', 'Unknown')}
-        Age: {patient.get('age', 'Unknown')}
-        Gender: {patient.get('gender', 'Unknown')}
-        Symptoms: {patient.get('symptoms', 'None reported')}
-        Duration: {patient.get('duration', 'Unknown')}
-        Severity: {patient.get('severity', 'Unknown')}
-        Pain Level: {patient.get('pain_level', 'Unknown')}
-        Associated Symptoms: {patient.get('associated_symptoms', 'None reported')}
-        Medical History: {patient.get('medical_history', 'None reported')}
-        """
-
-        analysis = run_groq_chat_sync(patient_summary)
-
-        st.session_state.analysis_results = {
-            "summary": patient_summary,
-            "analysis": analysis,
-            "timestamp": time.strftime("%Y-%m-%d %H:%M:%S")
-        }
-
-        st.session_state.is_processing = False
-        st.session_state.current_step = 3
-        st.rerun()
-
-    # Back button
-    if st.button("← Back to Assessment", key="back_step_2"):
-        st.session_state.current_step = 1
-        st.rerun()
-
-# ============================================
-# STEP 3: RESULTS DISPLAY
-# ============================================
-elif current_step == 3:
-    results = st.session_state.analysis_results
-    patient = st.session_state.patient_data
-
-    st.markdown(
-        """
-        <div class="results-container">
-            <div class="results-header">
-                <h2 class="results-title">📋 Clinical Assessment Results</h2>
-                <p class="results-subtitle">Comprehensive analysis and recommendations for patient care</p>
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    # Results grid
-    col1, col2 = st.columns(2)
-
-    with col1:
-        st.markdown(
-            """
-            <div class="result-card">
-                <div class="result-icon">👤</div>
-                <h3 class="result-title">Patient Summary</h3>
-                <div class="result-content">
-            """,
-            unsafe_allow_html=True,
-        )
-
-        st.markdown(f"**Name:** {patient.get('name', 'N/A')}")
-        st.markdown(f"**Age:** {patient.get('age', 'N/A')}")
-        st.markdown(f"**Gender:** {patient.get('gender', 'N/A')}")
-        st.markdown(f"**Symptoms:** {patient.get('symptoms', 'N/A')}")
-
-        st.markdown('</div></div>', unsafe_allow_html=True)
-
-    with col2:
-        st.markdown(
-            """
-            <div class="result-card">
-                <div class="result-icon">📊</div>
-                <h3 class="result-title">Assessment Details</h3>
-                <div class="result-content">
-            """,
-            unsafe_allow_html=True,
-        )
-
-        st.markdown(f"**Severity:** {patient.get('severity', 'N/A')}")
-        st.markdown(f"**Pain Level:** {patient.get('pain_level', 'N/A')}/10")
-        st.markdown(f"**Duration:** {patient.get('duration', 'N/A')}")
-        st.markdown(f"**Onset:** {patient.get('onset', 'N/A')}")
-
-        st.markdown('</div></div>', unsafe_allow_html=True)
-
-    # AI Analysis
-    st.markdown(
-        """
-        <div class="result-card">
-            <div class="result-icon">🤖</div>
-            <h3 class="result-title">AI Clinical Analysis</h3>
-            <div class="result-content">
-        """,
-        unsafe_allow_html=True,
-    )
-
-    st.markdown(results.get("analysis", "Analysis not available"))
-
-    st.markdown('</div></div>', unsafe_allow_html=True)
-
-    # Action buttons
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        if st.button("← Back to Analysis", key="back_step_3"):
-            st.session_state.current_step = 2
-            st.rerun()
-
-    with col2:
-        if st.button("New Assessment", key="new_assessment"):
-            # Reset everything
-            st.session_state.current_step = 0
-            st.session_state.patient_data = {}
-            st.session_state.analysis_results = {}
-            st.session_state.is_processing = False
-            st.session_state.chat_messages = []
-            st.rerun()
-
-    with col3:
-        if st.button("💬 AI Chat Assistant", key="open_chat", use_container_width=True, type="secondary"):
-            pass  # Will scroll to chat section
-
-st.markdown('</div>', unsafe_allow_html=True)
-
-# ============================================
-# AI CHAT ASSISTANT SECTION
-# ============================================
-st.markdown(
-    """
-    <section class="chat-section" id="chat">
-        <div class="chat-container">
-            <div class="chat-header">
-                <h2 class="chat-title">🤖 AI Medical Assistant</h2>
-                <p class="chat-subtitle">
-                    Get instant answers to clinical questions and evidence-based medical insights.
-                </p>
-            </div>
-        </div>
-    </section>
-    """,
-    unsafe_allow_html=True,
-)
-
-# Chat interface
-st.markdown('<div class="chat-messages">', unsafe_allow_html=True)
-
-# Display chat messages
-if st.session_state.chat_messages:
-    for message in st.session_state.chat_messages:
-        message_class = "user" if message["role"] == "user" else "assistant"
-        avatar = "👤" if message["role"] == "user" else "🤖"
-
-        st.markdown(
-            f"""
-            <div class="message {message_class}">
-                <div class="message-avatar">{avatar}</div>
-                <div class="message-content">{message["content"]}</div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-else:
-    st.markdown(
-        """
-        <div class="message assistant">
-            <div class="message-avatar">🤖</div>
-            <div class="message-content">
-                Hello! I'm your AI medical assistant. I can help you with:
-                <br>• Clinical case analysis
-                <br>• Symptom interpretation
-                <br>• Medical literature insights
-                <br>• Treatment considerations
-                <br><br>
-                <em>Please note: I'm not a substitute for professional medical advice.</em>
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-st.markdown('</div>', unsafe_allow_html=True)
-
-# Chat input
-st.markdown('<div class="chat-input-container">', unsafe_allow_html=True)
-
-col_input, col_send = st.columns([4, 1])
-
-with col_input:
-    user_input = st.text_area(
-        "Ask a medical question...",
-        key="chat_input",
-        height=50,
-        placeholder="e.g., What are the common causes of chest pain?",
-        label_visibility="collapsed"
-    )
-
-with col_send:
-    if st.button("Send", key="send_chat", use_container_width=True, type="primary"):
-        if user_input.strip():
-            # Add user message
-            st.session_state.chat_messages.append({
-                "role": "user",
-                "content": user_input
-            })
-
-            # Get patient context if available
-            patient_context = ""
-            if st.session_state.patient_data:
-                patient_context = f"Current patient: {st.session_state.patient_data.get('name', 'Unknown')}, Symptoms: {st.session_state.patient_data.get('symptoms', 'None')}"
-
-            # Generate AI response
-            ai_response = run_groq_chat_sync(f"{patient_context}\n\nUser: {user_input}")
-
-            # Add AI message
-            st.session_state.chat_messages.append({
-                "role": "assistant",
-                "content": ai_response
-            })
-
-            # Clear input
-            st.session_state.chat_input = ""
-            st.rerun()
-
-st.markdown('</div>', unsafe_allow_html=True)
-
-# ============================================
-# FOOTER
-# ============================================
-st.markdown(
-    """
-    <footer class="footer">
-        <div class="footer-container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3>Nirnay</h3>
-                    <p>AI-powered clinical diagnostic workflow for modern healthcare professionals.</p>
-                </div>
-                <div class="footer-section">
-                    <h3>Features</h3>
-                    <p>Rapid patient assessment, risk stratification, and personalized clinical recommendations.</p>
-                </div>
-                <div class="footer-section">
-                    <h3>Support</h3>
-                    <p>Built for healthcare providers seeking efficient, accurate diagnostic support.</p>
-                </div>
-            </div>
-            <div class="footer-links">
-                <a href="#" class="footer-link">Privacy Policy</a>
-                <a href="#" class="footer-link">Terms of Service</a>
-                <a href="#" class="footer-link">Contact</a>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2024 Nirnay. All rights reserved.</p>
-            </div>
-        </div>
-    </footer>
-    """,
-    unsafe_allow_html=True,
-)
-
-st.markdown(
-    f"""
+    # Mobile-first hero landing layout for the initial profile screen.
+    st.markdown("<div id='page-top'></div>", unsafe_allow_html=True)
+    st.markdown("<script>window.scrollTo({top:0,behavior:'auto'});</script>", unsafe_allow_html=True)
+    st.markdown(f"""
+        <div class="stepper">
             <div class="stepper-step active"><span class="status">Step 1 of 3</span>Profile</div>
             <div class="stepper-step upcoming"><span class="status">Next</span>Analysis</div>
             <div class="stepper-step upcoming"><span class="status">Future</span>Chat</div>
@@ -1785,34 +1814,34 @@ st.markdown(
         unsafe_allow_html=True,
     )
 
-st.markdown(
-    """
-    <div class="disclaimer-banner">
-        <div><strong>⚠️ Medical disclaimer</strong> This is an AI-assisted clinical workflow, not a clinical diagnosis tool. Please read the full disclaimer before continuing.</div>
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
-
-with st.expander("Read the full medical disclaimer", expanded=False):
     st.markdown(
         """
-        <div class="disclaimer-text">
-            <strong>IMPORTANT NOTICE:</strong><br>
-            This diagnostic tool is designed to ASSIST and ENHANCE medical sciences.
-            It is NOT a replacement for professional medical diagnosis, treatment, or advice from a qualified healthcare provider.
-            <ul>
-                <li>All diagnostic findings and insights provided by this tool must be CORRELATED with a qualified physician or medical specialist.</li>
-                <li>Users should NOT rely solely on this tool for medical decisions.</li>
-                <li>Always consult your doctor before making any healthcare decisions based on this tool's output.</li>
-                <li>This tool is for educational and informational purposes only.</li>
-                <li>In case of medical emergencies, seek immediate professional medical attention.</li>
-            </ul>
-            <p>By proceeding, you acknowledge and accept full responsibility for your medical decisions and agree to consult with healthcare professionals regarding all diagnostic findings.</p>
+        <div class="disclaimer-banner">
+            <div><strong>⚠️ Medical disclaimer</strong> This is an AI-assisted clinical workflow, not a clinical diagnosis tool. Please read the full disclaimer before continuing.</div>
         </div>
         """,
         unsafe_allow_html=True,
     )
+
+    with st.expander("Read the full medical disclaimer", expanded=False):
+        st.markdown(
+            """
+            <div class="disclaimer-text">
+                <strong>IMPORTANT NOTICE:</strong><br>
+                This diagnostic tool is designed to ASSIST and ENHANCE medical sciences.
+                It is NOT a replacement for professional medical diagnosis, treatment, or advice from a qualified healthcare provider.
+                <ul>
+                    <li>All diagnostic findings and insights provided by this tool must be CORRELATED with a qualified physician or medical specialist.</li>
+                    <li>Users should NOT rely solely on this tool for medical decisions.</li>
+                    <li>Always consult your doctor before making any healthcare decisions based on this tool's output.</li>
+                    <li>This tool is for educational and informational purposes only.</li>
+                    <li>In case of medical emergencies, seek immediate professional medical attention.</li>
+                </ul>
+                <p>By proceeding, you acknowledge and accept full responsibility for your medical decisions and agree to consult with healthcare professionals regarding all diagnostic findings.</p>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
     st.markdown(
         f"""
@@ -1840,7 +1869,7 @@ with st.expander("Read the full medical disclaimer", expanded=False):
         unsafe_allow_html=True,
     )
 
-    age_value = max(0, st.session_state.patient_age) if isinstance(st.session_state.patient_age, (int, float)) else 0
+    age_value = int(st.session_state.patient_age) if str(st.session_state.patient_age).isdigit() else 0
     col1, col2, col3 = st.columns(3)
     with col1:
         st.session_state.patient_name = st.text_input(
@@ -1849,13 +1878,15 @@ with st.expander("Read the full medical disclaimer", expanded=False):
             placeholder="e.g. Priya Sharma",
         )
     with col2:
-        st.session_state.patient_age = st.number_input(
-            "🎂 Age",
-            min_value=0,
-            max_value=130,
-            value=age_value,
-            step=1,
-            help="Enter the patient's age in years.",
+        st.session_state.patient_age = str(
+            st.number_input(
+                "🎂 Age",
+                min_value=0,
+                max_value=130,
+                value=age_value,
+                step=1,
+                help="Enter the patient's age in years.",
+            )
         )
     with col3:
         st.session_state.patient_gender = st.selectbox(
@@ -1883,7 +1914,7 @@ with st.expander("Read the full medical disclaimer", expanded=False):
 
     profile_save_ready = bool(
         st.session_state.patient_name.strip()
-        and st.session_state.patient_age > 0
+        and st.session_state.patient_age.strip()
         and st.session_state.patient_gender != ""
     )
 
@@ -1935,6 +1966,218 @@ with st.expander("Read the full medical disclaimer", expanded=False):
     st.button("Reset profile", key="reset_profile", on_click=reset_profile)
     render_footer()
     st.stop()
+
+
+def render_analysis_chat_styles():
+    st.markdown(
+        """
+        <style>
+        .assistant-experience-section {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 100%;
+            margin: 1.5rem 0 1.5rem;
+            padding: 1.8rem 1.5rem;
+            border-radius: 22px;
+            background: rgba(10, 18, 34, 0.84);
+            border: 1px solid rgba(94, 202, 255, 0.15);
+            box-shadow: 0 24px 80px rgba(4, 18, 38, 0.28);
+            backdrop-filter: blur(18px);
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+        .assistant-experience-section::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 10% 10%, rgba(45, 207, 255, 0.12), transparent 20%),
+                        radial-gradient(circle at 85% 20%, rgba(142, 96, 255, 0.10), transparent 18%),
+                        radial-gradient(circle at 50% 90%, rgba(89, 183, 255, 0.08), transparent 22%);
+            pointer-events: none;
+            filter: blur(10px);
+            opacity: 0.9;
+        }
+        .assistant-experience-section::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.00) 100%);
+            opacity: 0.18;
+            pointer-events: none;
+        }
+        .assistant-experience-header {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            max-width: 740px;
+            margin: 0 auto 1.85rem;
+        }
+        .assistant-experience-title {
+            margin: 0 auto;
+            color: #f8fbff;
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            text-shadow: 0 0 24px rgba(38, 209, 255, 0.18);
+        }
+        .assistant-experience-subtitle {
+            margin: 0.8rem auto 0;
+            max-width: 640px;
+            color: rgba(220, 236, 255, 0.78);
+            font-size: 1rem;
+            line-height: 1.8;
+            letter-spacing: 0.01em;
+        }
+        .assistant-experience-underline {
+            width: 90px;
+            height: 4px;
+            margin: 1.2rem auto 0;
+            border-radius: 999px;
+            background: linear-gradient(90deg, rgba(52, 211, 255, 0.95), rgba(126, 78, 255, 0.95));
+            box-shadow: 0 0 22px rgba(52, 211, 255, 0.25);
+        }
+        .assistant-option-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.25rem;
+            position: relative;
+            z-index: 2;
+        }
+        .assistant-option-card {
+            position: relative;
+            overflow: hidden;
+            border-radius: 28px;
+            min-height: 260px;
+            padding: 1.85rem 1.75rem;
+            background: linear-gradient(180deg, rgba(7, 17, 34, 0.92), rgba(12, 25, 48, 0.78));
+            border: 1px solid rgba(86, 216, 255, 0.14);
+            box-shadow: 0 28px 72px rgba(6, 18, 38, 0.26);
+            backdrop-filter: blur(14px);
+            transition: transform 0.32s ease, box-shadow 0.32s ease, border-color 0.32s ease;
+            animation: assistantFadeIn 0.75s ease both;
+        }
+        .assistant-option-card:nth-child(1) {
+            animation-delay: 0.08s;
+        }
+        .assistant-option-card:nth-child(2) {
+            animation-delay: 0.16s;
+        }
+        .assistant-option-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background: radial-gradient(circle at top left, rgba(40, 199, 255, 0.12), transparent 28%),
+                        radial-gradient(circle at bottom right, rgba(142, 96, 255, 0.08), transparent 24%);
+        }
+        .assistant-option-card:hover {
+            transform: translateY(-6px) scale(1.01);
+            border-color: rgba(37, 212, 255, 0.32);
+            box-shadow: 0 34px 96px rgba(8, 24, 52, 0.32);
+        }
+        .assistant-option-card:hover .assistant-option-icon {
+            transform: translateY(-2px) scale(1.04);
+            box-shadow: 0 0 22px rgba(37, 212, 255, 0.25);
+        }
+        .assistant-option-card .assistant-option-icon {
+            width: 56px;
+            height: 56px;
+            display: grid;
+            place-items: center;
+            border-radius: 18px;
+            background: rgba(34, 153, 255, 0.13);
+            color: #b5f3ff;
+            font-size: 1.45rem;
+            border: 1px solid rgba(255,255,255,0.12);
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06);
+            transition: transform 0.28s ease, box-shadow 0.28s ease;
+        }
+        .assistant-option-card .assistant-option-title {
+            margin: 1.25rem 0 0.6rem;
+            color: #eff7ff;
+            font-size: 1.35rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+        }
+        .assistant-option-card .assistant-option-desc {
+            margin: 0;
+            color: rgba(197, 214, 237, 0.78);
+            font-size: 0.98rem;
+            line-height: 1.75;
+            max-width: 95%;
+        }
+        .assistant-option-card .assistant-option-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 1.5rem;
+            gap: 1rem;
+        }
+        .assistant-option-card .option-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.45rem 0.9rem;
+            border-radius: 999px;
+            background: rgba(37, 212, 255, 0.14);
+            color: #c9f7ff;
+            font-size: 0.82rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+        .assistant-option-card .assistant-option-action {
+            width: 100%;
+            margin-top: 0.85rem;
+        }
+        .assistant-option-card .assistant-option-action .stButton > button,
+        .assistant-option-card .assistant-option-action .stButton > div > button,
+        .assistant-option-card .assistant-option-action .stButton > div > div > button {
+            width: 100% !important;
+            padding: 0.95rem 1.2rem !important;
+            border-radius: 18px !important;
+            background: linear-gradient(135deg, rgba(64,236,255,0.92), rgba(121, 90, 255, 0.94)) !important;
+            color: #03111f !important;
+            font-weight: 700 !important;
+            letter-spacing: 0.01em !important;
+            box-shadow: 0 18px 40px rgba(26, 151, 219, 0.24) !important;
+            border: 1px solid rgba(255,255,255,0.18) !important;
+            transition: transform 0.24s ease, box-shadow 0.24s ease, background 0.24s ease !important;
+        }
+        .assistant-option-card .assistant-option-action .stButton > button:hover,
+        .assistant-option-card .assistant-option-action .stButton > div > button:hover,
+        .assistant-option-card .assistant-option-action .stButton > div > div > button:hover {
+            transform: translateY(-1px) !important;
+            background: linear-gradient(135deg, rgba(75,244,255,0.98), rgba(171, 100, 255, 0.95)) !important;
+            box-shadow: 0 24px 48px rgba(54, 188, 255, 0.28) !important;
+        }
+        .assistant-option-card .assistant-option-action .stButton > button:focus,
+        .assistant-option-card .assistant-option-action .stButton > div > button:focus,
+        .assistant-option-card .assistant-option-action .stButton > div > div > button:focus {
+            animation: assistantPulse 1.8s infinite;
+        }
+        @keyframes assistantFadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes assistantPulse {
+            0%, 100% { box-shadow: 0 22px 42px rgba(68, 180, 255, 0.28); }
+            50% { box-shadow: 0 26px 56px rgba(68, 180, 255, 0.34); }
+        }
+        @media (max-width: 840px) {
+            .assistant-option-grid {
+                grid-template-columns: 1fr;
+            }
+            .assistant-experience-section {
+                padding: 1.6rem;
+            }
+        }
+        """,
+        unsafe_allow_html=True,
+    )
+
 
 def render_chat_styles():
     st.markdown(
@@ -2985,7 +3228,7 @@ if page == "analysis":
                         </div>
                     </div>
                     <div class='metrics-grid'>
-                        <div class='metric-pill'><strong>{len(st.session_state.uploaded_images)} assets</strong><span><br>Uploaded files ready for review.</span></div>
+                        <div class='metric-pill'><strong>{len(st.session_state.uploaded_images)} assets</strong><span><br>Uploaded files ready for review.</br></span></div>
                         <div class='metric-pill'><strong>{len(tab_names)} categories</strong><span>   Structured data sections available.   </span></div>
                     </div>
                 </div>
