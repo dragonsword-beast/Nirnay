@@ -9,6 +9,11 @@ from groq import Groq
 logo_png_path = pathlib.Path(__file__).resolve().parent / "893a2625-aa76-4993-af22-650fd069b640-8.png"
 logo_image_url = "https://cdn.creativefabrica.com/2020/07/17/Medicine-Logo-Graphics-4647232-1-580x386.jpg"
 
+# Sanitize session state to prevent type errors
+if "patient_age" in st.session_state:
+    if not isinstance(st.session_state.patient_age, int) or st.session_state.patient_age < 0:
+        st.session_state.patient_age = 0
+
 def _load_logo_html(path: pathlib.Path, remote_url: str, fallback_text: str = "Nirnay") -> str:
     if path.exists():
         data = base64.b64encode(path.read_bytes()).decode("ascii")
@@ -817,7 +822,7 @@ if "chat_history_quick" not in st.session_state:
 
 if "patient_name" not in st.session_state:
     st.session_state.patient_name = ""
-if "patient_age" not in st.session_state:
+if "patient_age" not in st.session_state or not isinstance(st.session_state.patient_age, int) or st.session_state.patient_age < 0:
     st.session_state.patient_age = 0
 if "patient_gender" not in st.session_state:
     st.session_state.patient_gender = ""
@@ -1131,7 +1136,7 @@ if page == "profile":
             unsafe_allow_html=True,
         )
 
-        age_value = st.session_state.patient_age
+        age_value = max(0, st.session_state.patient_age) if isinstance(st.session_state.patient_age, (int, float)) else 0
         col1, col2, col3 = st.columns(3)
         with col1:
             st.session_state.patient_name = st.text_input(
@@ -1835,7 +1840,7 @@ with st.expander("Read the full medical disclaimer", expanded=False):
         unsafe_allow_html=True,
     )
 
-    age_value = st.session_state.patient_age
+    age_value = max(0, st.session_state.patient_age) if isinstance(st.session_state.patient_age, (int, float)) else 0
     col1, col2, col3 = st.columns(3)
     with col1:
         st.session_state.patient_name = st.text_input(
