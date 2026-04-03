@@ -1972,15 +1972,79 @@ def render_analysis_chat_styles():
     st.markdown(
         """
         <style>
+        :root {
+            color-scheme: dark light;
+        }
         .analysis-tool-shell {
-            background: linear-gradient(135deg, rgba(8, 17, 34, 0.95), rgba(18, 34, 60, 0.90));
-            border: 1px solid rgba(90, 190, 255, 0.2);
-            border-radius: 22px;
-            padding: 1rem;
+            display: grid;
+            gap: 1.25rem;
             width: 100%;
             max-width: 1200px;
-            margin: 0 auto 1rem;
-            box-shadow: 0 22px 58px rgba(2, 8, 18, 0.31);
+            margin: 0 auto;
+            padding: 0.25rem;
+        }
+        .analysis-panel,
+        .dashboard-shell,
+        .assistant-panel,
+        .analysis-report-box,
+        .glass-card,
+        .panel-card {
+            border-radius: 18px;
+            border: 1px solid rgba(255,255,255,0.12);
+            background: rgba(12, 24, 39, 0.85);
+            box-shadow: 0 12px 28px rgba(0,0,0,0.22);
+            padding: 1rem;
+            color: inherit;
+        }
+        .analysis-heading {
+            font-size: 1.45rem;
+            font-weight: 800;
+            margin: 0 0 0.5rem;
+            color: inherit;
+        }
+        .analysis-subheading {
+            margin-bottom: 1rem;
+            color: rgba(255,255,255,0.8);
+            font-size: 0.95rem;
+        }
+        .analysis-action-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.65rem;
+            align-items: stretch;
+            margin-top: 1rem;
+            padding: 0.8rem;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 14px;
+        }
+        .action-copy {
+            flex: 1 1 100%;
+            min-width: 200px;
+            color: rgba(238, 244, 255, 0.85);
+            font-size: 0.9rem;
+        }
+        .section-card {
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(6, 14, 26, 0.88);
+            padding: 1.05rem;
+            margin-bottom: 0.95rem;
+        }
+        .analysis-action-buttons {
+            display: flex;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+            margin-top: 0.75rem;
+        }
+        .analysis-action-buttons .stButton>button,
+        .analysis-action-buttons .stButton>div>button,
+        .analysis-action-buttons .stButton>div>div>button {
+            min-width: 140px !important;
+            width: auto !important;
+            padding: 0.72rem 1rem !important;
+            border-radius: 12px !important;
+            font-size: 0.91rem !important;
         }
         .tool-grid-wrap {
             display: grid;
@@ -1988,51 +2052,82 @@ def render_analysis_chat_styles():
         }
         .stColumns {
             display: grid !important;
+            grid-template-columns: 1fr !important;
             gap: 1rem !important;
-            grid-template-columns: 1fr;
         }
-        .col-left, .col-right {
+        .result-line {
+            word-break: break-word;
+            white-space: pre-wrap;
+            font-size: 0.95rem;
+        }
+        @media (min-width: 980px) {
+            .stColumns {
+                grid-template-columns: repeat(12, minmax(0, 1fr)) !important;
+            }
+            .col-left, .col-right {
+                width: 100%;
+            }
+            .col-left { grid-column: span 8; }
+            .col-right { grid-column: span 4; }
+            .analysis-tool-shell {
+                width: 98%;
+            }
+        }
+        .assistant-experience-section {
+            position: relative;
+            z-index: 1;
             width: 100%;
+            max-width: 100%;
+            margin: 1.5rem 0 1.5rem;
+            padding: 1.8rem 1.5rem;
+            border-radius: 22px;
+            background: rgba(10, 18, 34, 0.84);
+            border: 1px solid rgba(94, 202, 255, 0.15);
+            box-shadow: 0 24px 80px rgba(4, 18, 38, 0.28);
+            backdrop-filter: blur(18px);
+            overflow: hidden;
+            box-sizing: border-box;
         }
-        .analysis-panel, .assistant-panel, .analysis-report-box, .glass-card, .panel-card {
+        .assistant-experience-section::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 10% 10%, rgba(45, 207, 255, 0.12), transparent 20%),
+                        radial-gradient(circle at 85% 20%, rgba(142, 96, 255, 0.10), transparent 18%),
+                        radial-gradient(circle at 50% 90%, rgba(89, 183, 255, 0.08), transparent 22%);
+            pointer-events: none;
+            filter: blur(10px);
+            opacity: 0.9;
+        }
+        .assistant-experience-section::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.00) 100%);
+            opacity: 0.18;
+            pointer-events: none;
+        }
+        .input-section, .action-section, .output-section, .assistant-section {
             border-radius: 16px;
             border: 1px solid rgba(221, 234, 255, 0.15);
             background: rgba(9, 14, 28, 0.82);
             box-shadow: 0 12px 26px rgba(2, 6, 14, 0.25);
-            padding: 0.95rem;
-            color: #eaf2ff;
+            padding: 1rem;
+            margin-bottom: 1rem;
         }
-        .analysis-heading {
-            font-size: 1.42rem;
-            font-weight: 800;
-            margin-bottom: 0.45rem;
-            color: #e2f2ff;
+        .input-section .glass-card {
+            margin-bottom: 1rem;
         }
-        .analysis-subheading {
-            margin: 0 0 0.9rem;
-            color: rgba(218, 230, 252, 0.83);
-            font-size: 0.94rem;
+        .action-section {
+            background: rgba(17, 28, 50, 0.9);
         }
-        .analysis-action-bar {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.6rem;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 0.8rem;
-            padding: 0.75rem;
-            background: rgba(255,255,255,0.06);
-            border: 1px solid rgba(145, 180, 255, 0.15);
-            border-radius: 14px;
+        .output-section {
+            background: rgba(6, 12, 22, 0.86);
         }
-        .analysis-action-buttons .stButton>button,
-        .analysis-action-buttons .stButton>div>button,
-        .analysis-action-buttons .stButton>div>div>button {
-            min-width: 140px !important;
-            width: auto !important;
-            padding: 0.70rem 1rem !important;
-            border-radius: 12px !important;
-            font-size: 0.90rem !important;
+        .assistant-section {
+            background: rgba(10, 18, 34, 0.84);
+            border: 1px solid rgba(94, 202, 255, 0.15);
+            box-shadow: 0 24px 80px rgba(4, 18, 38, 0.28);
         }
         .assistant-panel {
             position: sticky;
@@ -2110,7 +2205,7 @@ def render_analysis_chat_styles():
         }
         @media (max-width: 680px) {
             .analysis-tool-shell {
-                padding: 0.5rem;
+                padding: 0.25rem;
             }
             .analysis-action-bar {
                 gap: 0.5rem;
@@ -2121,8 +2216,10 @@ def render_analysis_chat_styles():
             .assistant-panel .assistant-card {
                 padding: 0.7rem;
             }
+            .input-section, .action-section, .output-section, .assistant-section {
+                padding: 0.75rem;
+            }
         }
-        </style>
         """,
         unsafe_allow_html=True,
     )
@@ -3240,6 +3337,8 @@ if page == "analysis":
     col1, col2 = st.columns([7, 3], gap="large")
     with col1:
         st.markdown("<div class='col-left'>", unsafe_allow_html=True)
+        st.markdown("<div class='input-section'>", unsafe_allow_html=True)
+        st.markdown("### 📥 Clinical Inputs")
         st.markdown(
             """
             <div class='glass-card'>
@@ -3346,6 +3445,9 @@ if page == "analysis":
                 unsafe_allow_html=True,
             )
 
+        st.markdown("</div>", unsafe_allow_html=True)  # close input-section
+        st.markdown("<div class='action-section'>", unsafe_allow_html=True)
+        st.markdown("### ⚡ Actions")
         st.markdown(
             "<div class='analysis-action-bar'><div class='action-copy'>Primary action will activate once at least one clinical input, manual symptom text, or image is provided.</div></div>",
             unsafe_allow_html=True,
@@ -3363,7 +3465,11 @@ if page == "analysis":
         with action_cols[2]:
             st.button("Reset", key="reset_analysis")
 
+        st.markdown("</div>", unsafe_allow_html=True)  # close action-section
+
         if st.session_state.get("analysis_output", "").strip():
+            st.markdown("<div class='output-section'>", unsafe_allow_html=True)
+            st.markdown("### 📋 Results")
             report_text = st.session_state.analysis_output
             st.markdown(
                 """
@@ -3412,10 +3518,13 @@ if page == "analysis":
                     line_class = "ok"
                 st.markdown(f"<div class='result-line {line_class}'>{safe_line}</div>", unsafe_allow_html=True)
             st.markdown("</div>", unsafe_allow_html=True)
+            st.markdown("</div>", unsafe_allow_html=True)  # close output-section
             st.markdown("</div>", unsafe_allow_html=True)  # close col-left
 
     with col2:
         st.markdown("<div class='col-right'>", unsafe_allow_html=True)
+        st.markdown("<div class='assistant-section'>", unsafe_allow_html=True)
+        st.markdown("### 🤖 AI Assistant")
         st.markdown(
             """
             <div class='assistant-panel sticky'>
@@ -3442,6 +3551,7 @@ if page == "analysis":
             unsafe_allow_html=True,
         )
         render_chat_options()
+        st.markdown("</div>", unsafe_allow_html=True)  # close assistant-section
         st.markdown("</div>", unsafe_allow_html=True)  # close col-right
         st.markdown("</div>", unsafe_allow_html=True)  # close stColumns
         st.markdown("</div>", unsafe_allow_html=True)  # close tool-grid-wrap
