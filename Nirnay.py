@@ -3028,62 +3028,62 @@ def suggest_analysis_followup_questions(collected):
     question_map = [
         (
             "🧪 Metabolism",
-            collected["🧪 Metabolism"],
+            collected.get("metabolism", {}),
             "Add glucose metrics, lipid markers, or classic diabetes symptoms such as thirst, polyuria, or slow wound healing.",
         ),
         (
             "❤️ Cardiac",
-            collected["❤️ Cardiac"],
+            collected.get("cardiac", {}),
             "Add blood pressure, troponin, BNP, or chest pain/shortness of breath symptoms.",
         ),
         (
             "🧬 Oncology",
-            collected["🧬 Oncology"],
+            collected.get("oncology", {}),
             "Add mass size, weight loss, lymph node changes, tumor marker values, or new systemic symptoms.",
         ),
         (
             "🧠 Neurology",
-            collected["🧠 Neurology"],
+            collected.get("neurology", {}),
             "Add headaches, weakness, sensory changes, seizures, dizziness, or focal deficit details.",
         ),
         (
             "👩 Gynecology",
-            collected["👩 Gynecology"],
+            collected.get("gynecology", {}),
             "Add menstrual changes, pelvic pain, discharge, infertility symptoms, or gynecologic exam findings.",
         ),
         (
             "🛡️ Immunology",
-            collected["🛡️ Immunology"],
+            collected.get("immunology", {}),
             "Add autoimmune markers, recurrent infection history, rashes, joint pain, or lymph node findings.",
         ),
         (
             "🦋 Endocrinology",
-            collected["🦋 Endocrinology"],
+            collected.get("endocrinology", {}),
             "Add thyroid labs, cortisol/PTH levels, metabolic symptoms, or hormone-related complaints.",
         ),
         (
             "👶 Pediatric",
-            collected["👶 Pediatric"],
+            collected.get("pediatric", {}),
             "Add growth measures, developmental milestones, feeding issues, fever, or respiratory symptoms.",
         ),
         (
             "🧴 Dermatology",
-            collected["🧴 Dermatology"],
+            collected.get("dermatology", {}),
             "Add rash description, lesion size, itching, scaling, or ulcer characteristics.",
         ),
         (
             "🧠 Psychiatry",
-            collected["🧠 Psychiatry"],
+            collected.get("psychiatry", {}),
             "Add mood, anxiety, sleep, cognitive impairment, or suicide risk details.",
         ),
         (
             "💧 Nephrology",
-            collected["💧 Nephrology"],
+            collected.get("nephrology", {}),
             "Add kidney labs, urine changes, edema, blood in urine, or fluid balance concerns.",
         ),
         (
             "🩸 Hematology",
-            collected["🩸 Hematology"],
+            collected.get("hematology", {}),
             "Add hemoglobin, platelet or white count values, bleeding, bruising, or lymphadenopathy symptoms.",
         ),
     ]
@@ -3651,18 +3651,18 @@ hema_defs = {
 
 # ------------ Create tabs and inputs -------------
 tab_names = [
-    ("🧪 Metabolism", vital_defs),
-    ("❤️ Cardiac", cardiac_defs),
-    ("🧬 Oncology", onco_defs),
-    ("🧠 Neurology", neural_defs),
-    ("👩 Gynecology", gynae_defs),
-    ("🛡️ Immunology", immuno_defs),
-    ("🦋 Endocrinology", endo_defs),
-    ("👶 Pediatric", pedia_defs),
-    ("🧴 Dermatology", derm_defs),
-    ("🧠 Psychiatry", psych_defs),
-    ("💧 Nephrology", neph_defs),
-    ("🩸 Hematology", hema_defs),
+    ("metabolism", "🧪 Metabolism", vital_defs),
+    ("cardiac", "❤️ Cardiac", cardiac_defs),
+    ("oncology", "🧬 Oncology", onco_defs),
+    ("neurology", "🧠 Neurology", neural_defs),
+    ("gynecology", "👩 Gynecology", gynae_defs),
+    ("immunology", "🛡️ Immunology", immuno_defs),
+    ("endocrinology", "🦋 Endocrinology", endo_defs),
+    ("pediatric", "👶 Pediatric", pedia_defs),
+    ("dermatology", "🧴 Dermatology", derm_defs),
+    ("psychiatry", "🧠 Psychiatry", psych_defs),
+    ("nephrology", "💧 Nephrology", neph_defs),
+    ("hematology", "🩸 Hematology", hema_defs),
 ]
 
 if "analysis_requested" not in st.session_state:
@@ -3788,30 +3788,29 @@ if page == "analysis":
     )
 
     with expander_placeholder.expander("Clinical Intake Dashboard", expanded=True):
-        tabs_objs = st.tabs([x[0] for x in tab_names])
+        tabs_objs = st.tabs([x[1] for x in tab_names])
         collected = {}
 
-        for (tab_title, defs), tab_obj in zip(tab_names, tabs_objs):
+        for (tab_key, tab_label, defs), tab_obj in zip(tab_names, tabs_objs):
             with tab_obj:
-                collected[tab_title] = make_inputs(tab_obj, defs)
-
-            any_section_data = any(
-                any(value is not None and value is not False and value != "" for value in section.values())
-                for section in [
-                    collected["🧪 Metabolism"],
-                    collected["❤️ Cardiac"],
-                    collected["🧬 Oncology"],
-                    collected["🧠 Neurology"],
-                    collected["👩 Gynecology"],
-                    collected["🛡️ Immunology"],
-                    collected["🦋 Endocrinology"],
-                    collected["👶 Pediatric"],
-                    collected["🧴 Dermatology"],
-                    collected["🧠 Psychiatry"],
-                    collected["💧 Nephrology"],
-                    collected["🩸 Hematology"],
-                ]
-            ) or bool(st.session_state.uploaded_images) or bool(st.session_state.manual_symptoms.strip())
+                collected[tab_key] = make_inputs(tab_obj, defs)
+        any_section_data = any(
+            any(value is not None and value is not False and value != "" for value in section.values())
+            for section in [
+                collected.get("metabolism", {}),
+                collected.get("cardiac", {}),
+                collected.get("oncology", {}),
+                collected.get("neurology", {}),
+                collected.get("gynecology", {}),
+                collected.get("immunology", {}),
+                collected.get("endocrinology", {}),
+                collected.get("pediatric", {}),
+                collected.get("dermatology", {}),
+                collected.get("psychiatry", {}),
+                collected.get("nephrology", {}),
+                collected.get("hematology", {}),
+            ]
+        ) or bool(st.session_state.uploaded_images) or bool(st.session_state.manual_symptoms.strip())
 
         st.markdown(
             """
@@ -3994,18 +3993,18 @@ if page == "analysis":
         st.markdown("</div>", unsafe_allow_html=True)  # close tool-grid-wrap
         st.markdown("</div>", unsafe_allow_html=True)  # close analysis-tool-shell
 
-v_checks = collected["🧪 Metabolism"]
-c_checks = collected["❤️ Cardiac"]
-o_checks = collected["🧬 Oncology"]
-n_checks = collected["🧠 Neurology"]
-g_checks = collected["👩 Gynecology"]
-i_checks = collected["🛡️ Immunology"]
-endo_checks = collected["🦋 Endocrinology"]
-ped_checks = collected["👶 Pediatric"]
-derm_checks = collected["🧴 Dermatology"]
-psych_checks = collected["🧠 Psychiatry"]
-neph_checks = collected["💧 Nephrology"]
-hem_checks = collected["🩸 Hematology"]
+v_checks = collected.get("metabolism", {})
+c_checks = collected.get("cardiac", {})
+o_checks = collected.get("oncology", {})
+n_checks = collected.get("neurology", {})
+g_checks = collected.get("gynecology", {})
+i_checks = collected.get("immunology", {})
+endo_checks = collected.get("endocrinology", {})
+ped_checks = collected.get("pediatric", {})
+derm_checks = collected.get("dermatology", {})
+psych_checks = collected.get("psychiatry", {})
+neph_checks = collected.get("nephrology", {})
+hem_checks = collected.get("hematology", {})
 
 metabolic_has_data = has_data(v_checks.values())
 cardiac_has_data = has_data(c_checks.values())
