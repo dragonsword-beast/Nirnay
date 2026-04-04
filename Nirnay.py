@@ -3118,14 +3118,6 @@ if page == "profile":
         key="agree_disclaimer",
     )
 
-    with st.expander("Saved profiles", expanded=False):
-        if st.session_state.saved_profiles:
-            saved_labels = [f"{p['name']} · {p['age']} · {p['gender']}" for p in st.session_state.saved_profiles]
-            st.selectbox("Select a saved profile to load", [""] + saved_labels, key="selected_saved_profile")
-            st.button("Load saved profile", key="load_saved_profile", on_click=load_saved_profile)
-        else:
-            st.info("No saved profiles yet. Save the current profile after completing the form.")
-
     profile_save_ready = bool(
         st.session_state.patient_name.strip()
         and st.session_state.patient_age.strip()
@@ -3153,8 +3145,7 @@ if page == "profile":
             unsafe_allow_html=True,
         )
         if profile_save_ready:
-            st.info("You can still save this profile once the name, age, and gender are filled in.")
-        st.button("Reset profile", key="reset_profile", on_click=reset_profile)
+            st.info("Complete the disclaimer to continue.")
         st.markdown('</div>', unsafe_allow_html=True)
         render_custom_footer()
         st.stop()
@@ -3167,18 +3158,7 @@ if page == "profile":
             on_click=continue_to_analysis,
             disabled=not valid_profile,
         )
-    with col2:
-        st.button(
-            "Save profile",
-            key="save_profile",
-            on_click=save_profile,
-            disabled=not profile_save_ready,
-        )
 
-    if st.session_state.profile_saved:
-        st.success("Profile saved successfully. You can load it later from Saved profiles.")
-
-    st.button("Reset profile", key="reset_profile", on_click=reset_profile)
     st.markdown('</div>', unsafe_allow_html=True)
     render_custom_footer()
     st.stop()
@@ -3692,14 +3672,14 @@ def handle_chat_submit(input_key, mode):
             system_prompt = (
                 "You are a medical AI assistant integrated into the NirnayAI application. Your role is to provide accurate, safe, and structured medical guidance only.\n\n"
                 "CORE RULE: You must ONLY respond to queries related to the medical field. If a user asks anything outside medical topics (e.g., coding, finance, relationships, general advice), you must politely refuse and redirect: 'I'm designed to assist only with medical-related questions. Please ask about symptoms, health conditions, treatments, or wellness.'\n\n"
-                "MEDICAL SCOPE: You are allowed to answer symptoms analysis, possible conditions (non-diagnostic), general treatment options, first-aid guidance, preventive healthcare, lifestyle and wellness advice, medication general info (no prescriptions).\n\n"
+                "MEDICAL SCOPE: You are allowed to answer symptoms analysis, possible conditions (non-diagnostic), general treatment options, first-aid guidance, preventive healthcare, lifestyle and wellness advice, medication general info (no prescriptions). If the user mentions prescribed medication, you may discuss general information about the medication, common side effects, precautions, and potential interactions, but do not make new prescriptions or change dosing.\n\n"
                 "SAFETY RULES: Never give final diagnosis. Never prescribe specific medicines or dosages. Always include a disclaimer: 'This is not a medical diagnosis. Please consult a qualified doctor for professional advice.' For serious symptoms (chest pain, breathing difficulty, etc.), respond with immediate action steps and suggest seeking urgent medical help.\n\n"
-                "RESPONSE STYLE: Be clear, calm, and professional. Use structured format: Possible Causes, What You Can Do, When to See a Doctor. Use simple language (easy for non-medical users). Add light emojis where appropriate (🩺⚠️💊).\n\n"
+                "RESPONSE STYLE: Be clear, calm, and professional. Use structured format: Possible Causes, What You Can Do, When to See a Doctor. Use simple language (easy for non-medical users). Add light emojis where appropriate (🩺⚠️💊). Do not use tables. Use paragraphs or bullet point lists instead.\n\n"
                 "RESTRICTIONS: Do NOT answer programming questions, financial advice, legal queries, personal opinions outside health. Do NOT hallucinate unknown medical facts.\n\n"
                 "BONUS: If user input is vague, ask follow-up questions like 'How long have you had this symptom?' or 'Do you have any other symptoms?'\n\n"
                 "Respond in the same language as the user's query. Support all international languages, including Indian languages such as Hindi, Tamil, Telugu, Bengali, Marathi, Gujarati, Kannada, Malayalam, Punjabi, Urdu, and others."
                 if mode == "medical"
-                else "You are a medical AI assistant integrated into the NirnayAI application. Your role is to provide accurate, safe, and structured medical guidance only. Answer briefly and compactly in 1-2 short sentences. Provide general medical information only, not medical advice. Always include a disclaimer: 'This is not a medical diagnosis. Please consult a qualified doctor for professional advice.' Respond in the same language as the user's query. Support all international languages, including Indian languages such as Hindi, Tamil, Telugu, Bengali, Marathi, Gujarati, Kannada, Malayalam, Punjabi, Urdu, and others."
+                else "You are a medical AI assistant integrated into the NirnayAI application. Your role is to provide accurate, safe, and structured medical guidance only. Answer briefly and compactly in 1-2 short sentences. Provide general medical information only, not medical advice. Always include a disclaimer: 'This is not a medical diagnosis. Please consult a qualified doctor for professional advice.' Do not use tables. Respond in paragraphs or bullet points, not tables. Respond in the same language as the user's query. Support all international languages, including Indian languages such as Hindi, Tamil, Telugu, Bengali, Marathi, Gujarati, Kannada, Malayalam, Punjabi, Urdu, and others."
             )
 
         completion = client.chat.completions.create(
@@ -3708,7 +3688,7 @@ def handle_chat_submit(input_key, mode):
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": prompt_text},
             ],
-            max_completion_tokens=3072 if mode == "medical" else 540,
+            max_completion_tokens=2048 if mode == "medical" else 420,
             temperature=0.4,
             stream=False,
         )
