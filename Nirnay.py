@@ -111,11 +111,17 @@ st.markdown(
         box-shadow: none;
     }}
 
-    #MainMenu, footer, .stDeployButton, .css-1lsmgbg, .viewerBadge_container__1QSob {{
+    #MainMenu, footer, .stDeployButton, .css-1lsmgbg, .viewerBadge_container__1QSob, .css-1adrfps, .css-1k0ckh2, header, .css-18ni7ap, .css-1v3fvcr {{
         visibility: hidden !important;
         opacity: 0 !important;
         height: 0 !important;
         width: 0 !important;
+        display: none !important;
+    }}
+
+    /* Hide any GitHub or external links in header */
+    header a[href*="github"], header .css-1v3fvcr {{
+        display: none !important;
     }}
 
     .custom-navbar {{
@@ -623,6 +629,26 @@ st.markdown(
     .stColumns {{
         display: grid !important;
         gap: 1rem !important;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)) !important;
+    }}
+
+    /* Ensure text wraps properly */
+    .stMarkdown, .stText, .stTextArea, .stTextInput {{
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        hyphens: auto !important;
+    }}
+
+    /* Touch-friendly inputs */
+    input, textarea, select {{
+        min-height: 44px !important;
+        font-size: 16px !important; /* Prevents zoom on iOS */
+    }}
+
+    /* Better button sizing */
+    .stButton>button {{
+        min-height: 44px !important;
+        font-size: 1rem !important;
     }}
 
     @media (max-width: 980px) {{
@@ -635,21 +661,54 @@ st.markdown(
         .custom-navbar {{
             flex-direction: column;
             align-items: stretch;
+            gap: 0.5rem;
+        }}
+        .navbar-nav {{
+            flex-direction: row;
+            justify-content: center;
         }}
         .hero-actions {{
-            justify-content: stretch;
+            flex-direction: column;
+            gap: 0.75rem;
         }}
         .hero-primary-cta, .hero-secondary-cta {{
             width: 100%;
+            text-align: center;
         }}
         .stepper {{
             grid-template-columns: 1fr;
+            gap: 0.5rem;
+        }}
+        .feature-grid {{
+            grid-template-columns: 1fr;
+        }}
+        .tool-grid-wrap {{
+            width: 100%;
+        }}
+        .analysis-layout {{
+            grid-template-columns: 1fr;
+        }}
+        .col-left, .col-right {{
+            width: 100%;
+        }}
+        .metrics-grid {{
+            grid-template-columns: 1fr;
+        }}
+        .profile-row {{
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }}
+        .action-bar {{
+            flex-direction: column;
+            align-items: stretch;
         }}
     }}
 
     @media (max-width: 680px) {{
         .site-hero {{
             padding: 1.4rem 1rem;
+            margin-bottom: 1rem;
         }}
         .custom-navbar {{
             padding: 0.9rem 1rem;
@@ -657,15 +716,182 @@ st.markdown(
         }}
         .block-container {{
             padding: 1rem 0.75rem 1.5rem;
+            max-width: 100%;
         }}
         .glass-card, .panel-card, .analysis-report-box, .assistant-panel {{
             padding: 1rem;
+            border-radius: 16px;
         }}
         .analysis-action-bar {{
             padding: 0.85rem;
+            flex-direction: column;
+            gap: 0.75rem;
         }}
         .result-line {{
             font-size: 0.92rem;
+            word-wrap: break-word;
+            hyphens: auto;
+        }}
+        .main-header {{
+            font-size: clamp(2rem, 6vw, 2.5rem);
+            line-height: 1.1;
+        }}
+        .subtitle {{
+            font-size: clamp(0.9rem, 3vw, 1rem);
+            line-height: 1.6;
+        }}
+        .hero-primary-cta, .hero-secondary-cta {{
+            padding: 1rem 1.2rem;
+            font-size: 1rem;
+            min-height: 48px;
+        }}
+        .nav-btn {{
+            padding: 0.8rem 1rem;
+            font-size: 0.95rem;
+            min-height: 44px;
+        }}
+        .stButton>button, .stButton>div>button, .stButton>div>div>button {{
+            padding: 1rem 1.4rem !important;
+            font-size: 1rem !important;
+            min-height: 48px !important;
+            border-radius: 12px !important;
+        }}
+        .custom-footer {{
+            padding: 1.5rem 1rem;
+        }}
+        .footer-content {{
+            flex-direction: column;
+            gap: 1.5rem;
+            text-align: center;
+        }}
+        .footer-links {{
+            justify-content: center;
+            flex-wrap: wrap;
+        }}
+        .footer-links a {{
+            margin: 0.25rem 0.5rem;
+        }}
+        .input-section, .action-section, .output-section, .assistant-section {{
+            margin-bottom: 1rem;
+        }}
+        .upload-panel {{
+            margin-bottom: 0.75rem;
+        }}
+        .hint-box {{
+            margin-bottom: 0.75rem;
+        }}
+        .report-header {{
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }}
+        .report-badge {{
+            align-self: flex-end;
+        }}
+    }}
+
+    @media (max-width: 480px) {{
+        .block-container {{
+            padding: 0.75rem 0.5rem 1rem;
+        }}
+        .site-hero {{
+            padding: 1rem 0.75rem;
+            border-radius: 16px;
+        }}
+        .custom-navbar {{
+            padding: 0.75rem 0.75rem;
+            border-radius: 12px;
+        }}
+        .main-header {{
+            font-size: clamp(1.8rem, 7vw, 2.2rem);
+        }}
+        .subtitle {{
+            font-size: clamp(0.85rem, 4vw, 0.95rem);
+        }}
+        .hero-trust-row {{
+            flex-direction: column;
+            gap: 0.5rem;
+        }}
+        .hero-trust-item {{
+            padding: 0.75rem 0.9rem;
+            font-size: 0.9rem;
+            text-align: center;
+        }}
+        .feature-card {{
+            padding: 1.25rem;
+        }}
+        .feature-title {{
+            font-size: 0.95rem;
+        }}
+        .feature-copy {{
+            font-size: 0.9rem;
+        }}
+        .stepper-step {{
+            padding: 0.8rem 1rem;
+            font-size: 0.9rem;
+            min-height: 50px;
+        }}
+        .panel-title {{
+            font-size: 1.1rem;
+        }}
+        .panel-subtitle {{
+            font-size: 0.9rem;
+        }}
+        .stButton>button, .stButton>div>button, .stButton>div>div>button {{
+            padding: 1.1rem 1.5rem !important;
+            font-size: 1.05rem !important;
+            min-height: 50px !important;
+        }}
+        .custom-footer {{
+            padding: 1.25rem 0.75rem;
+        }}
+        .footer-credits p {{
+            font-size: 0.9rem;
+        }}
+        .glass-card {{
+            padding: 0.875rem;
+        }}
+        .card-header {{
+            margin-bottom: 0.75rem;
+        }}
+        .profile-name {{
+            font-size: 1rem;
+        }}
+        .profile-meta {{
+            font-size: 0.9rem;
+        }}
+        .status-badge {{
+            padding: 0.5rem 0.75rem;
+            font-size: 0.8rem;
+        }}
+        .metric-pill {{
+            padding: 0.875rem;
+        }}
+        .metric-pill strong {{
+            font-size: 0.95rem;
+        }}
+        .metric-pill span {{
+            font-size: 0.88rem;
+        }}
+        .assistant-title {{
+            font-size: 1rem;
+        }}
+        .assistant-chip {{
+            padding: 0.5rem 0.8rem;
+            font-size: 0.85rem;
+        }}
+        .assistant-card {{
+            padding: 0.875rem;
+        }}
+        .assistant-card h4 {{
+            font-size: 0.95rem;
+        }}
+        .result-line {{
+            font-size: 0.9rem;
+        }}
+        .upload-report-card {{
+            width: 90vw;
+            max-width: 300px;
         }}
     }}
 
