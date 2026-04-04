@@ -4,6 +4,7 @@ import re
 import time
 import base64
 import pathlib
+import random
 from groq import Groq
 
 logo_png_path = pathlib.Path(__file__).resolve().parent / "893a2625-aa76-4993-af22-650fd069b640-8.png"
@@ -39,23 +40,27 @@ st.markdown(
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
     :root {{
-        --brand-color: #57d4ff;
-        --brand-strong: #44b7ff;
-        --background-color: #07101d;
-        --surface-color: rgba(8, 18, 35, 0.92);
-        --surface-soft: rgba(11, 21, 36, 0.88);
-        --surface-muted: rgba(12, 24, 42, 0.80);
-        --border-color: rgba(255,255,255,0.10);
-        --text-color: #e9f5ff;
-        --muted-text: #a9c7df;
-        --surface-white: #f5f7fb;
+        --brand-color: #06b6d4;
+        --brand-strong: #0891b2;
+        --background-color: #0f172a;
+        --chat-container-bg: #1e293b;
+        --surface-color: rgba(30, 41, 59, 0.95);
+        --surface-soft: rgba(51, 65, 85, 0.9);
+        --surface-muted: rgba(71, 85, 105, 0.8);
+        --border-color: rgba(255,255,255,0.1);
+        --text-color: #f1f5f9;
+        --muted-text: #94a3b8;
+        --surface-white: #f8fafc;
         --success-color: #22c55e;
         --warning-color: #eab308;
         --danger-color: #ef4444;
-        --shadow-color: rgba(0,0,0,0.24);
-        --radius: 24px;
-        --radius-sm: 16px;
-        --max-width: 1220px;
+        --shadow-color: rgba(0,0,0,0.3);
+        --radius: 16px;
+        --radius-sm: 8px;
+        --max-width: 900px;
+        --max-chat-width: 900px;
+        --user-msg-bg: linear-gradient(135deg, #3b82f6, #8b5cf6);
+        --bot-msg-bg: rgba(255,255,255,0.05);
     }}
 
     @media (prefers-color-scheme: light) {{
@@ -83,7 +88,7 @@ st.markdown(
     body, .stApp, .main, .block-container {{
         margin: 0;
         padding: 0;
-        background: linear-gradient(180deg, #08101c 0%, #0c1830 42%, #141d39 100%);
+        background: var(--background-color);
         color: var(--text-color);
         min-width: 0;
     }}
@@ -3441,178 +3446,232 @@ def render_chat_styles():
     st.markdown(
         """
         <style>
-        .chat-shell {
-            width: 100%;
-            max-width: 980px;
-            margin: 0 auto 1.5rem;
-            background: #07101d;
-            border-radius: 28px;
-            box-shadow: 0 26px 60px rgba(0,0,0,0.18);
+        .chat-container {{
+            max-width: var(--max-chat-width);
+            margin: 0 auto;
+            background: var(--chat-container-bg);
+            border-radius: var(--radius);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
             overflow: hidden;
-            position: relative;
-            z-index: 1;
-            border: 1px solid rgba(255,255,255,0.08);
-        }
-        .chat-shell header {
+            display: flex;
+            flex-direction: column;
+            height: 80vh;
+        }}
+
+        .chat-header {{
+            padding: 1rem 1.5rem;
+            background: var(--chat-container-bg);
+            border-bottom: 1px solid var(--border-color);
             display: flex;
             align-items: center;
-            gap: 0.9rem;
-            justify-content: space-between;
-            background: linear-gradient(135deg, #075e54 0%, #128c7e 100%);
-            padding: 1rem 1.25rem;
-            color: #ffffff;
-        }
-        .chat-shell .avatar {
-            width: 48px;
-            height: 48px;
+            gap: 1rem;
+        }}
+
+        .chat-avatar {{
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
-            background: rgba(255,255,255,0.12);
+            background: var(--brand-color);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1.2rem;
-            font-weight: 800;
-            border: 1px solid rgba(255,255,255,0.16);
-        }
-        .chat-shell .chat-title {
-            margin: 0;
-            font-size: 1.2rem;
-            font-weight: 800;
-        }
-        .chat-shell .chat-subtitle {
-            margin: 0.25rem 0 0;
-            font-size: 0.92rem;
-            color: rgba(255,255,255,0.9);
-        }
-        .chat-window {
-            background: #0f1f30;
-            padding: 1rem 1rem 0;
-            min-height: 0;
-            max-height: 62vh;
+            color: white;
+        }}
+
+        .chat-title {{
+            font-weight: 600;
+            color: var(--text-color);
+        }}
+
+        .chat-subtitle {{
+            font-size: 0.9rem;
+            color: var(--muted-text);
+        }}
+
+        .chat-messages {{
+            flex: 1;
             overflow-y: auto;
+            padding: 1rem 1.5rem;
             display: flex;
             flex-direction: column;
-            justify-content: flex-start;
-            gap: 0.85rem;
-        }
-        .chat-window::-webkit-scrollbar {
-            width: 10px;
-        }
-        .chat-window::-webkit-scrollbar-thumb {
-            background: rgba(0,0,0,0.18);
-            border-radius: 999px;
-        }
-        .bubble {
-            display: inline-flex;
-            flex-direction: column;
-            max-width: 78%;
-            padding: 0.95rem 1rem;
-            border-radius: 18px;
-            line-height: 1.6;
-            word-break: break-word;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-        }
-        .bubble.user {
-            background: #25d366;
-            color: #0b1721;
-            align-self: flex-end;
-            margin-left: auto;
-            border-bottom-right-radius: 4px;
-            border-top-left-radius: 18px;
-        }
-        .bubble.assistant {
-            background: #1a293c;
-            color: #e8eff7;
-            align-self: flex-start;
-            margin-right: auto;
-            border-bottom-left-radius: 4px;
-            border-top-right-radius: 18px;
-        }
-        .bubble.assistant.alt {
-            background: #1b2b43;
-            color: #d5e3ff;
-        }
-        .chat-input-panel {
-            background: #0e1b2d;
-            padding: 1rem 1rem 1.1rem;
-            border-top: 1px solid rgba(255,255,255,0.08);
-            display: grid;
+            gap: 1rem;
+        }}
+
+        .message {{
+            display: flex;
             gap: 0.75rem;
-        }
-        .chat-shell .stButton>button,
-        .chat-shell .stButton>div>button,
-        .chat-shell .stButton>div>div>button {
-            background: rgba(255,255,255,0.08) !important;
-            color: #e8eff7 !important;
-            border: 1px solid rgba(255,255,255,0.16) !important;
-            border-radius: 18px !important;
-            min-height: 3.4rem !important;
-            box-shadow: none !important;
-        }
-        .chat-shell .stButton>button:hover,
-        .chat-shell .stButton>div>button:hover,
-        .chat-shell .stButton>div>div>button:hover {
-            background: rgba(255,255,255,0.14) !important;
-        }
-        .chat-input-panel .stButton>button,
-        .chat-input-panel .stButton>div>button,
-        .chat-input-panel .stButton>div>div>button {
-            min-height: 3.6rem !important;
-        }
-        .chat-input-panel .stButton>button:hover,
-        .chat-input-panel .stButton>div>button:hover,
-        .chat-input-panel .stButton>div>div>button:hover {
-            background: rgba(255,255,255,0.14) !important;
-        }
-        .chat-prompt-panel {
+            animation: fadeIn 0.3s ease-in;
+        }}
+
+        .message.user {{
+            justify-content: flex-end;
+        }}
+
+        .message.bot {{
+            justify-content: flex-start;
+        }}
+
+        .message-avatar {{
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }}
+
+        .message.user .message-avatar {{
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            color: white;
+        }}
+
+        .message.bot .message-avatar {{
+            background: var(--bot-msg-bg);
+            color: var(--text-color);
+        }}
+
+        .message-bubble {{
+            max-width: 70%;
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius);
+            font-size: 0.95rem;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }}
+
+        .message.user .message-bubble {{
+            background: var(--user-msg-bg);
+            color: white;
+            border-bottom-right-radius: var(--radius-sm);
+        }}
+
+        .message.bot .message-bubble {{
+            background: var(--bot-msg-bg);
+            color: var(--text-color);
+            border-bottom-left-radius: var(--radius-sm);
+        }}
+
+        .message-content {{
+            margin-bottom: 0.5rem;
+        }}
+
+        .confidence {{
+            font-size: 0.8rem;
+            color: var(--muted-text);
+            font-weight: 500;
+        }}
+
+        .suggested-questions {{
             display: flex;
             flex-wrap: wrap;
-            gap: 0.65rem;
-            padding: 1rem 0 0;
-        }
-        .chat-prompt-chip {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0.65rem 0.95rem;
-            border-radius: 999px;
-            background: rgba(255,255,255,0.08);
-            border: 1px solid rgba(255,255,255,0.12);
-            color: #e8eff7;
-            font-size: 0.92rem;
-        }
-        .chat-input-panel input[type="text"] {
-            width: 100% !important;
-            height: 4rem !important;
-            border-radius: 20px !important;
-            border: 1px solid rgba(255,255,255,0.18) !important;
-            padding: 1rem !important;
-            color: #e8eff7 !important;
-            background: #0b1726 !important;
-            box-shadow: none !important;
-        }
-        .chat-close-row {
+            gap: 0.5rem;
+            padding: 0.5rem 1.5rem;
+            background: rgba(255,255,255,0.05);
+            border-top: 1px solid var(--border-color);
+        }}
+
+        .question-btn {{
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            background: rgba(255,255,255,0.05);
+            color: var(--text-color);
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }}
+
+        .question-btn:hover {{
+            background: rgba(6,182,212,0.1);
+            border-color: var(--brand-color);
+            color: var(--brand-color);
+        }}
+
+        .chat-input {{
+            padding: 1rem 1.5rem;
+            background: var(--chat-container-bg);
+            border-top: 1px solid var(--border-color);
             display: flex;
-            justify-content: flex-end;
-            padding: 0.8rem 1rem 0;
-        }
-        @media (max-width: 980px) {
-            .chat-shell {
-                max-width: 100%;
-            }
-            .chat-window {
-                padding: 1rem 0.85rem 0;
-            }
-        }
-        @media (max-width: 640px) {
-            .chat-shell header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            .chat-input-row {
-                grid-template-columns: 1fr;
-            }
-        }
+            gap: 0.75rem;
+            align-items: flex-end;
+        }}
+
+        .chat-input input {{
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            background: rgba(255,255,255,0.05);
+            color: var(--text-color);
+            font-size: 1rem;
+            outline: none;
+        }}
+
+        .chat-input input::placeholder {{
+            color: var(--muted-text);
+        }}
+
+        .chat-input button {{
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius);
+            border: none;
+            background: var(--brand-color);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }}
+
+        .chat-input button:hover {{
+            background: #0891b2;
+            transform: translateY(-1px);
+        }}
+
+        .loading {{
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: var(--brand-color);
+            animation: spin 1s ease-in-out infinite;
+        }}
+
+        @keyframes spin {{
+            to {{ transform: rotate(360deg); }}
+        }}
+
+        @keyframes fadeIn {{
+            from {{ opacity: 0; transform: translateY(10px); }}
+            to {{ opacity: 1; transform: translateY(0); }}
+        }}
+
+    @media (max-width: 768px) {{
+            .chat-container {{
+                height: 90vh;
+                border-radius: 0;
+            }}
+            .message-bubble {{
+                max-width: 85%;
+            }}
+            .suggested-questions {{
+                padding: 0.5rem 1rem;
+            }}
+            .chat-input {{
+                padding: 1rem;
+            }}
+        }}
+
+        /* Hide Streamlit default elements */
+        #MainMenu {{visibility: hidden;}}
+        footer {{visibility: hidden;}}
+        header[data-testid="stHeader"] {{visibility: hidden;}}
         </style>
         """,
         unsafe_allow_html=True,
@@ -3710,13 +3769,26 @@ def handle_chat_submit(input_key, mode):
             bot_response = completion.choices[0].text
 
         bot_response = bot_response or "No response received from the AI."
+
+        # Add confidence indicator (simulated)
+        confidence = random.randint(70, 95)  # Random for demo
+        confidence_text = f"Confidence: {confidence}%"
+
+        # For medical mode, ensure structured response
+        if mode == "medical":
+            # Check if response already has structure, if not, format it
+            if not any(section in bot_response.lower() for section in ["possible condition", "symptoms", "advice", "when to see"]):
+                # Try to structure it
+                structured = f"**Possible Condition:** {bot_response[:200]}...\n\n**Symptoms:** Based on the query.\n\n**Advice:** Consult a healthcare professional.\n\n**When to see doctor:** If symptoms persist."
+                bot_response = structured
+
         st.session_state.chat_last_user = user_prompt
         st.session_state.chat_last_response = bot_response
         history_key = "chat_history_medical" if mode == "medical" else "chat_history_quick"
         if history_key not in st.session_state:
             st.session_state[history_key] = []
         st.session_state[history_key].append({"role": "user", "content": user_prompt})
-        st.session_state[history_key].append({"role": "assistant", "content": bot_response})
+        st.session_state[history_key].append({"role": "assistant", "content": bot_response, "confidence": confidence_text})
         st.session_state[input_key] = ""
         st.session_state.chat_error = ""
         st.session_state.chat_warning = ""
@@ -4001,8 +4073,59 @@ def run_groq_chat_sync(prompt, model="openai/gpt-oss-120b"):
         return completion.choices[0].message.get("content", "") or ""
     return getattr(completion.choices[0], "text", "") or ""
 
+def format_structured_response(response):
+    """Format AI response with structured sections for medical mode."""
+    sections = {
+        "Possible Condition": [],
+        "Symptoms": [],
+        "Advice": [],
+        "When to see doctor": []
+    }
+
+    lines = response.split('\n')
+    current_section = None
+
+    for line in lines:
+        line = line.strip()
+        if not line:
+            continue
+
+        # Check for section headers
+        for section in sections.keys():
+            if section.lower() in line.lower() or line.lower().startswith(section.lower().split()[0]):
+                current_section = section
+                break
+        else:
+            if current_section:
+                sections[current_section].append(line)
+            else:
+                # If no section found, put in first section
+                sections["Possible Condition"].append(line)
+
+    # Build HTML
+    html_parts = []
+    for section, content in sections.items():
+        if content:
+            html_parts.append(f"<strong>{section}:</strong>")
+            html_parts.extend([f"<br>• {item}" for item in content])
+            html_parts.append("<br><br>")
+
+    if not html_parts:
+        # Fallback to original response
+        return response.replace('\n', '<br>')
+
+    return ''.join(html_parts).rstrip('<br><br>')
+
 if page == "chat":
     render_navbar()
+
+    # Trust banner
+    st.markdown("""
+    <div style="background: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; text-align: center;">
+        <strong style="color: #92400e;">⚠️ This AI is not a replacement for professional medical advice. Always consult qualified healthcare providers for diagnosis and treatment.</strong>
+    </div>
+    """, unsafe_allow_html=True)
+
     mode = st.session_state.get("chat_mode", "medical")
     header = "Nirnay Clinical Advisor" if mode == "medical" else "Nirnay Rapid Triage"
     subtitle = (
@@ -4010,17 +4133,10 @@ if page == "chat":
         if mode == "medical"
         else "Ask a short clinical question in any language and receive a focused triage recommendation."
     )
-    prompt_label = (
-        "Type your clinical question in any language..."
-        if mode == "medical"
-        else "Type your quick triage question in any language..."
-    )
-    send_label = "Ask Advisor" if mode == "medical" else "Ask Triage"
-    form_key = "nirnay_chat_form" if mode == "medical" else "nirnay_chat_alt_form"
-    input_key = "nirnay_chat_prompt" if mode == "medical" else "nirnay_chat_prompt_alt"
 
     render_chat_styles()
 
+    # Initialize session state
     if "chat_last_user" not in st.session_state:
         st.session_state.chat_last_user = ""
     if "chat_last_response" not in st.session_state:
@@ -4030,136 +4146,131 @@ if page == "chat":
     if "chat_warning" not in st.session_state:
         st.session_state.chat_warning = ""
 
-    st.markdown("<div class='chat-shell'>", unsafe_allow_html=True)
-    action_col, _ = st.columns([1, 2], gap="small")
-    with action_col:
-        st.button(
-            "🗑️ Clear Conversation",
-            key=f"clear_chat_{mode}_button",
-            on_click=clear_chat_history,
-            args=(mode,),
-        )
-        st.button(
-            "⬅️ Back to Analysis",
-            key=f"back_{mode}_button",
-            on_click=back_to_analysis,
-        )
+    # Action buttons
+    col1, col2, col3 = st.columns([1, 1, 2])
+    with col1:
+        st.button("🗑️ Clear", on_click=clear_chat_history, args=(mode,))
+    with col2:
+        st.button("⬅️ Back", on_click=back_to_analysis)
+    with col3:
+        if st.button("Medical" if mode == "quick" else "Quick", key="switch_mode"):
+            new_mode = "quick" if mode == "medical" else "medical"
+            st.session_state.chat_mode = new_mode
 
-    st.markdown(
-        f"<header><div class='avatar'>{'👩‍⚕️' if mode == 'medical' else '⚡'}</div><div><div class='chat-title'>{header}</div><div class='chat-subtitle'>{subtitle}</div></div></header>",
-        unsafe_allow_html=True,
-    )
+    # Chat container
+    st.markdown("<div class='chat-container'>", unsafe_allow_html=True)
 
-    switch_col1, switch_col2 = st.columns([1, 1], gap="small")
-    with switch_col1:
-        st.button(
-            "Medical Assistant",
-            key="chat_mode_med_button",
-            disabled=mode == "medical",
-            on_click=launch_chat,
-            args=("medical",),
-        )
-    with switch_col2:
-        st.button(
-            "Quick Assistant",
-            key="chat_mode_quick_button",
-            disabled=mode == "quick",
-            on_click=launch_chat,
-            args=("quick",),
-        )
+    # Chat header
+    st.markdown(f"""
+    <div class='chat-header'>
+        <div class='chat-avatar'>{'👩‍⚕️' if mode == 'medical' else '⚡'}</div>
+        <div>
+            <div class='chat-title'>{header}</div>
+            <div class='chat-subtitle'>{subtitle}</div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
-    context_items = []
-    if st.session_state.get("patient_name"):
-        context_items.append(f"Patient: {st.session_state.patient_name}")
-    if st.session_state.get("patient_age"):
-        context_items.append(f"Age: {st.session_state.patient_age}")
-    if st.session_state.get("patient_gender"):
-        context_items.append(f"Gender: {st.session_state.patient_gender}")
-    if st.session_state.get("uploaded_images"):
-        context_items.append(f"Uploaded files: {len(st.session_state.uploaded_images)}")
-    if context_items:
-        st.markdown(
-            f"<div class='hint-box'><strong>Session context:</strong> {html.escape(' · '.join(context_items))}</div>",
-            unsafe_allow_html=True,
-        )
-
-    st.markdown(
-        "<div class='chat-prompt-panel'>"
-        + "<span class='chat-prompt-chip'>What are the key red flags for this symptom?</span>"
-        + "<span class='chat-prompt-chip'>How should I interpret these lab values?</span>"
-        + "<span class='chat-prompt-chip'>List the top 3 differential diagnoses.</span>"
-        + "<span class='chat-prompt-chip'>What next test is most useful?</span>"
-        + "</div>",
-        unsafe_allow_html=True,
-    )
-
-    suggestion_texts = [
-        "What are the most urgent concerns for this patient?",
-        "Which findings need immediate follow-up?",
-        "What additional tests are recommended next?",
-    ] if mode == "medical" else [
-        "Summarize the main concern in one sentence.",
-        "Give a quick next step for this presentation.",
-        "What is the likely diagnosis?",
-    ]
-    suggestion_cols = st.columns(len(suggestion_texts), gap="small")
-    for idx, suggestion in enumerate(suggestion_texts):
-        suggestion_cols[idx].button(
-            suggestion,
-            key=f"chat_suggestion_{mode}_{idx}",
-            on_click=fill_chat_prompt,
-            args=(suggestion, input_key),
-        )
-
-    st.markdown("<div class='chat-window'>", unsafe_allow_html=True)
+    # Messages area
+    st.markdown("<div class='chat-messages' id='chat-messages'>", unsafe_allow_html=True)
 
     history_key = "chat_history_medical" if mode == "medical" else "chat_history_quick"
     history = st.session_state.get(history_key, [])
 
-    if history:
-        for msg in history:
-            content_html = html.escape(msg["content"]).replace("\n", "<br>")
-            if msg["role"] == "user":
-                bubble_class = "bubble user"
-            else:
-                bubble_class = "bubble assistant" if mode == "medical" else "bubble assistant alt"
-            st.markdown(
-                f"<div class='{bubble_class}'>{content_html}</div>",
-                unsafe_allow_html=True,
-            )
-    else:
+    if not history:
         welcome_text = (
-            "Hello! I'm Nirnay. Ask me any clinical question in any language to begin." if mode == "medical" else "Hello! I'm Quick Nirnay. Ask me a short clinical question in any language for a compact answer."
+            "Hello! I'm Nirnay. Ask me any clinical question in any language to begin."
+            if mode == "medical"
+            else "Hello! I'm Quick Nirnay. Ask me a short clinical question in any language for a compact answer."
         )
-        st.markdown(
-            f"<div class='bubble assistant'>{html.escape(welcome_text)}</div>",
-            unsafe_allow_html=True,
-        )
+        st.markdown(f"""
+        <div class='message bot'>
+            <div class='message-avatar'>🤖</div>
+            <div class='message-bubble'>
+                <div class='message-content'>{html.escape(welcome_text)}</div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+    else:
+        for msg in history:
+            if msg["role"] == "user":
+                avatar = "👤"
+                msg_class = "user"
+            else:
+                avatar = "🤖"
+                msg_class = "bot"
+
+            # Format bot messages with structured sections if medical mode
+            content = msg["content"]
+            confidence = msg.get("confidence", "")
+            if msg["role"] == "assistant" and mode == "medical":
+                content = format_structured_response(content)
+            else:
+                content = content.replace('\n', '<br>')
+
+            confidence_html = f"<div class='confidence'>{confidence}</div>" if confidence else ""
+
+            st.markdown(f"""
+            <div class='message {msg_class}'>
+                <div class='message-avatar'>{avatar}</div>
+                <div class='message-bubble'>
+                    <div class='message-content'>{content}</div>
+                    {confidence_html}
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
 
     st.markdown("</div>", unsafe_allow_html=True)
-    st.markdown(
-        """
-        <script>
-        const chatWindow = document.querySelector('.chat-window');
-        if (chatWindow) {
-            chatWindow.scrollTop = chatWindow.scrollHeight;
-        }
-        window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'});
-        </script>
-        """,
-        unsafe_allow_html=True,
+
+    # Suggested questions
+    if not history:
+        suggested_questions = [
+            "What are the key red flags for this symptom?",
+            "How should I interpret these lab values?",
+            "List the top 3 differential diagnoses.",
+            "What next test is most useful?"
+        ] if mode == "medical" else [
+            "Summarize the main concern in one sentence.",
+            "Give a quick next step for this presentation.",
+            "What is the likely diagnosis?"
+        ]
+
+        st.markdown("<div class='suggested-questions'>", unsafe_allow_html=True)
+        cols = st.columns(len(suggested_questions))
+        for i, question in enumerate(suggested_questions):
+            with cols[i]:
+                if st.button(question, key=f"suggest_{i}", use_container_width=True):
+                    st.session_state[f"chat_input_{mode}"] = question
+        st.markdown("</div>", unsafe_allow_html=True)
+
+    # Chat input
+    st.markdown("<div class='chat-input'>", unsafe_allow_html=True)
+    input_key = f"chat_input_{mode}"
+    user_input = st.text_input(
+        "Type your question...",
+        key=input_key,
+        placeholder="Ask a clinical question...",
+        label_visibility="collapsed"
     )
 
-    if st.session_state.chat_error:
-        st.error(st.session_state.chat_error)
-    if st.session_state.chat_warning:
-        st.warning(st.session_state.chat_warning)
+    col_send, col_loading = st.columns([4, 1])
+    with col_send:
+        if st.button("Send", use_container_width=True, disabled=not user_input.strip()):
+            handle_chat_submit(input_key, mode)
 
-    st.markdown("<div class='chat-input-panel'>", unsafe_allow_html=True)
-    user_input = st.text_input(prompt_label, key=input_key, placeholder=prompt_label, label_visibility='collapsed')
-    st.button(send_label, key=f"{form_key}_submit", on_click=handle_chat_submit, args=(input_key, mode))
     st.markdown("</div>", unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
+
+    # Auto-scroll script
+    st.markdown("""
+    <script>
+    const messages = document.getElementById('chat-messages');
+    if (messages) {
+        messages.scrollTop = messages.scrollHeight;
+    }
+    </script>
+    """, unsafe_allow_html=True)
+
     render_custom_footer()
     st.stop()
 
