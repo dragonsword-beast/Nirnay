@@ -1,4 +1,4 @@
-# Nirnay Web
+# Nirnay 
 
 ## About
 
