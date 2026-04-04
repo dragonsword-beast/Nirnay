@@ -4184,7 +4184,7 @@ if page == "chat":
     # Chat input
     st.markdown("<div class='chat-input-panel'>", unsafe_allow_html=True)
     input_key = f"chat_input_{mode}"
-    user_input = st.text_input(
+    st.text_input(
         "Type your question...",
         key=input_key,
         placeholder="Ask a clinical question...",
@@ -4193,8 +4193,13 @@ if page == "chat":
 
     col_send, col_loading = st.columns([4, 1])
     with col_send:
-        if st.button("Send", use_container_width=True, disabled=not user_input.strip()):
-            handle_chat_submit(input_key, mode)
+        st.button(
+            "Send",
+            use_container_width=True,
+            key=f"send_button_{mode}",
+            on_click=handle_chat_submit,
+            args=(input_key, mode),
+        )
 
     st.markdown("</div>", unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
@@ -4735,7 +4740,6 @@ if page == "analysis":
             st.button(
                 "Run Analysis",
                 key="generate_analysis",
-                disabled=not any_section_data,
                 on_click=request_analysis,
             )
         with action_cols[1]:
