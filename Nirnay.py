@@ -1982,6 +1982,55 @@ st.markdown(
         }}
     }}
 
+    /* Analysis layout responsive */
+    .analysis-layout {{
+        display: grid;
+        grid-template-columns: 7fr 3fr;
+        gap: 1rem;
+    }}
+
+    @media (max-width: 980px) {{
+        .analysis-layout {{
+            display: block;
+        }}
+    }}
+
+    /* Improved visual hierarchy */
+    .section-heading {{
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: var(--primary-color);
+    }}
+
+    .subsection-heading {{
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        color: var(--secondary-text-color);
+    }}
+
+    .card-section {{
+        margin-bottom: 2rem;
+    }}
+
+    /* Theme-aware colors */
+    .primary-text {{
+        color: var(--primary-color);
+    }}
+
+    .secondary-text {{
+        color: var(--secondary-text-color);
+    }}
+
+    .surface-bg {{
+        background: var(--card-background);
+    }}
+
+    .border {{
+        border-color: var(--border-color);
+    }}
+
     </style>
     """,
     unsafe_allow_html=True,
@@ -3713,29 +3762,27 @@ if page == "analysis":
 
 
     st.markdown("<div class='tool-grid-wrap'>", unsafe_allow_html=True)
-    st.markdown("<div class='stColumns'>", unsafe_allow_html=True)
-    col1, col2 = st.columns([7, 3], gap="large")
-    with col1:
-        st.markdown("<div class='col-left'>", unsafe_allow_html=True)
-        st.markdown("<div class='input-section'>", unsafe_allow_html=True)
-        st.markdown("### 📥 Clinical Inputs")
-        st.markdown(
-            """
-            <div class='glass-card'>
-                <div class='card-header'><span class='section-icon'>🧩</span> Intake dashboard</div>
-                <p class='profile-meta'>Choose a category, enter your core data, and use the dashboard to generate concise insights.</p>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
+    st.markdown('<div class="analysis-layout">', unsafe_allow_html=True)
+    st.markdown('<div class="col-left">', unsafe_allow_html=True)
+    st.markdown("<div class='input-section'>", unsafe_allow_html=True)
+    st.markdown("### 📥 Clinical Inputs")
+    st.markdown(
+        """
+        <div class='glass-card'>
+            <div class='card-header'><span class='section-icon'>🧩</span> Intake dashboard</div>
+            <p class='profile-meta'>Choose a category, enter your core data, and use the dashboard to generate concise insights.</p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
-        with expander_placeholder.expander("Clinical Intake Dashboard", expanded=True):
-            tabs_objs = st.tabs([x[0] for x in tab_names])
-            collected = {}
+    with expander_placeholder.expander("Clinical Intake Dashboard", expanded=True):
+        tabs_objs = st.tabs([x[0] for x in tab_names])
+        collected = {}
 
-            for (tab_title, defs), tab_obj in zip(tab_names, tabs_objs):
-                with tab_obj:
-                    collected[tab_title] = make_inputs(tab_obj, defs)
+        for (tab_title, defs), tab_obj in zip(tab_names, tabs_objs):
+            with tab_obj:
+                collected[tab_title] = make_inputs(tab_obj, defs)
 
             any_section_data = any(
                 any(value is not None and value is not False and value != "" for value in section.values())
@@ -3899,10 +3946,8 @@ if page == "analysis":
                 st.markdown(f"<div class='result-line {line_class}'>{safe_line}</div>", unsafe_allow_html=True)
             st.markdown("</div>", unsafe_allow_html=True)
             st.markdown("</div>", unsafe_allow_html=True)  # close output-section
-            st.markdown("</div>", unsafe_allow_html=True)  # close col-left
-
-    with col2:
-        st.markdown("<div class='col-right'>", unsafe_allow_html=True)
+            st.markdown('</div>', unsafe_allow_html=True)  # close col-left
+            st.markdown('<div class="col-right">', unsafe_allow_html=True)
         st.markdown("<div class='assistant-section'>", unsafe_allow_html=True)
         st.markdown("### 🤖 AI Assistant")
         st.markdown(
@@ -3932,8 +3977,8 @@ if page == "analysis":
         )
         render_chat_options()
         st.markdown("</div>", unsafe_allow_html=True)  # close assistant-section
-        st.markdown("</div>", unsafe_allow_html=True)  # close col-right
-        st.markdown("</div>", unsafe_allow_html=True)  # close stColumns
+        st.markdown('</div>', unsafe_allow_html=True)  # close col-right
+        st.markdown('</div>', unsafe_allow_html=True)  # close analysis-layout
         st.markdown("</div>", unsafe_allow_html=True)  # close tool-grid-wrap
         st.markdown("</div>", unsafe_allow_html=True)  # close analysis-tool-shell
 
