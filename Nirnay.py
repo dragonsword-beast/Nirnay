@@ -3703,13 +3703,6 @@ def handle_chat_submit(input_key, mode):
 
         bot_response = bot_response or "No response received from the AI."
 
-        # For medical mode, ensure structured response
-        if mode == "medical":
-            # Check if response already has structure, if not, format it
-            if not any(section in bot_response.lower() for section in ["possible condition", "symptoms", "advice", "when to see"]):
-                structured = f"**Possible Condition:** {bot_response[:200]}...\n\n**Symptoms:** Based on the query.\n\n**Advice:** Consult a healthcare professional.\n\n**When to see doctor:** If symptoms persist."
-                bot_response = structured
-
         st.session_state.chat_last_user = user_prompt
         st.session_state.chat_last_response = bot_response
         history_key = "chat_history_medical" if mode == "medical" else "chat_history_quick"
