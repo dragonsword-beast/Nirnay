@@ -1964,20 +1964,31 @@ st.markdown(
         }}
     }}
 
-    /* Profile form grid */
-    .profile-form-grid {{
-        display: contents;
+    /* Global responsive column support */
+    .stColumns {{
+        display: grid !important;
+        grid-template-columns: repeat(12, minmax(0, 1fr)) !important;
+        gap: 1rem !important;
+        width: 100%;
+    }}
+    .stColumns > div {{
+        min-width: 0;
+    }}
+    @media (max-width: 980px) {{
+        .stColumns {{
+            grid-template-columns: 1fr !important;
+        }}
     }}
 
-    .profile-form-grid > div {{
+    /* Profile form grid */
+    .profile-form-grid {{
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 1rem;
     }}
 
-    /* Mobile profile form */
-    @media (max-width: 768px) {{
-        .profile-form-grid > div {{
+    @media (max-width: 980px) {{
+        .profile-form-grid {{
             grid-template-columns: 1fr;
         }}
     }}
@@ -3946,8 +3957,9 @@ if page == "analysis":
                 st.markdown(f"<div class='result-line {line_class}'>{safe_line}</div>", unsafe_allow_html=True)
             st.markdown("</div>", unsafe_allow_html=True)
             st.markdown("</div>", unsafe_allow_html=True)  # close output-section
-            st.markdown('</div>', unsafe_allow_html=True)  # close col-left
-            st.markdown('<div class="col-right">', unsafe_allow_html=True)
+
+        st.markdown('</div>', unsafe_allow_html=True)  # close col-left
+        st.markdown('<div class="col-right">', unsafe_allow_html=True)
         st.markdown("<div class='assistant-section'>", unsafe_allow_html=True)
         st.markdown("### 🤖 AI Assistant")
         st.markdown(
