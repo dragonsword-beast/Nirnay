@@ -1,4 +1,4 @@
-# Nirnay Web
+# Nirnay 
 
 Nirnay is a Streamlit-based clinical workflow dashboard for AI-assisted medical intake, image support, and chat assistant interactions.
 
