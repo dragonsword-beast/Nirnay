@@ -1,6 +1,8 @@
-# Nirnay 
+# Nirnay Web
 
-Nirnay is a Streamlit-based clinical workflow dashboard for AI-assisted medical intake, image support, and chat assistant interactions.
+## About
+
+Nirnay is an AI-assisted clinical workflow application built with Streamlit. It combines patient intake, image support, and a safe medical chat assistant to help clinicians and care teams organize patient data, review clinical images, and explore medical guidance in a polished dashboard.
 
 ## What this app does
 
