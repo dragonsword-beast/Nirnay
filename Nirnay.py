@@ -4031,6 +4031,9 @@ def format_structured_response(response):
         "When to see doctor": []
     }
 
+    def sanitize_text(text):
+        return html.escape(re.sub(r"<[^>]+>", "", text.strip()))
+
     lines = response.split('\n')
     current_section = None
 
@@ -4046,10 +4049,10 @@ def format_structured_response(response):
                 break
         else:
             if current_section:
-                sections[current_section].append(line)
+                sections[current_section].append(sanitize_text(line))
             else:
                 # If no section found, put in first section
-                sections["Possible Condition"].append(line)
+                sections["Possible Condition"].append(sanitize_text(line))
 
     # Build HTML
     html_parts = []
@@ -4061,7 +4064,7 @@ def format_structured_response(response):
 
     if not html_parts:
         # Fallback to original response
-        return response.replace('\n', '<br>')
+        return html.escape(response).replace('\n', '<br>')
 
     return ''.join(html_parts).rstrip('<br><br>')
 
@@ -4107,21 +4110,21 @@ if page == "chat":
             st.session_state.chat_mode = new_mode
 
     # Chat container
-    st.markdown("<div class='chat-container'>", unsafe_allow_html=True)
+    st.markdown("<div class='chat-shell'>", unsafe_allow_html=True)
 
     # Chat header
     st.markdown(f"""
-    <div class='chat-header'>
-        <div class='chat-avatar'>{'👩‍⚕️' if mode == 'medical' else '⚡'}</div>
+    <header>
+        <div class='avatar'>{'👩‍⚕️' if mode == 'medical' else '⚡'}</div>
         <div>
             <div class='chat-title'>{header}</div>
             <div class='chat-subtitle'>{subtitle}</div>
         </div>
-    </div>
+    </header>
     """, unsafe_allow_html=True)
 
     # Messages area
-    st.markdown("<div class='chat-messages' id='chat-messages'>", unsafe_allow_html=True)
+    st.markdown("<div class='chat-window' id='chat-messages'>", unsafe_allow_html=True)
 
     history_key = "chat_history_medical" if mode == "medical" else "chat_history_quick"
     history = st.session_state.get(history_key, [])
@@ -4133,39 +4136,26 @@ if page == "chat":
             else "Hello! I'm Quick Nirnay. Ask me a short clinical question in any language for a compact answer."
         )
         st.markdown(f"""
-        <div class='message bot'>
-            <div class='message-avatar'>🤖</div>
-            <div class='message-bubble'>
-                <div class='message-content'>{html.escape(welcome_text)}</div>
-            </div>
+        <div class='bubble assistant'>
+            {html.escape(welcome_text)}
         </div>
         """, unsafe_allow_html=True)
     else:
         for msg in history:
             if msg["role"] == "user":
-                avatar = "👤"
                 msg_class = "user"
             else:
-                avatar = "🤖"
-                msg_class = "bot"
+                msg_class = "assistant alt" if mode == "quick" else "assistant"
 
-            # Format bot messages with structured sections if medical mode
-            content = msg["content"]
-            confidence = msg.get("confidence", "")
+            raw_content = msg["content"]
             if msg["role"] == "assistant" and mode == "medical":
-                content = format_structured_response(content)
+                content = format_structured_response(raw_content)
             else:
-                content = content.replace('\n', '<br>')
-
-            confidence_html = f"<div class='confidence'>{confidence}</div>" if confidence else ""
+                content = html.escape(raw_content).replace('\n', '<br>')
 
             st.markdown(f"""
-            <div class='message {msg_class}'>
-                <div class='message-avatar'>{avatar}</div>
-                <div class='message-bubble'>
-                    <div class='message-content'>{content}</div>
-                    {confidence_html}
-                </div>
+            <div class='bubble {msg_class}'>
+                {content}
             </div>
             """, unsafe_allow_html=True)
 
@@ -4192,7 +4182,7 @@ if page == "chat":
         st.markdown("</div>", unsafe_allow_html=True)
 
     # Chat input
-    st.markdown("<div class='chat-input'>", unsafe_allow_html=True)
+    st.markdown("<div class='chat-input-panel'>", unsafe_allow_html=True)
     input_key = f"chat_input_{mode}"
     user_input = st.text_input(
         "Type your question...",
