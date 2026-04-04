@@ -4,7 +4,6 @@ import re
 import time
 import base64
 import pathlib
-import random
 from groq import Groq
 
 logo_png_path = pathlib.Path(__file__).resolve().parent / "893a2625-aa76-4993-af22-650fd069b640-8.png"
