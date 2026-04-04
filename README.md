@@ -1,63 +1,74 @@
-# Nirnay
+# Nirnay Web
 
-A Streamlit-based clinical diagnostic workflow interface for patient intake, image review, and AI-assisted analysis.
+Nirnay is a Streamlit-based clinical workflow dashboard for AI-assisted medical intake, image support, and chat assistant interactions.
 
-## Overview
+## What this app does
 
-`Nirnay.py` implements a polished web dashboard for a clinical workflow experience. It includes:
-- Patient intake and profile management
-- Analysis and insights console
-- AI chat/assistant interaction
-- File upload support for images and clinical data
-- Custom dark UI theme and responsive layout
+- Provides a patient intake profile page with name, age, gender, disclaimer consent, and saved workflow support.
+- Offers a clinical analysis flow with structured UI, image upload support, and AI-guided report generation.
+- Includes a chat assistant page with medical and quick-response chat modes backed by the `groq` SDK.
+- Uses a polished custom UI with responsive styling and a dark, clinical dashboard aesthetic.
 
-## Features
+## Files
 
-- Interactive patient profile collection
-- Insight dashboard with metrics and action cards
-- AI assistant chat options for medical guidance
-- Structured data and image upload workflow
-- Custom CSS styling and polished visual design
-- Upload and preview clinical images
-- Remove individual uploaded images or clear all uploads
-- Generate AI-assisted diagnostic summaries
+- `Nirnay.py` - Main Streamlit application file.
+- `requirements.txt` - Python dependencies for the app.
+- `README.md` - Project documentation.
 
 ## Requirements
 
-Install the required Python packages:
+- Python 3.10+ (recommended)
+- `streamlit`
+- `groq`
+
+## Installation
+
+1. Create and activate a Python virtual environment:
+
+```bash
+python -m venv .venv
+.venv\Scripts\activate
+```
+
+2. Install dependencies:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-Current dependencies:
-- `streamlit`
-- `groq`
+## Running the app
 
-## Run locally
-
-From the project directory, launch the app with:
+From the project directory:
 
 ```bash
 streamlit run Nirnay.py
 ```
 
-Open the local URL shown in the terminal to access the app.
+Then open the local URL shown in the terminal.
 
-## File structure
+## Optional configuration
 
-- `Nirnay.py` — main Streamlit application and UI logic
-- `requirements.txt` — Python dependencies
-- `README.md` — project documentation
-- `893a2625-aa76-4993-af22-650fd069b640-8.png` — brand/logo image asset used in the UI
-- `website code.txt` — backup or extra website code
+The app can use the Groq API key if provided via Streamlit secrets. Create a `.streamlit/secrets.toml` file with:
+
+```toml
+GROQ_API_KEY = "your_api_key_here"
+```
+
+If no API key is set, the app will still attempt to use the `groq` client with default credentials.
 
 ## Notes
 
-- The app uses inline CSS via `st.markdown` for custom styling.
-- If you add more dependencies, update `requirements.txt` accordingly.
-- Refresh the Streamlit app after code changes to see updates.
+- This project is intended as an AI-assisted clinical workflow tool, not a replacement for medical professionals.
+- The app includes a medical disclaimer and requires the user to agree before continuing.
+- The AI chat assistant is designed to answer medical-related questions only and to avoid general or non-medical topics.
+
+## Usage overview
+
+1. Fill in patient profile details and accept the disclaimer.
+2. Save or load patient profiles if needed.
+3. Proceed to analysis and optionally upload clinical images.
+4. Use the chat assistant for follow-up medical queries.
 
 ## License
 
-Use this project under your preferred license or internal use policy.
+This repository does not include a license file; add one if needed for your project.
