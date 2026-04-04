@@ -4225,10 +4225,9 @@ if page == "chat":
     # Suggested questions
     if not history:
         suggested_questions = [
-            "What are the key red flags for this symptom?",
-            "How should I interpret these lab values?",
-            "List the top 3 differential diagnoses.",
-            "What next test is most useful?"
+            "I have fever and cough",
+            "Side effects of paracetamol",
+            "Symptoms of diabetes"
         ] if mode == "medical" else [
             "Summarize the main concern in one sentence.",
             "Give a quick next step for this presentation.",
