@@ -47,40 +47,19 @@ st.markdown(
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
     :root {{
-        --brand-color: #57d4ff;
-        --brand-strong: #44b7ff;
-        --background-color: #07101d;
-        --surface-color: rgba(8, 18, 35, 0.92);
-        --surface-soft: rgba(11, 21, 36, 0.88);
-        --surface-muted: rgba(12, 24, 42, 0.80);
-        --border-color: rgba(255,255,255,0.10);
-        --text-color: #e9f5ff;
-        --muted-text: #a9c7df;
-        --surface-white: #f5f7fb;
+        --primary-color: #2563eb;
+        --background-color: #ffffff;
+        --surface-color: #f8fafc;
+        --card-color: #ffffff;
+        --border-color: #e2e8f0;
+        --text-color: #1e293b;
+        --text-muted: #64748b;
         --success-color: #22c55e;
         --warning-color: #eab308;
         --danger-color: #ef4444;
-        --shadow-color: rgba(0,0,0,0.24);
-        --radius: 24px;
-        --radius-sm: 16px;
-        --max-width: 1220px;
-    }}
-
-    @media (prefers-color-scheme: light) {{
-        :root {{
-            --background-color: #f4f7fb;
-            --surface-color: rgba(255,255,255,0.96);
-            --surface-soft: rgba(248,251,255,0.92);
-            --surface-muted: rgba(241,245,252,0.96);
-            --border-color: rgba(15,23,42,0.08);
-            --text-color: #0f172a;
-            --muted-text: #475569;
-            --shadow-color: rgba(15,23,42,0.08);
-        }}
-    }}
-
-    html {{
-        scroll-behavior: smooth;
+        --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+        --radius: 8px;
+        --max-width: 1200px;
     }}
 
     * {{
@@ -88,716 +67,208 @@ st.markdown(
         font-family: 'Inter', sans-serif;
     }}
 
-    body, .stApp, .main, .block-container {{
-        margin: 0;
-        padding: 0;
-        background: linear-gradient(180deg, #08101c 0%, #0c1830 42%, #141d39 100%);
-        color: var(--text-color);
-        min-width: 0;
-    }}
-
-    .stApp {{
+    body, .stApp {{
         background: var(--background-color);
         color: var(--text-color);
+        margin: 0;
+        padding: 0;
     }}
 
     .block-container {{
-        padding: 1.75rem 1.25rem 2rem;
+        padding: 2rem 1rem;
         max-width: var(--max-width);
-        width: 100%;
         margin: 0 auto;
-        background: transparent;
-        border: none;
-        box-shadow: none;
     }}
 
-    #MainMenu, footer, .stDeployButton, .css-1lsmgbg, .viewerBadge_container__1QSob, .css-1adrfps, .css-1k0ckh2, header, .css-18ni7ap, .css-1v3fvcr {{
+    /* Hide Streamlit elements */
+    #MainMenu, footer, .stDeployButton {{
         visibility: hidden !important;
-        opacity: 0 !important;
-        height: 0 !important;
-        width: 0 !important;
+    }}
+
+    header {{
         display: none !important;
     }}
 
-    /* Hide any GitHub or external links in header */
-    header a[href*="github"], header .css-1v3fvcr {{
-        display: none !important;
-    }}
-
-    .custom-navbar {{
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 1rem;
-        padding: 1rem 1.25rem;
-        margin: 0 -1rem 1.5rem;
-        background: rgba(8,18,34,0.94);
-        border: 1px solid rgba(255,255,255,0.08);
-        border-radius: 22px;
-        backdrop-filter: blur(18px);
-        position: sticky;
-        top: 0;
-        z-index: 100;
-    }}
-
-    .navbar-brand {{
-        display: flex;
-        align-items: center;
-        gap: 0.85rem;
-        font-size: 1.2rem;
-        font-weight: 800;
-        letter-spacing: -0.02em;
-        color: var(--brand-color);
-    }}
-
-    .navbar-brand span {{
-        display: inline-block;
-        font-size: 0.95rem;
-        font-weight: 600;
-        color: var(--text-color);
-    }}
-
-    .navbar-nav {{
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.65rem;
-    }}
-
-    .nav-btn {{
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0.7rem 1rem;
-        border-radius: 999px;
-        border: 1px solid rgba(255,255,255,0.08);
-        background: rgba(255,255,255,0.04);
-        color: var(--muted-text);
-        font-weight: 600;
-        text-decoration: none;
-        transition: all 0.22s ease;
-        cursor: pointer;
-    }}
-
-    .nav-btn:hover, .nav-btn.active {{
-        background: rgba(87,212,255,0.12);
-        color: var(--brand-color);
-        border-color: rgba(87,212,255,0.18);
-    }}
-
-    .site-hero {{
-        display: grid;
-        gap: 1.5rem;
-        padding: 2rem 1.25rem;
-        margin-bottom: 1.75rem;
-        background: rgba(10,18,32,0.9);
-        border-radius: 28px;
-        border: 1px solid rgba(255,255,255,0.08);
-        box-shadow: 0 30px 80px rgba(0,0,0,0.24);
-        backdrop-filter: blur(22px);
-    }}
-
-    .brand-header {{
-        display: grid;
-        gap: 1rem;
-    }}
-
+    /* Typography */
     .main-header {{
-        font-size: clamp(2.4rem, 5vw, 3.4rem);
-        margin: 0;
-        line-height: 1.02;
-        letter-spacing: -0.04em;
+        font-size: 2.5rem;
+        font-weight: 700;
         color: var(--text-color);
+        margin: 0 0 0.5rem 0;
+        line-height: 1.2;
     }}
 
     .subtitle {{
-        max-width: 760px;
-        margin: 0;
-        color: var(--muted-text);
-        font-size: 1rem;
-        line-height: 1.75;
+        font-size: 1.1rem;
+        color: var(--text-muted);
+        margin: 0 0 2rem 0;
+        line-height: 1.5;
     }}
 
-    .hero-actions {{
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.9rem;
-    }}
-
-    .hero-primary-cta,
-    .hero-secondary-cta {{
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0.95rem 1.4rem;
-        border-radius: 14px;
-        font-weight: 700;
-        text-decoration: none;
-        transition: transform 0.2s ease, background 0.2s ease;
-    }}
-
-    .hero-primary-cta {{
-        background: linear-gradient(135deg, rgba(87,212,255,0.18), rgba(70,139,255,0.26));
-        color: var(--brand-color);
-        border: 1px solid rgba(87,212,255,0.22);
-    }}
-
-    .hero-secondary-cta {{
-        background: rgba(255,255,255,0.05);
-        color: var(--text-color);
-        border: 1px solid rgba(255,255,255,0.1);
-    }}
-
-    .hero-primary-cta:hover,
-    .hero-secondary-cta:hover {{
-        transform: translateY(-1px);
-    }}
-
-    .hero-trust-row {{
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.75rem;
-        align-items: center;
-    }}
-
-    .hero-trust-item {{
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.9rem 1rem;
-        border-radius: 999px;
-        background: rgba(255,255,255,0.05);
-        color: var(--muted-text);
-        font-size: 0.95rem;
-    }}
-
-    .feature-grid {{
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 1rem;
-        margin-top: 1.5rem;
-    }}
-
-    .feature-card {{
-        padding: 1rem;
-        border-radius: 22px;
-        background: rgba(255,255,255,0.04);
-        border: 1px solid rgba(255,255,255,0.08);
-        box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
-    }}
-
-    .feature-title {{
-        margin: 0 0 0.5rem;
-        font-size: 1rem;
-        font-weight: 700;
-        color: var(--text-color);
-    }}
-
-    .feature-copy {{
-        margin: 0;
-        color: var(--muted-text);
-        line-height: 1.75;
-        font-size: 0.94rem;
-    }}
-
-    .stepper {{
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 0.9rem;
-        margin-bottom: 1.5rem;
-    }}
-
-    .stepper-step {{
-        padding: 0.85rem 1rem;
-        border-radius: 16px;
-        background: rgba(255,255,255,0.04);
-        border: 1px solid rgba(255,255,255,0.06);
-        color: var(--muted-text);
-        font-size: 0.95rem;
-        font-weight: 600;
-    }}
-
-    .stepper-step.active {{
-        background: rgba(87,212,255,0.18);
-        border-color: rgba(87,212,255,0.25);
-        color: var(--brand-color);
-    }}
-
-    .glass-card, .panel-card, .analysis-report-box, .assistant-panel {{
+    /* Cards */
+    .card {{
+        background: var(--card-color);
+        border: 1px solid var(--border-color);
         border-radius: var(--radius);
-        border: 1px solid rgba(255,255,255,0.08);
-        background: rgba(12, 21, 40, 0.94);
-        box-shadow: 0 18px 45px rgba(0,0,0,0.24);
-        padding: 1.4rem;
+        padding: 1.5rem;
+        box-shadow: var(--shadow);
+        margin-bottom: 1rem;
     }}
 
     .card-header {{
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--text-color);
+        margin: 0 0 1rem 0;
         display: flex;
         align-items: center;
-        gap: 0.85rem;
-        margin-bottom: 1rem;
-        font-size: 1rem;
-        font-weight: 700;
-        color: var(--brand-color);
-    }}
-
-    .section-icon {{
-        width: 2.2rem;
-        height: 2.2rem;
-        border-radius: 16px;
-        display: grid;
-        place-items: center;
-        background: rgba(87,212,255,0.14);
-    }}
-
-    .profile-row {{
-        display: flex;
-        gap: 1rem;
-        align-items: center;
-        flex-wrap: wrap;
-    }}
-
-    .profile-name {{
-        font-size: 1.05rem;
-        font-weight: 700;
-        color: var(--text-color);
-    }}
-
-    .profile-meta {{
-        color: var(--muted-text);
-        font-size: 0.95rem;
-        line-height: 1.7;
-    }}
-
-    .status-badge {{
-        display: inline-flex;
-        margin-top: 0.85rem;
-        padding: 0.55rem 0.85rem;
-        border-radius: 999px;
-        background: rgba(87,212,255,0.12);
-        color: var(--brand-color);
-        font-size: 0.82rem;
-        font-weight: 700;
-    }}
-
-    .metrics-grid {{
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 1rem;
-        margin-top: 1.3rem;
-    }}
-
-    .metric-pill {{
-        padding: 1rem;
-        border-radius: 18px;
-        background: rgba(255,255,255,0.04);
-        border: 1px solid rgba(255,255,255,0.08);
-    }}
-
-    .metric-pill strong {{
-        display: block;
-        margin-bottom: 0.5rem;
-        color: var(--text-color);
-    }}
-
-    .metric-pill span {{
-        color: var(--muted-text);
-        font-size: 0.92rem;
-    }}
-
-    .dashboard-top-grid {{
-        display: grid;
-        grid-template-columns: 1.8fr 1fr;
-        gap: 1rem;
-        margin-bottom: 1.25rem;
-    }}
-
-    .action-card {{
-        min-height: 100%;
-    }}
-
-    .input-section, .action-section, .output-section, .assistant-section {{
-        border-radius: var(--radius);
-        border: 1px solid rgba(255,255,255,0.08);
-        background: rgba(10, 18, 31, 0.96);
-        box-shadow: 0 14px 40px rgba(0,0,0,0.18);
-        padding: 1.35rem;
-        margin-bottom: 1rem;
-    }}
-
-    .input-section h3, .action-section h3, .output-section h3, .assistant-section h3 {{
-        margin-top: 0;
-        margin-bottom: 1rem;
-        font-size: 1.18rem;
-        color: var(--brand-color);
-    }}
-
-    .analysis-action-bar {{
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.8rem;
-        margin-bottom: 1rem;
-        padding: 1rem;
-        border-radius: 18px;
-        background: rgba(255,255,255,0.04);
-        border: 1px solid rgba(255,255,255,0.08);
-    }}
-
-    .action-copy {{
-        flex: 1 1 100%;
-        color: var(--muted-text);
-        font-size: 0.95rem;
-    }}
-
-    .assistant-panel {{
-        position: sticky;
-        top: 1rem;
-    }}
-
-    .assistant-title {{
-        font-size: 1.05rem;
-        margin-bottom: 0.75rem;
-        color: var(--text-color);
-    }}
-
-    .assistant-chip-row {{
-        display: flex;
-        flex-wrap: wrap;
         gap: 0.5rem;
-        margin-bottom: 1rem;
     }}
 
-    .assistant-chip {{
-        padding: 0.35rem 0.85rem;
-        border-radius: 999px;
-        background: rgba(87,212,255,0.11);
-        color: var(--brand-color);
-        font-size: 0.75rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.03em;
-    }}
-
-    .assistant-card {{
-        margin-bottom: 0.9rem;
-        padding: 1rem;
-        border-radius: 18px;
-        background: rgba(255,255,255,0.04);
-        border: 1px solid rgba(255,255,255,0.08);
-    }}
-
-    .assistant-card h4 {{
-        margin: 0 0 0.6rem;
-        color: var(--text-color);
-    }}
-
-    .tool-grid-wrap {{
-        width: 100%;
-    }}
-
-    .analysis-layout {{
-        display: grid;
-        grid-template-columns: 1.6fr 1fr;
-        gap: 1.25rem;
-    }}
-
-    .col-left, .col-right {{
-        width: 100%;
-    }}
-
-    .upload-panel {{
-        margin-bottom: 1rem;
-    }}
-
-    .panel-title {{
-        margin: 0 0 0.35rem;
-        font-weight: 700;
-        color: var(--brand-color);
-    }}
-
-    .panel-subtitle {{
-        margin: 0;
-        color: var(--muted-text);
-        line-height: 1.75;
-    }}
-
-    .analysis-report-box {{
-        padding: 1.4rem;
-        border-radius: 22px;
-        border: 1px solid rgba(255,255,255,0.08);
-        background: rgba(10, 17, 30, 0.96);
-    }}
-
-    .report-header {{
-        display: grid;
-        grid-template-columns: 1fr auto;
+    /* Stepper */
+    .stepper {{
+        display: flex;
         gap: 1rem;
-        align-items: center;
-        margin-bottom: 1rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
     }}
 
-    .report-title {{
-        font-size: 1.04rem;
-        font-weight: 700;
-        color: var(--text-color);
+    .step {{
+        padding: 0.75rem 1rem;
+        border-radius: var(--radius);
+        background: var(--surface-color);
+        border: 1px solid var(--border-color);
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        font-weight: 500;
+        flex: 1;
+        min-width: 120px;
+        text-align: center;
     }}
 
-    .report-subtitle {{
-        margin: 0.35rem 0 0;
-        color: var(--muted-text);
-        font-size: 0.95rem;
-        line-height: 1.7;
+    .step.active {{
+        background: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
     }}
 
-    .report-badge {{
-        display: inline-flex;
-        align-items: center;
-        padding: 0.55rem 0.85rem;
-        border-radius: 999px;
-        background: rgba(87,212,255,0.14);
-        color: var(--brand-color);
-        font-size: 0.85rem;
-        font-weight: 700;
+    /* Results section */
+    .result-section {{
+        background: var(--card-color);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius);
+        padding: 1.5rem;
+        box-shadow: var(--shadow);
     }}
 
-    .result-line {{
-        word-break: break-word;
-        white-space: pre-wrap;
-        padding: 0.35rem 0;
-        border-bottom: 1px solid rgba(255,255,255,0.06);
-        color: var(--muted-text);
-        font-size: 0.95rem;
+    /* Buttons */
+    .stButton>button {{
+        background: var(--primary-color) !important;
+        color: white !important;
+        border: none !important;
+        border-radius: var(--radius) !important;
+        padding: 0.75rem 1.5rem !important;
+        font-weight: 500 !important;
+        transition: all 0.2s ease !important;
     }}
 
-    .result-line.heading {{
-        color: var(--text-color);
-        font-weight: 700;
-    }}
-
-    .result-line.critical {{ color: #f87171; }}
-    .result-line.alert {{ color: #fbbf24; }}
-    .result-line.warning {{ color: #facc15; }}
-    .result-line.ok {{ color: var(--muted-text); }}
-
-    .upload-report-hover {{
-        position: relative;
-        display: inline-flex;
-    }}
-
-    .upload-report-trigger {{
-        text-decoration: underline;
-        cursor: help;
-        color: var(--brand-color);
-    }}
-
-    .upload-report-card {{
-        display: none;
-        position: absolute;
-        top: 110%;
-        left: 0;
-        width: min(320px, 100vw);
-        padding: 0.95rem;
-        border-radius: 18px;
-        background: rgba(10,18,31,0.96);
-        border: 1px solid rgba(255,255,255,0.1);
-        box-shadow: 0 18px 40px rgba(0,0,0,0.28);
-        z-index: 20;
-    }}
-
-    .upload-report-hover:hover .upload-report-card {{
-        display: block;
-    }}
-
-    .hint-box {{
-        padding: 0.95rem 1rem;
-        border-radius: 16px;
-        background: rgba(255,255,255,0.05);
-        border: 1px solid rgba(255,255,255,0.08);
-        color: var(--muted-text);
-        margin-bottom: 1rem;
-    }}
-
-    .stButton>button, .stButton>div>button, .stButton>div>div>button {{
-        border-radius: 14px !important;
-        padding: 0.9rem 1.2rem !important;
-        font-weight: 700 !important;
-    }}
-
-    .stButton>button:hover, .stButton>div>button:hover, .stButton>div>div>button:hover {{
+    .stButton>button:hover {{
+        background: #1d4ed8 !important;
         transform: translateY(-1px);
     }}
 
-    .stColumns {{
-        display: grid !important;
-        gap: 1rem !important;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)) !important;
+    /* Form elements */
+    .stTextInput>div>div>input,
+    .stTextArea>div>textarea,
+    .stSelectbox>div>div>select {{
+        border: 1px solid var(--border-color) !important;
+        border-radius: var(--radius) !important;
+        padding: 0.75rem !important;
+        background: var(--card-color) !important;
     }}
 
-    /* Ensure text wraps properly */
-    .stMarkdown, .stText, .stTextArea, .stTextInput {{
-        word-wrap: break-word !important;
-        overflow-wrap: break-word !important;
-        hyphens: auto !important;
+    /* File uploader */
+    .stFileUploader {{
+        border: 2px dashed var(--border-color) !important;
+        border-radius: var(--radius) !important;
+        padding: 1rem !important;
+        background: var(--surface-color) !important;
     }}
 
-    /* Touch-friendly inputs */
-    input, textarea, select {{
-        min-height: 44px !important;
-        font-size: 16px !important; /* Prevents zoom on iOS */
+    /* Tabs */
+    .stTabs [data-baseweb="tab-list"] {{
+        gap: 0;
+        background: transparent;
     }}
 
-    /* Better button sizing */
-    .stButton>button {{
-        min-height: 44px !important;
-        font-size: 1rem !important;
+    .stTabs [data-baseweb="tab-list"] [data-baseweb="tab"] {{
+        background: transparent;
+        border-radius: var(--radius) var(--radius) 0 0;
+        padding: 0.75rem 1.5rem;
+        border: 1px solid var(--border-color);
+        border-bottom: none;
+        color: var(--text-muted);
+        font-weight: 500;
     }}
 
-    @media (max-width: 980px) {{
-        .analysis-layout, .dashboard-top-grid {{
-            grid-template-columns: 1fr !important;
-        }}
-        .stColumns {{
-            grid-template-columns: 1fr !important;
-        }}
-        .custom-navbar {{
-            flex-direction: column;
-            align-items: stretch;
-            gap: 0.5rem;
-        }}
-        .navbar-nav {{
-            flex-direction: row;
-            justify-content: center;
-        }}
-        .hero-actions {{
-            flex-direction: column;
-            gap: 0.75rem;
-        }}
-        .hero-primary-cta, .hero-secondary-cta {{
-            width: 100%;
-            text-align: center;
-        }}
-        .stepper {{
-            grid-template-columns: 1fr;
-            gap: 0.5rem;
-        }}
-        .feature-grid {{
-            grid-template-columns: 1fr;
-        }}
-        .tool-grid-wrap {{
-            width: 100%;
-        }}
-        .analysis-layout {{
-            grid-template-columns: 1fr;
-        }}
-        .col-left, .col-right {{
-            width: 100%;
-        }}
-        .metrics-grid {{
-            grid-template-columns: 1fr;
-        }}
-        .profile-row {{
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 0.75rem;
-        }}
-        .action-bar {{
-            flex-direction: column;
-            align-items: stretch;
-        }}
+    .stTabs [data-baseweb="tab-list"] [aria-selected="true"] {{
+        background: var(--card-color);
+        color: var(--text-color);
+        border-color: var(--border-color);
     }}
 
-    @media (max-width: 680px) {{
-        .site-hero {{
-            padding: 1.4rem 1rem;
-            margin-bottom: 1rem;
-        }}
-        .custom-navbar {{
-            padding: 0.9rem 1rem;
-            margin-bottom: 1rem;
-        }}
+    .stTabs [data-baseweb="tab-panel"] {{
+        border: 1px solid var(--border-color);
+        border-top: none;
+        border-radius: 0 0 var(--radius) var(--radius);
+        padding: 1.5rem;
+        background: var(--card-color);
+    }}
+
+    /* Chat messages */
+    .stChatMessage {{
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius);
+        padding: 1rem;
+        margin-bottom: 0.5rem;
+        background: var(--surface-color);
+    }}
+
+    /* Success/Warning messages */
+    .stSuccess, .stWarning, .stError {{
+        border-radius: var(--radius) !important;
+        border: 1px solid var(--border-color) !important;
+    }}
+
+    /* Spinner */
+    .stSpinner {{
+        text-align: center;
+        padding: 2rem;
+    }}
+
+    /* Mobile responsiveness */
+    @media (max-width: 768px) {{
         .block-container {{
-            padding: 1rem 0.75rem 1.5rem;
-            max-width: 100%;
+            padding: 1rem 0.5rem;
         }}
-        .glass-card, .panel-card, .analysis-report-box, .assistant-panel {{
-            padding: 1rem;
-            border-radius: 16px;
-        }}
-        .analysis-action-bar {{
-            padding: 0.85rem;
-            flex-direction: column;
-            gap: 0.75rem;
-        }}
-        .result-line {{
-            font-size: 0.92rem;
-            word-wrap: break-word;
-            hyphens: auto;
-        }}
+
         .main-header {{
-            font-size: clamp(2rem, 6vw, 2.5rem);
-            line-height: 1.1;
+            font-size: 2rem;
         }}
-        .subtitle {{
-            font-size: clamp(0.9rem, 3vw, 1rem);
-            line-height: 1.6;
-        }}
-        .hero-primary-cta, .hero-secondary-cta {{
-            padding: 1rem 1.2rem;
-            font-size: 1rem;
-            min-height: 48px;
-        }}
-        .nav-btn {{
-            padding: 0.8rem 1rem;
-            font-size: 0.95rem;
-            min-height: 44px;
-        }}
-        .stButton>button, .stButton>div>button, .stButton>div>div>button {{
-            padding: 1rem 1.4rem !important;
-            font-size: 1rem !important;
-            min-height: 48px !important;
-            border-radius: 12px !important;
-        }}
-        .custom-footer {{
-            padding: 1.5rem 1rem;
-        }}
-        .footer-content {{
+
+        .stepper {{
             flex-direction: column;
-            gap: 1.5rem;
-            text-align: center;
         }}
-        .footer-links {{
-            justify-content: center;
-            flex-wrap: wrap;
+
+        .step {{
+            min-width: auto;
         }}
-        .footer-links a {{
-            margin: 0.25rem 0.5rem;
-        }}
-        .input-section, .action-section, .output-section, .assistant-section {{
-            margin-bottom: 1rem;
-        }}
-        .upload-panel {{
-            margin-bottom: 0.75rem;
-        }}
-        .hint-box {{
-            margin-bottom: 0.75rem;
-        }}
-        .report-header {{
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 0.75rem;
-        }}
-        .report-badge {{
-            align-self: flex-end;
+
+        .card {{
+            padding: 1rem;
         }}
     }}
-
-    @media (max-width: 480px) {{
-        .block-container {{
-            padding: 0.75rem 0.5rem 1rem;
-        }}
-        .site-hero {{
-            padding: 1rem 0.75rem;
-            border-radius: 16px;
-        }}
+    </style>
         .custom-navbar {{
             padding: 0.75rem 0.75rem;
             border-radius: 12px;
