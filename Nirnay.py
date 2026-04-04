@@ -3457,9 +3457,9 @@ def render_chat_styles():
         .chat-container {{
             max-width: var(--max-chat-width);
             margin: 0 auto;
-            background: var(--chat-container-bg);
-            border-radius: var(--radius);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            background: #e5ddd5;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
             overflow: hidden;
             display: flex;
             flex-direction: column;
@@ -3468,48 +3468,51 @@ def render_chat_styles():
 
         .chat-header {{
             padding: 1rem 1.5rem;
-            background: var(--chat-container-bg);
-            border-bottom: 1px solid var(--border-color);
+            background: #075e54;
             display: flex;
             align-items: center;
             gap: 1rem;
+            color: #ffffff;
         }}
 
         .chat-avatar {{
-            width: 40px;
-            height: 40px;
+            width: 42px;
+            height: 42px;
             border-radius: 50%;
-            background: var(--brand-color);
+            background: #25d366;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1.2rem;
-            color: white;
+            color: #075e54;
+            font-weight: 700;
         }}
 
         .chat-title {{
-            font-weight: 600;
-            color: var(--text-color);
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 0.15rem;
         }}
 
         .chat-subtitle {{
             font-size: 0.9rem;
-            color: var(--muted-text);
+            color: rgba(255,255,255,0.82);
         }}
 
         .chat-messages {{
             flex: 1;
             overflow-y: auto;
-            padding: 1rem 1.5rem;
+            padding: 1.5rem;
             display: flex;
             flex-direction: column;
             gap: 1rem;
+            background: linear-gradient(180deg, #d6e7df 0%, #e5ddd5 100%);
         }}
 
         .message {{
             display: flex;
             gap: 0.75rem;
-            animation: fadeIn 0.3s ease-in;
+            animation: fadeIn 0.2s ease-in;
         }}
 
         .message.user {{
@@ -3521,55 +3524,130 @@ def render_chat_styles():
         }}
 
         .message-avatar {{
-            width: 32px;
-            height: 32px;
+            width: 34px;
+            height: 34px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             flex-shrink: 0;
+            background: transparent;
         }}
 
         .message.user .message-avatar {{
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-            color: white;
+            background: #25d366;
+            color: #ffffff;
         }}
 
         .message.bot .message-avatar {{
-            background: var(--bot-msg-bg);
-            color: var(--text-color);
+            background: #ffffff;
+            color: #075e54;
+            border: 1px solid rgba(0,0,0,0.08);
         }}
 
         .message-bubble {{
-            max-width: 70%;
-            padding: 0.75rem 1rem;
-            border-radius: var(--radius);
-            font-size: 0.95rem;
-            line-height: 1.5;
+            max-width: 72%;
+            padding: 0.85rem 1rem;
+            border-radius: 18px;
+            font-size: 0.96rem;
+            line-height: 1.55;
             word-wrap: break-word;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.05);
         }}
 
         .message.user .message-bubble {{
-            background: var(--user-msg-bg);
-            color: white;
-            border-bottom-right-radius: var(--radius-sm);
+            background: #dcf8c6;
+            color: #172a19;
+            border-bottom-right-radius: 6px;
+            border-bottom-left-radius: 18px;
+            border-top-right-radius: 18px;
+            border-top-left-radius: 18px;
         }}
 
         .message.bot .message-bubble {{
-            background: var(--bot-msg-bg);
-            color: var(--text-color);
-            border-bottom-left-radius: var(--radius-sm);
+            background: #ffffff;
+            color: #202c33;
+            border-bottom-left-radius: 6px;
+            border-bottom-right-radius: 18px;
+            border-top-right-radius: 18px;
+            border-top-left-radius: 18px;
         }}
 
         .message-content {{
-            margin-bottom: 0.5rem;
+            margin-bottom: 0;
         }}
 
-        .confidence {{
-            font-size: 0.8rem;
-            color: var(--muted-text);
-            font-weight: 500;
+        .chat-input {{
+            padding: 1rem 1.5rem;
+            background: #fafafa;
+            border-top: 1px solid #d6e7df;
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }}
+
+        .chat-input input {{
+            flex: 1;
+            padding: 0.9rem 1rem;
+            border-radius: 999px;
+            border: 1px solid #c0d8ca;
+            background: #ffffff;
+            color: #202c33;
+            font-size: 1rem;
+            outline: none;
+        }}
+
+        .chat-input input::placeholder {{
+            color: #7f8c8d;
+        }}
+
+        .chat-input button {{
+            padding: 0.9rem 1.4rem;
+            border-radius: 999px;
+            border: none;
+            background: #25d366;
+            color: #ffffff;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }}
+
+        .chat-input button:hover {{
+            background: #22c45e;
+        }}
+
+        .suggested-questions {{
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: #f7f9f7;
+            border-top: 1px solid #d6e7df;
+        }}
+
+        .question-btn {{
+            padding: 0.55rem 1rem;
+            border-radius: 999px;
+            border: 1px solid #c0d8ca;
+            background: #ffffff;
+            color: #075e54;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }}
+
+        .question-btn:hover {{
+            background: #dff3e6;
+            border-color: #25d366;
+        }}
+
+        @keyframes fadeIn {{
+            from {{ opacity: 0; transform: translateY(6px); }}
+            to {{ opacity: 1; transform: translateY(0); }}
         }}
 
         .suggested-questions {{
@@ -3778,10 +3856,6 @@ def handle_chat_submit(input_key, mode):
 
         bot_response = bot_response or "No response received from the AI."
 
-        # Add confidence indicator (simulated)
-        confidence = random.randint(70, 95)  # Random for demo
-        confidence_text = f"Confidence: {confidence}%"
-
         # For medical mode, ensure structured response
         if mode == "medical":
             # Check if response already has structure, if not, format it
@@ -3796,7 +3870,7 @@ def handle_chat_submit(input_key, mode):
         if history_key not in st.session_state:
             st.session_state[history_key] = []
         st.session_state[history_key].append({"role": "user", "content": user_prompt})
-        st.session_state[history_key].append({"role": "assistant", "content": bot_response, "confidence": confidence_text})
+        st.session_state[history_key].append({"role": "assistant", "content": bot_response})
         st.session_state[input_key] = ""
         st.session_state.chat_error = ""
         st.session_state.chat_warning = ""
@@ -4210,20 +4284,16 @@ if page == "chat":
 
             # Format bot messages with structured sections if medical mode
             content = msg["content"]
-            confidence = msg.get("confidence", "")
             if msg["role"] == "assistant" and mode == "medical":
                 content = format_structured_response(content)
             else:
                 content = content.replace('\n', '<br>')
-
-            confidence_html = f"<div class='confidence'>{confidence}</div>" if confidence else ""
 
             st.markdown(f"""
             <div class='message {msg_class}'>
                 <div class='message-avatar'>{avatar}</div>
                 <div class='message-bubble'>
                     <div class='message-content'>{content}</div>
-                    {confidence_html}
                 </div>
             </div>
             """, unsafe_allow_html=True)
