@@ -2820,6 +2820,128 @@ st.markdown(
         border-color: var(--border-color);
     }}
 
+    /* Responsive button grids */
+    .responsive-button-grid {{
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }}
+    .responsive-button-grid > div {{
+        flex: 1;
+        min-width: 200px;
+    }}
+    @media (max-width: 680px) {{
+        .responsive-button-grid {{
+            flex-direction: column;
+        }}
+        .responsive-button-grid > div {{
+            min-width: unset;
+        }}
+    }}
+
+    .responsive-download-grid {{
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 1rem;
+    }}
+
+    .responsive-action-grid {{
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-bottom: 1rem;
+    }}
+    .responsive-action-grid > div {{
+        flex: 1;
+        min-width: 150px;
+    }}
+    @media (max-width: 680px) {{
+        .responsive-action-grid {{
+            flex-direction: column;
+        }}
+        .responsive-action-grid > div {{
+            min-width: unset;
+        }}
+    }}
+
+    .responsive-chat-mode-grid {{
+        display: flex;
+        gap: 0.5rem;
+        margin: 1rem 0;
+    }}
+    .responsive-chat-mode-grid > div {{
+        flex: 1;
+    }}
+    @media (max-width: 680px) {{
+        .responsive-chat-mode-grid {{
+            flex-direction: column;
+        }}
+    }}
+
+    .responsive-suggestion-grid {{
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-bottom: 1rem;
+    }}
+    .responsive-suggestion-grid > div {{
+        flex: 1;
+        min-width: 200px;
+    }}
+    @media (max-width: 680px) {{
+        .responsive-suggestion-grid {{
+            flex-direction: column;
+        }}
+        .responsive-suggestion-grid > div {{
+            min-width: unset;
+        }}
+    }}
+
+    .responsive-assistant-grid {{
+        display: flex;
+        gap: 1rem;
+        margin-top: 1rem;
+    }}
+    .responsive-assistant-grid > div {{
+        flex: 1;
+    }}
+    @media (max-width: 680px) {{
+        .responsive-assistant-grid {{
+            flex-direction: column;
+        }}
+    }}
+
+    .responsive-action-bar-grid {{
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-top: 0.5rem;
+    }}
+    .responsive-action-bar-grid > div {{
+        flex: 1;
+        min-width: 120px;
+    }}
+    @media (max-width: 680px) {{
+        .responsive-action-bar-grid {{
+            flex-direction: column;
+        }}
+        .responsive-action-bar-grid > div {{
+            min-width: unset;
+        }}
+    }}
+
+    .responsive-image-grid {{
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+    }}
+    @media (max-width: 680px) {{
+        .responsive-image-grid {{
+            grid-template-columns: 1fr;
+        }}
+    }}
+
     </style>
     """,
     unsafe_allow_html=True,
@@ -3098,32 +3220,28 @@ if page == "profile":
     age_value = int(st.session_state.patient_age) if str(st.session_state.patient_age).isdigit() else 0
     
     st.markdown('<div class="profile-form-grid">', unsafe_allow_html=True)
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        st.session_state.patient_name = st.text_input(
-            "👤 Full name",
-            value=st.session_state.patient_name,
-            placeholder="e.g. Priya Sharma",
+    st.session_state.patient_name = st.text_input(
+        "👤 Full name",
+        value=st.session_state.patient_name,
+        placeholder="e.g. John Doe",
+    )
+    st.session_state.patient_age = str(
+        st.number_input(
+            "🎂 Age",
+            min_value=0,
+            max_value=130,
+            value=age_value,
+            step=1,
+            help="Enter the patient's age in years.",
         )
-    with col2:
-        st.session_state.patient_age = str(
-            st.number_input(
-                "🎂 Age",
-                min_value=0,
-                max_value=130,
-                value=age_value,
-                step=1,
-                help="Enter the patient's age in years.",
-            )
-        )
-    with col3:
-        st.session_state.patient_gender = st.selectbox(
-            "⚧ Gender",
-            ["", "Male", "Female"],
-            index=["", "Male", "Female"].index(st.session_state.patient_gender)
-            if st.session_state.patient_gender in ["", "Male", "Female"]
-            else 0,
-        )
+    )
+    st.session_state.patient_gender = st.selectbox(
+        "⚧ Gender",
+        ["", "Male", "Female"],
+        index=["", "Male", "Female"].index(st.session_state.patient_gender)
+        if st.session_state.patient_gender in ["", "Male", "Female"]
+        else 0,
+    )
 
     st.markdown("---")
     st.checkbox(
@@ -3173,21 +3291,21 @@ if page == "profile":
         render_custom_footer()
         st.stop()
 
-    col1, col2 = st.columns([3, 2])
-    with col1:
-        st.button(
-            "Begin Assessment",
-            key="continue_to_analysis",
-            on_click=continue_to_analysis,
-            disabled=not valid_profile,
-        )
-    with col2:
-        st.button(
-            "Save profile",
-            key="save_profile",
-            on_click=save_profile,
-            disabled=not profile_save_ready,
-        )
+    # Replaced st.columns with responsive flex layout for buttons
+    st.markdown('<div class="responsive-button-grid">', unsafe_allow_html=True)
+    st.button(
+        "Begin Assessment",
+        key="continue_to_analysis",
+        on_click=continue_to_analysis,
+        disabled=not valid_profile,
+    )
+    st.button(
+        "Save profile",
+        key="save_profile",
+        on_click=save_profile,
+        disabled=not profile_save_ready,
+    )
+    st.markdown('</div>', unsafe_allow_html=True)
 
     if st.session_state.profile_saved:
         st.success("Profile saved successfully. You can load it later from Saved profiles.")
@@ -4031,42 +4149,43 @@ if page == "chat":
         st.session_state.chat_warning = ""
 
     st.markdown("<div class='chat-shell'>", unsafe_allow_html=True)
-    action_col, _ = st.columns([1, 2], gap="small")
-    with action_col:
-        st.button(
-            "🗑️ Clear Conversation",
-            key=f"clear_chat_{mode}_button",
-            on_click=clear_chat_history,
-            args=(mode,),
-        )
-        st.button(
-            "⬅️ Back to Analysis",
-            key=f"back_{mode}_button",
-            on_click=back_to_analysis,
-        )
+    # Replaced st.columns with responsive flex layout for action buttons
+    st.markdown('<div class="responsive-action-grid">', unsafe_allow_html=True)
+    st.button(
+        "🗑️ Clear Conversation",
+        key=f"clear_chat_{mode}_button",
+        on_click=clear_chat_history,
+        args=(mode,),
+    )
+    st.button(
+        "⬅️ Back to Analysis",
+        key=f"back_{mode}_button",
+        on_click=back_to_analysis,
+    )
+    st.markdown('</div>', unsafe_allow_html=True)
 
     st.markdown(
         f"<header><div class='avatar'>{'👩‍⚕️' if mode == 'medical' else '⚡'}</div><div><div class='chat-title'>{header}</div><div class='chat-subtitle'>{subtitle}</div></div></header>",
         unsafe_allow_html=True,
     )
 
-    switch_col1, switch_col2 = st.columns([1, 1], gap="small")
-    with switch_col1:
-        st.button(
-            "Medical Assistant",
-            key="chat_mode_med_button",
-            disabled=mode == "medical",
-            on_click=launch_chat,
-            args=("medical",),
-        )
-    with switch_col2:
-        st.button(
-            "Quick Assistant",
-            key="chat_mode_quick_button",
-            disabled=mode == "quick",
-            on_click=launch_chat,
-            args=("quick",),
-        )
+    # Replaced st.columns with responsive flex layout for chat mode switches
+    st.markdown('<div class="responsive-chat-mode-grid">', unsafe_allow_html=True)
+    st.button(
+        "Medical Assistant",
+        key="chat_mode_med_button",
+        disabled=mode == "medical",
+        on_click=launch_chat,
+        args=("medical",),
+    )
+    st.button(
+        "Quick Assistant",
+        key="chat_mode_quick_button",
+        disabled=mode == "quick",
+        on_click=launch_chat,
+        args=("quick",),
+    )
+    st.markdown('</div>', unsafe_allow_html=True)
 
     context_items = []
     if st.session_state.get("patient_name"):
@@ -4102,14 +4221,16 @@ if page == "chat":
         "Give a quick next step for this presentation.",
         "What is the likely diagnosis?",
     ]
-    suggestion_cols = st.columns(len(suggestion_texts), gap="small")
+    # Replaced st.columns with responsive flex layout for suggestion buttons
+    st.markdown('<div class="responsive-suggestion-grid">', unsafe_allow_html=True)
     for idx, suggestion in enumerate(suggestion_texts):
-        suggestion_cols[idx].button(
+        st.button(
             suggestion,
             key=f"chat_suggestion_{mode}_{idx}",
             on_click=fill_chat_prompt,
             args=(suggestion, input_key),
         )
+    st.markdown('</div>', unsafe_allow_html=True)
 
     st.markdown("<div class='chat-window'>", unsafe_allow_html=True)
 
@@ -4557,11 +4678,11 @@ if page == "analysis":
             """,
             unsafe_allow_html=True,
         )
-        button_cols = st.columns(2, gap="large")
-        with button_cols[0]:
-            st.button("Open Insights Advisor", key="choose_medical_assistant", on_click=launch_chat, args=("medical",))
-        with button_cols[1]:
-            st.button("Open Quick Summary", key="choose_quick_assistant", on_click=launch_chat, args=("quick",))
+        # Replaced st.columns with responsive flex layout for assistant choice buttons
+        st.markdown('<div class="responsive-assistant-grid">', unsafe_allow_html=True)
+        st.button("Open Insights Advisor", key="choose_medical_assistant", on_click=launch_chat, args=("medical",))
+        st.button("Open Quick Summary", key="choose_quick_assistant", on_click=launch_chat, args=("quick",))
+        st.markdown('</div>', unsafe_allow_html=True)
 
 
     st.markdown("<div class='tool-grid-wrap'>", unsafe_allow_html=True)
@@ -4642,16 +4763,16 @@ if page == "analysis":
 
         if st.session_state.uploaded_images:
             st.markdown("**Preview uploaded images:**")
-            image_cols = st.columns(3)
+            st.markdown('<div class="responsive-image-grid">', unsafe_allow_html=True)
             for idx, img in enumerate(st.session_state.uploaded_images):
-                with image_cols[idx % 3]:
-                    st.image(img, caption=img.name, width=300)
-                    st.button(
-                        "Remove",
-                        key=f"remove_uploaded_image_{idx}",
-                        on_click=remove_uploaded_image,
-                        args=(idx,),
-                    )
+                st.image(img, caption=img.name, width=300)
+                st.button(
+                    "Remove",
+                    key=f"remove_uploaded_image_{idx}",
+                    on_click=remove_uploaded_image,
+                    args=(idx,),
+                )
+            st.markdown('</div>', unsafe_allow_html=True)
 
             st.markdown(
                 f"<div class='hint-box'>Uploaded {len(st.session_state.uploaded_images)} file(s) received. They will be included in the generated report.</div>",
@@ -4681,18 +4802,17 @@ if page == "analysis":
             "<div class='analysis-action-bar'><div class='action-copy'>Primary action will activate once at least one clinical input, manual symptom text, or image is provided.</div></div>",
             unsafe_allow_html=True,
         )
-        action_cols = st.columns([4, 2, 2], gap="large")
-        with action_cols[0]:
-            st.button(
-                "Run Analysis",
-                key="generate_analysis",
-                disabled=not any_section_data,
-                on_click=request_analysis,
-            )
-        with action_cols[1]:
-            st.button("Save Draft", key="save_draft")
-        with action_cols[2]:
-            st.button("Reset", key="reset_analysis")
+        # Replaced st.columns with responsive flex layout for action buttons
+        st.markdown('<div class="responsive-action-bar-grid">', unsafe_allow_html=True)
+        st.button(
+            "Run Analysis",
+            key="generate_analysis",
+            disabled=not any_section_data,
+            on_click=request_analysis,
+        )
+        st.button("Save Draft", key="save_draft")
+        st.button("Reset", key="reset_analysis")
+        st.markdown('</div>', unsafe_allow_html=True)
 
         st.markdown("</div>", unsafe_allow_html=True)  # close action-section
 
@@ -4713,15 +4833,16 @@ if page == "analysis":
                 """,
                 unsafe_allow_html=True,
             )
-            download_cols = st.columns([3, 1])
-            with download_cols[1]:
-                st.download_button(
-                    "Download Report",
-                    report_text,
-                    file_name="nirnay_diagnostics_report.txt",
-                    mime="text/plain",
-                    key="download_report",
-                )
+            # Replaced st.columns with responsive flex layout for download button
+            st.markdown('<div class="responsive-download-grid">', unsafe_allow_html=True)
+            st.download_button(
+                "Download Report",
+                report_text,
+                file_name="nirnay_diagnostics_report.txt",
+                mime="text/plain",
+                key="download_report",
+            )
+            st.markdown('</div>', unsafe_allow_html=True)
             if st.session_state.get("uploaded_image_report", "").strip():
                 report_html = html.escape(st.session_state.uploaded_image_report).replace("\n", " ")
                 st.markdown(
