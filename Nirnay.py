@@ -3709,7 +3709,7 @@ def handle_chat_submit(input_key, mode):
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": prompt_text},
             ],
-            max_completion_tokens=2048 if mode == "medical" else 420,
+            max_completion_tokens=3072 if mode == "medical" else 540,
             temperature=0.4,
             stream=False,
         )
