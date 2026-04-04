@@ -2473,8 +2473,7 @@ def click_debounced(key, threshold=0.8):
 
 def set_page(target):
     st.session_state.page = target
-    if hasattr(st, "experimental_rerun"):
-        st.experimental_rerun()
+    st.rerun()
 
 
 def remove_uploaded_image(index):
@@ -2500,8 +2499,7 @@ def save_profile():
         if label not in [f"{p['name']} · {p['age']} · {p['gender']}" for p in st.session_state.saved_profiles]:
             st.session_state.saved_profiles.append(profile)
         st.session_state.profile_saved = True
-    if hasattr(st, "experimental_rerun"):
-        st.experimental_rerun()
+    st.rerun()
 
 
 def load_saved_profile():
@@ -2512,8 +2510,7 @@ def load_saved_profile():
             st.session_state.patient_age = p["age"]
             st.session_state.patient_gender = p["gender"]
             break
-    if hasattr(st, "experimental_rerun"):
-        st.experimental_rerun()
+    st.rerun()
 
 
 def continue_to_analysis():
@@ -2525,8 +2522,7 @@ def reset_profile():
     st.session_state.patient_age = ""
     st.session_state.patient_gender = ""
     st.session_state.agree_disclaimer = False
-    if hasattr(st, "experimental_rerun"):
-        st.experimental_rerun()
+    st.rerun()
 
 
 def render_navbar():
@@ -3239,8 +3235,7 @@ def clear_chat_history(mode=None):
         st.session_state.chat_history_quick = []
     st.session_state.chat_warning = ""
     st.session_state.chat_error = ""
-    if hasattr(st, "experimental_rerun"):
-        st.experimental_rerun()
+    st.rerun()
 
 
 def handle_chat_submit(input_key, mode):
