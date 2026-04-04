@@ -47,77 +47,629 @@ st.markdown(
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
     :root {{
-        --primary-color: #27c8f1;
-        --background-color: #0d1b2a;
-        --secondary-background-color: #07101d;
-        --text-color: #e8f3fc;
-        --secondary-text-color: #dde6f4;
-        --border-color: rgba(255,255,255,0.1);
-        --card-background: rgba(16, 30, 50, 0.92);
+        --brand-color: #57d4ff;
+        --brand-strong: #44b7ff;
+        --background-color: #07101d;
+        --surface-color: rgba(8, 18, 35, 0.92);
+        --surface-soft: rgba(11, 21, 36, 0.88);
+        --surface-muted: rgba(12, 24, 42, 0.80);
+        --border-color: rgba(255,255,255,0.10);
+        --text-color: #e9f5ff;
+        --muted-text: #a9c7df;
         --surface-white: #f5f7fb;
         --success-color: #22c55e;
         --warning-color: #eab308;
-        --danger-color: #dc2626;
+        --danger-color: #ef4444;
+        --shadow-color: rgba(0,0,0,0.24);
+        --radius: 24px;
+        --radius-sm: 16px;
+        --max-width: 1220px;
+    }}
+
+    @media (prefers-color-scheme: light) {{
+        :root {{
+            --background-color: #f4f7fb;
+            --surface-color: rgba(255,255,255,0.96);
+            --surface-soft: rgba(248,251,255,0.92);
+            --surface-muted: rgba(241,245,252,0.96);
+            --border-color: rgba(15,23,42,0.08);
+            --text-color: #0f172a;
+            --muted-text: #475569;
+            --shadow-color: rgba(15,23,42,0.08);
+        }}
+    }}
+
+    html {{
+        scroll-behavior: smooth;
     }}
 
     * {{
+        box-sizing: border-box;
         font-family: 'Inter', sans-serif;
     }}
 
-    /* Hide Streamlit branding */
-    #MainMenu {{visibility: hidden;}}
-    footer {{visibility: hidden;}}
-    .stDeployButton {{display: none;}}
-
-    .stApp {{
-        background: radial-gradient(circle at top left, var(--background-color) 0%, var(--secondary-background-color) 45%, #050812 100%);
-        color: var(--primary-color);
+    body, .stApp, .main, .block-container {{
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(180deg, #08101c 0%, #0c1830 42%, #141d39 100%);
+        color: var(--text-color);
         min-width: 0;
-        overflow-x: hidden;
     }}
 
-    body, .stApp, .main, .block-container {{
-        box-sizing: border-box;
+    .stApp {{
+        background: var(--background-color);
+        color: var(--text-color);
     }}
 
     .block-container {{
-        padding: 1.5rem 1rem;
-        max-width: 1200px;
+        padding: 1.75rem 1.25rem 2rem;
+        max-width: var(--max-width);
         width: 100%;
-        background: var(--card-background);
-        border: 1px solid var(--border-color);
-        border-radius: 20px;
-        box-shadow: 0 18px 40px rgba(0,0,0,0.24);
-        backdrop-filter: blur(14px);
+        margin: 0 auto;
+        background: transparent;
+        border: none;
+        box-shadow: none;
     }}
 
-    /* Responsive adjustments */
-    @media (max-width: 768px) {{
-        .block-container {{
-            padding: 1rem 0.75rem;
-            border-radius: 12px;
-            margin: 0 0.5rem;
-        }}
+    #MainMenu, footer, .stDeployButton, .css-1lsmgbg, .viewerBadge_container__1QSob {{
+        visibility: hidden !important;
+        opacity: 0 !important;
+        height: 0 !important;
+        width: 0 !important;
     }}
 
-    @media (max-width: 480px) {{
-        .block-container {{
-            padding: 0.75rem 0.5rem;
-            margin: 0 0.25rem;
-        }}
+    .custom-navbar {{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem 1.25rem;
+        margin: 0 -1rem 1.5rem;
+        background: rgba(8,18,34,0.94);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 22px;
+        backdrop-filter: blur(18px);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }}
+
+    .navbar-brand {{
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        font-size: 1.2rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        color: var(--brand-color);
+    }}
+
+    .navbar-brand span {{
+        display: inline-block;
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--text-color);
+    }}
+
+    .navbar-nav {{
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.65rem;
+    }}
+
+    .nav-btn {{
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.7rem 1rem;
+        border-radius: 999px;
+        border: 1px solid rgba(255,255,255,0.08);
+        background: rgba(255,255,255,0.04);
+        color: var(--muted-text);
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.22s ease;
+        cursor: pointer;
+    }}
+
+    .nav-btn:hover, .nav-btn.active {{
+        background: rgba(87,212,255,0.12);
+        color: var(--brand-color);
+        border-color: rgba(87,212,255,0.18);
+    }}
+
+    .site-hero {{
+        display: grid;
+        gap: 1.5rem;
+        padding: 2rem 1.25rem;
+        margin-bottom: 1.75rem;
+        background: rgba(10,18,32,0.9);
+        border-radius: 28px;
+        border: 1px solid rgba(255,255,255,0.08);
+        box-shadow: 0 30px 80px rgba(0,0,0,0.24);
+        backdrop-filter: blur(22px);
+    }}
+
+    .brand-header {{
+        display: grid;
+        gap: 1rem;
     }}
 
     .main-header {{
-        font-family: Calibri, sans-serif;
-        text-align: center;
-        font-size: clamp(2.5rem, 5vw, 3rem);
-        font-weight: 900;
-        margin-bottom: 0.15rem;
-        letter-spacing: 0px;
-        color: var(--primary-color);
-        text-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+        font-size: clamp(2.4rem, 5vw, 3.4rem);
+        margin: 0;
+        line-height: 1.02;
+        letter-spacing: -0.04em;
+        color: var(--text-color);
     }}
 
+    .subtitle {{
+        max-width: 760px;
+        margin: 0;
+        color: var(--muted-text);
+        font-size: 1rem;
+        line-height: 1.75;
+    }}
+
+    .hero-actions {{
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.9rem;
+    }}
+
+    .hero-primary-cta,
+    .hero-secondary-cta {{
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.95rem 1.4rem;
+        border-radius: 14px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: transform 0.2s ease, background 0.2s ease;
+    }}
+
+    .hero-primary-cta {{
+        background: linear-gradient(135deg, rgba(87,212,255,0.18), rgba(70,139,255,0.26));
+        color: var(--brand-color);
+        border: 1px solid rgba(87,212,255,0.22);
+    }}
+
+    .hero-secondary-cta {{
+        background: rgba(255,255,255,0.05);
+        color: var(--text-color);
+        border: 1px solid rgba(255,255,255,0.1);
+    }}
+
+    .hero-primary-cta:hover,
+    .hero-secondary-cta:hover {{
+        transform: translateY(-1px);
+    }}
+
+    .hero-trust-row {{
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        align-items: center;
+    }}
+
+    .hero-trust-item {{
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.9rem 1rem;
+        border-radius: 999px;
+        background: rgba(255,255,255,0.05);
+        color: var(--muted-text);
+        font-size: 0.95rem;
+    }}
+
+    .feature-grid {{
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }}
+
+    .feature-card {{
+        padding: 1rem;
+        border-radius: 22px;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.08);
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+    }}
+
+    .feature-title {{
+        margin: 0 0 0.5rem;
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--text-color);
+    }}
+
+    .feature-copy {{
+        margin: 0;
+        color: var(--muted-text);
+        line-height: 1.75;
+        font-size: 0.94rem;
+    }}
+
+    .stepper {{
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.9rem;
+        margin-bottom: 1.5rem;
+    }}
+
+    .stepper-step {{
+        padding: 0.85rem 1rem;
+        border-radius: 16px;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.06);
+        color: var(--muted-text);
+        font-size: 0.95rem;
+        font-weight: 600;
+    }}
+
+    .stepper-step.active {{
+        background: rgba(87,212,255,0.18);
+        border-color: rgba(87,212,255,0.25);
+        color: var(--brand-color);
+    }}
+
+    .glass-card, .panel-card, .analysis-report-box, .assistant-panel {{
+        border-radius: var(--radius);
+        border: 1px solid rgba(255,255,255,0.08);
+        background: rgba(12, 21, 40, 0.94);
+        box-shadow: 0 18px 45px rgba(0,0,0,0.24);
+        padding: 1.4rem;
+    }}
+
+    .card-header {{
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        margin-bottom: 1rem;
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--brand-color);
+    }}
+
+    .section-icon {{
+        width: 2.2rem;
+        height: 2.2rem;
+        border-radius: 16px;
+        display: grid;
+        place-items: center;
+        background: rgba(87,212,255,0.14);
+    }}
+
+    .profile-row {{
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        flex-wrap: wrap;
+    }}
+
+    .profile-name {{
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--text-color);
+    }}
+
+    .profile-meta {{
+        color: var(--muted-text);
+        font-size: 0.95rem;
+        line-height: 1.7;
+    }}
+
+    .status-badge {{
+        display: inline-flex;
+        margin-top: 0.85rem;
+        padding: 0.55rem 0.85rem;
+        border-radius: 999px;
+        background: rgba(87,212,255,0.12);
+        color: var(--brand-color);
+        font-size: 0.82rem;
+        font-weight: 700;
+    }}
+
+    .metrics-grid {{
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1rem;
+        margin-top: 1.3rem;
+    }}
+
+    .metric-pill {{
+        padding: 1rem;
+        border-radius: 18px;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.08);
+    }}
+
+    .metric-pill strong {{
+        display: block;
+        margin-bottom: 0.5rem;
+        color: var(--text-color);
+    }}
+
+    .metric-pill span {{
+        color: var(--muted-text);
+        font-size: 0.92rem;
+    }}
+
+    .dashboard-top-grid {{
+        display: grid;
+        grid-template-columns: 1.8fr 1fr;
+        gap: 1rem;
+        margin-bottom: 1.25rem;
+    }}
+
+    .action-card {{
+        min-height: 100%;
+    }}
+
+    .input-section, .action-section, .output-section, .assistant-section {{
+        border-radius: var(--radius);
+        border: 1px solid rgba(255,255,255,0.08);
+        background: rgba(10, 18, 31, 0.96);
+        box-shadow: 0 14px 40px rgba(0,0,0,0.18);
+        padding: 1.35rem;
+        margin-bottom: 1rem;
+    }}
+
+    .input-section h3, .action-section h3, .output-section h3, .assistant-section h3 {{
+        margin-top: 0;
+        margin-bottom: 1rem;
+        font-size: 1.18rem;
+        color: var(--brand-color);
+    }}
+
+    .analysis-action-bar {{
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.8rem;
+        margin-bottom: 1rem;
+        padding: 1rem;
+        border-radius: 18px;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.08);
+    }}
+
+    .action-copy {{
+        flex: 1 1 100%;
+        color: var(--muted-text);
+        font-size: 0.95rem;
+    }}
+
+    .assistant-panel {{
+        position: sticky;
+        top: 1rem;
+    }}
+
+    .assistant-title {{
+        font-size: 1.05rem;
+        margin-bottom: 0.75rem;
+        color: var(--text-color);
+    }}
+
+    .assistant-chip-row {{
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }}
+
+    .assistant-chip {{
+        padding: 0.35rem 0.85rem;
+        border-radius: 999px;
+        background: rgba(87,212,255,0.11);
+        color: var(--brand-color);
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+    }}
+
+    .assistant-card {{
+        margin-bottom: 0.9rem;
+        padding: 1rem;
+        border-radius: 18px;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.08);
+    }}
+
+    .assistant-card h4 {{
+        margin: 0 0 0.6rem;
+        color: var(--text-color);
+    }}
+
+    .tool-grid-wrap {{
+        width: 100%;
+    }}
+
+    .analysis-layout {{
+        display: grid;
+        grid-template-columns: 1.6fr 1fr;
+        gap: 1.25rem;
+    }}
+
+    .col-left, .col-right {{
+        width: 100%;
+    }}
+
+    .upload-panel {{
+        margin-bottom: 1rem;
+    }}
+
+    .panel-title {{
+        margin: 0 0 0.35rem;
+        font-weight: 700;
+        color: var(--brand-color);
+    }}
+
+    .panel-subtitle {{
+        margin: 0;
+        color: var(--muted-text);
+        line-height: 1.75;
+    }}
+
+    .analysis-report-box {{
+        padding: 1.4rem;
+        border-radius: 22px;
+        border: 1px solid rgba(255,255,255,0.08);
+        background: rgba(10, 17, 30, 0.96);
+    }}
+
+    .report-header {{
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 1rem;
+        align-items: center;
+        margin-bottom: 1rem;
+    }}
+
+    .report-title {{
+        font-size: 1.04rem;
+        font-weight: 700;
+        color: var(--text-color);
+    }}
+
+    .report-subtitle {{
+        margin: 0.35rem 0 0;
+        color: var(--muted-text);
+        font-size: 0.95rem;
+        line-height: 1.7;
+    }}
+
+    .report-badge {{
+        display: inline-flex;
+        align-items: center;
+        padding: 0.55rem 0.85rem;
+        border-radius: 999px;
+        background: rgba(87,212,255,0.14);
+        color: var(--brand-color);
+        font-size: 0.85rem;
+        font-weight: 700;
+    }}
+
+    .result-line {{
+        word-break: break-word;
+        white-space: pre-wrap;
+        padding: 0.35rem 0;
+        border-bottom: 1px solid rgba(255,255,255,0.06);
+        color: var(--muted-text);
+        font-size: 0.95rem;
+    }}
+
+    .result-line.heading {{
+        color: var(--text-color);
+        font-weight: 700;
+    }}
+
+    .result-line.critical {{ color: #f87171; }}
+    .result-line.alert {{ color: #fbbf24; }}
+    .result-line.warning {{ color: #facc15; }}
+    .result-line.ok {{ color: var(--muted-text); }}
+
+    .upload-report-hover {{
+        position: relative;
+        display: inline-flex;
+    }}
+
+    .upload-report-trigger {{
+        text-decoration: underline;
+        cursor: help;
+        color: var(--brand-color);
+    }}
+
+    .upload-report-card {{
+        display: none;
+        position: absolute;
+        top: 110%;
+        left: 0;
+        width: min(320px, 100vw);
+        padding: 0.95rem;
+        border-radius: 18px;
+        background: rgba(10,18,31,0.96);
+        border: 1px solid rgba(255,255,255,0.1);
+        box-shadow: 0 18px 40px rgba(0,0,0,0.28);
+        z-index: 20;
+    }}
+
+    .upload-report-hover:hover .upload-report-card {{
+        display: block;
+    }}
+
+    .hint-box {{
+        padding: 0.95rem 1rem;
+        border-radius: 16px;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.08);
+        color: var(--muted-text);
+        margin-bottom: 1rem;
+    }}
+
+    .stButton>button, .stButton>div>button, .stButton>div>div>button {{
+        border-radius: 14px !important;
+        padding: 0.9rem 1.2rem !important;
+        font-weight: 700 !important;
+    }}
+
+    .stButton>button:hover, .stButton>div>button:hover, .stButton>div>div>button:hover {{
+        transform: translateY(-1px);
+    }}
+
+    .stColumns {{
+        display: grid !important;
+        gap: 1rem !important;
+    }}
+
+    @media (max-width: 980px) {{
+        .analysis-layout, .dashboard-top-grid {{
+            grid-template-columns: 1fr !important;
+        }}
+        .stColumns {{
+            grid-template-columns: 1fr !important;
+        }}
+        .custom-navbar {{
+            flex-direction: column;
+            align-items: stretch;
+        }}
+        .hero-actions {{
+            justify-content: stretch;
+        }}
+        .hero-primary-cta, .hero-secondary-cta {{
+            width: 100%;
+        }}
+        .stepper {{
+            grid-template-columns: 1fr;
+        }}
+    }}
+
+    @media (max-width: 680px) {{
+        .site-hero {{
+            padding: 1.4rem 1rem;
+        }}
+        .custom-navbar {{
+            padding: 0.9rem 1rem;
+            margin-bottom: 1rem;
+        }}
+        .block-container {{
+            padding: 1rem 0.75rem 1.5rem;
+        }}
+        .glass-card, .panel-card, .analysis-report-box, .assistant-panel {{
+            padding: 1rem;
+        }}
+        .analysis-action-bar {{
+            padding: 0.85rem;
+        }}
+        .result-line {{
+            font-size: 0.92rem;
+        }}
+    }}
+
+    /* Improved visual hierarchy */
     .subtitle {{
         text-align: center;
         color: var(--secondary-text-color);
@@ -2242,6 +2794,20 @@ if page == "profile":
                 <div class="hero-trust-item">🤖 AI-assisted, not a doctor</div>
                 <div class="hero-trust-item">🔒 Secure by design</div>
                 <div class="hero-trust-item">⚡ Fast clinical workflow</div>
+            </div>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-title">Structured clinical intake</div>
+                    <div class="feature-copy">Capture patient vitals, symptoms, and diagnostic signals in one organized workflow.</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-title">AI-driven insights</div>
+                    <div class="feature-copy">Generate concise diagnostic guidance, risk flags, and follow-up suggestions.</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-title">Image review support</div>
+                    <div class="feature-copy">Upload scans and photos for image-aware analysis and richer clinical context.</div>
+                </div>
             </div>
         </div>
         """,
