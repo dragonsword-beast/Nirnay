@@ -3326,11 +3326,19 @@ def render_analysis_chat_styles():
         }
         .input-section, .action-section, .output-section, .assistant-section {
             border-radius: 16px;
-            border: 1px solid rgba(221, 234, 255, 0.15);
             background: rgba(9, 14, 28, 0.82);
             box-shadow: 0 12px 26px rgba(2, 6, 14, 0.25);
             padding: 1rem;
             margin-bottom: 1rem;
+        }
+        .input-section {
+            border: 1px solid rgba(255, 255, 255, 0.07);
+        }
+        .action-section, .output-section {
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .assistant-section {
+            border: 1px solid rgba(94, 202, 255, 0.15);
         }
         .input-section .glass-card {
             margin-bottom: 1rem;
