@@ -28,17 +28,9 @@ st.set_page_config(
 )
 
 # --- THEME COLORS---
-neutral_light = "#e8f3fc"
-highlight_gold = "#f3c136"
 surface_white = "#f5f7fb"
 surface_frost = "#dde6f4"
 primary_cyan = "#27c8f1"
-primary_ink = "#1761c1"
-border_ink = "#1f3042"
-text_night = "#020617"
-success_mint = "#22c55e"
-warning_amber = "#eab308"
-danger_crimson = "#dc2626"
 
 
 st.markdown(
@@ -2824,16 +2816,6 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
-
-def render_footer():
-    st.markdown(
-        """
-        <footer class="footer">
-            Created with passion by Aarko Batabyal & Saptak Bhattacharjee
-        </footer>
-        """,
-        unsafe_allow_html=True,
-    )
 
 # ------------ Pages -------------
 if "page" not in st.session_state:
